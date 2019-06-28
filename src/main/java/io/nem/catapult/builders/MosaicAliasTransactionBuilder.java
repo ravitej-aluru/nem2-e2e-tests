@@ -18,152 +18,121 @@
 *** along with Catapult. If not, see <http://www.gnu.org/licenses/>.
 **/
 
-
 package io.nem.catapult.builders;
 
-import java.io.ByteArrayOutputStream;
 import java.io.DataInput;
-import java.io.DataOutputStream;
-import java.nio.ByteBuffer;
 
-public class MosaicAliasTransactionBuilder {
-    public int getSize()  {
-        return this.size;
+/** Binary layout for a non-embedded mosaic alias transaction. */
+public final class MosaicAliasTransactionBuilder extends TransactionBuilder {
+    /** Mosaic alias transaction body. */
+    private final MosaicAliasTransactionBodyBuilder mosaicAliasTransactionBody;
+
+    /**
+     * Constructor - Creates an object from stream.
+     *
+     * @param stream Byte stream to use to serialize the object.
+     */
+    protected MosaicAliasTransactionBuilder(final DataInput stream) {
+        super(stream);
+        this.mosaicAliasTransactionBody = MosaicAliasTransactionBodyBuilder.loadFromBinary(stream);
     }
 
-    public void setSize(int size)  {
-        this.size = size;
+    /**
+     * Constructor.
+     *
+     * @param signature Entity signature.
+     * @param signer Entity signer's public key.
+     * @param version Entity version.
+     * @param type Entity type.
+     * @param fee Transaction fee.
+     * @param deadline Transaction deadline.
+     * @param aliasAction Alias action.
+     * @param namespaceId Id of a namespace that will become an alias.
+     * @param mosaicId Aliased mosaic id.
+     */
+    protected MosaicAliasTransactionBuilder(final SignatureDto signature, final KeyDto signer, final short version, final EntityTypeDto type, final AmountDto fee, final TimestampDto deadline, final AliasActionDto aliasAction, final NamespaceIdDto namespaceId, final MosaicIdDto mosaicId) {
+        super(signature, signer, version, type, fee, deadline);
+        this.mosaicAliasTransactionBody = MosaicAliasTransactionBodyBuilder.create(aliasAction, namespaceId, mosaicId);
     }
 
-    public ByteBuffer getSignature()  {
-        return this.signature;
+    /**
+     * Creates an instance of MosaicAliasTransactionBuilder.
+     *
+     * @param signature Entity signature.
+     * @param signer Entity signer's public key.
+     * @param version Entity version.
+     * @param type Entity type.
+     * @param fee Transaction fee.
+     * @param deadline Transaction deadline.
+     * @param aliasAction Alias action.
+     * @param namespaceId Id of a namespace that will become an alias.
+     * @param mosaicId Aliased mosaic id.
+     * @return Instance of MosaicAliasTransactionBuilder.
+     */
+    public static MosaicAliasTransactionBuilder create(final SignatureDto signature, final KeyDto signer, final short version, final EntityTypeDto type, final AmountDto fee, final TimestampDto deadline, final AliasActionDto aliasAction, final NamespaceIdDto namespaceId, final MosaicIdDto mosaicId) {
+        return new MosaicAliasTransactionBuilder(signature, signer, version, type, fee, deadline, aliasAction, namespaceId, mosaicId);
     }
 
-    public void setSignature(ByteBuffer signature)  {
-        if (signature == null)
-            throw new NullPointerException("signature");
-        
-        if (signature.array().length != 64)
-            throw new IllegalArgumentException("signature should be 64 bytes");
-        
-        this.signature = signature;
+    /**
+     * Gets alias action.
+     *
+     * @return Alias action.
+     */
+    public AliasActionDto getAliasAction() {
+        return this.mosaicAliasTransactionBody.getAliasAction();
     }
 
-    public ByteBuffer getSigner()  {
-        return this.signer;
+    /**
+     * Gets id of a namespace that will become an alias.
+     *
+     * @return Id of a namespace that will become an alias.
+     */
+    public NamespaceIdDto getNamespaceId() {
+        return this.mosaicAliasTransactionBody.getNamespaceId();
     }
 
-    public void setSigner(ByteBuffer signer)  {
-        if (signer == null)
-            throw new NullPointerException("signer");
-        
-        if (signer.array().length != 32)
-            throw new IllegalArgumentException("signer should be 32 bytes");
-        
-        this.signer = signer;
+    /**
+     * Gets aliased mosaic id.
+     *
+     * @return Aliased mosaic id.
+     */
+    public MosaicIdDto getMosaicId() {
+        return this.mosaicAliasTransactionBody.getMosaicId();
     }
 
-    public short getVersion()  {
-        return this.version;
+    /**
+     * Gets the size of the object.
+     *
+     * @return Size in bytes.
+     */
+    @Override
+    public int getSize() {
+        int size = super.getSize();
+        size += this.mosaicAliasTransactionBody.getSize();
+        return size;
     }
 
-    public void setVersion(short version)  {
-        this.version = version;
+    /**
+     * Creates an instance of MosaicAliasTransactionBuilder from a stream.
+     *
+     * @param stream Byte stream to use to serialize the object.
+     * @return Instance of MosaicAliasTransactionBuilder.
+     */
+    public static MosaicAliasTransactionBuilder loadFromBinary(final DataInput stream) {
+        return new MosaicAliasTransactionBuilder(stream);
     }
 
-    public EntityTypeBuilder getType()  {
-        return this.type;
+    /**
+     * Serializes an object to bytes.
+     *
+     * @return Serialized bytes.
+     */
+    public byte[] serialize() {
+        return GeneratorUtils.serialize(dataOutputStream -> {
+            final byte[] superBytes = super.serialize();
+            dataOutputStream.write(superBytes, 0, superBytes.length);
+            final byte[] mosaicAliasTransactionBodyBytes = this.mosaicAliasTransactionBody.serialize();
+            dataOutputStream.write(mosaicAliasTransactionBodyBytes, 0, mosaicAliasTransactionBodyBytes.length);
+        });
     }
-
-    public void setType(EntityTypeBuilder type)  {
-        this.type = type;
-    }
-
-    public long getFee()  {
-        return this.fee;
-    }
-
-    public void setFee(long fee)  {
-        this.fee = fee;
-    }
-
-    public long getDeadline()  {
-        return this.deadline;
-    }
-
-    public void setDeadline(long deadline)  {
-        this.deadline = deadline;
-    }
-
-    public AliasActionBuilder getAliasaction()  {
-        return this.aliasAction;
-    }
-
-    public void setAliasaction(AliasActionBuilder aliasAction)  {
-        this.aliasAction = aliasAction;
-    }
-
-    public long getNamespaceid()  {
-        return this.namespaceId;
-    }
-
-    public void setNamespaceid(long namespaceId)  {
-        this.namespaceId = namespaceId;
-    }
-
-    public long getMosaicid()  {
-        return this.mosaicId;
-    }
-
-    public void setMosaicid(long mosaicId)  {
-        this.mosaicId = mosaicId;
-    }
-
-    public static MosaicAliasTransactionBuilder loadFromBinary(DataInput stream) throws Exception {
-        MosaicAliasTransactionBuilder obj = new MosaicAliasTransactionBuilder();
-        obj.setSize(Integer.reverseBytes(stream.readInt()));
-        obj.signature = ByteBuffer.allocate(64);
-        stream.readFully(obj.signature.array());
-        obj.signer = ByteBuffer.allocate(32);
-        stream.readFully(obj.signer.array());
-        obj.setVersion(Short.reverseBytes(stream.readShort()));
-        obj.setType(EntityTypeBuilder.loadFromBinary(stream));
-        obj.setFee(Long.reverseBytes(stream.readLong()));
-        obj.setDeadline(Long.reverseBytes(stream.readLong()));
-        obj.setAliasaction(AliasActionBuilder.loadFromBinary(stream));
-        obj.setNamespaceid(Long.reverseBytes(stream.readLong()));
-        obj.setMosaicid(Long.reverseBytes(stream.readLong()));
-        return obj;
-    }
-
-    public byte[] serialize() throws Exception {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        DataOutputStream stream = new DataOutputStream(bos);
-        stream.writeInt(Integer.reverseBytes(this.getSize()));
-        stream.write(this.signature.array(), 0, this.signature.array().length);
-        stream.write(this.signer.array(), 0, this.signer.array().length);
-        stream.writeShort(Short.reverseBytes(this.getVersion()));
-        byte[] type = this.getType().serialize();
-        stream.write(type, 0, type.length);
-        stream.writeLong(Long.reverseBytes(this.getFee()));
-        stream.writeLong(Long.reverseBytes(this.getDeadline()));
-        byte[] aliasAction = this.getAliasaction().serialize();
-        stream.write(aliasAction, 0, aliasAction.length);
-        stream.writeLong(Long.reverseBytes(this.getNamespaceid()));
-        stream.writeLong(Long.reverseBytes(this.getMosaicid()));
-        stream.close();
-        return bos.toByteArray();
-    }
-
-    private int size;
-    private ByteBuffer signature;
-    private ByteBuffer signer;
-    private short version;
-    private EntityTypeBuilder type;
-    private long fee;
-    private long deadline;
-    private AliasActionBuilder aliasAction;
-    private long namespaceId;
-    private long mosaicId;
-
 }

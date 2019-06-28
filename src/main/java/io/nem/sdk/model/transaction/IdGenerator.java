@@ -17,80 +17,108 @@
 package io.nem.sdk.model.transaction;
 
 import io.nem.core.crypto.Hashes;
+import io.nem.core.utils.ByteUtils;
 import io.nem.sdk.model.mosaic.IllegalIdentifierException;
 import org.apache.commons.lang.ArrayUtils;
 
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
+/**
+ * Id generator
+ */
+final public class IdGenerator {
+	private static final long ID_GENERATOR_FLAG = 0x8000000000000000L;
 
-public class IdGenerator {
+	/**
+	 * Generate mosaic id.
+	 *
+	 * @param nonce     Nonce bytes.
+	 * @param publicKey Public key.
+	 * @return Mosaic id.
+	 */
+	public static BigInteger generateMosaicId(final byte[] nonce, final byte[] publicKey) {
+		final byte[] reverseNonce = ByteUtils.reverseCopy(nonce);
+		final byte[] hash = IdGenerator.getHashInLittleEndian(reverseNonce, publicKey);
+		// Unset the high bit for mosaic id
+		return BigInteger.valueOf(ByteBuffer.wrap(hash).getLong() & ~ID_GENERATOR_FLAG);
+	}
 
-    public static BigInteger generateId(String name, BigInteger parentId) {
-        byte[] parentIdBytes = new byte[8];
-        ByteBuffer.wrap(parentIdBytes).put(parentId.toByteArray()); // GO
-        ArrayUtils.reverse(parentIdBytes);
+	/**
+	 * Generate namespace id.
+	 *
+	 * @param namespaceName Namespace name.
+	 * @param parentId      Parent id.
+	 * @return Namespace id.
+	 */
+	public static BigInteger generateNamespaceId(final String namespaceName, final BigInteger parentId) {
+		final ByteBuffer parentIdBuffer = ByteBuffer.allocate(8).order(ByteOrder.LITTLE_ENDIAN).putLong(parentId.longValue());
+		final byte[] hash = IdGenerator.getHashInLittleEndian(parentIdBuffer.array(), namespaceName.getBytes());
+		// Set the high bit for namespace id
+		return BigInteger.valueOf(ByteBuffer.wrap(hash).getLong() | ID_GENERATOR_FLAG);
+	}
 
-        byte[] bytes = name.getBytes();
+	/**
+	 * Generate namespace id.
+	 *
+	 * @param namespaceName       Namespace name.
+	 * @param parentNamespaceName Parent name.
+	 * @return Namespace id.
+	 */
+	public static BigInteger generateNamespaceId(final String namespaceName, final String parentNamespaceName) {
+		return IdGenerator.generateNamespaceId(parentNamespaceName + "." + namespaceName);
+	}
 
-        byte[] result = Hashes.sha3_256(parentIdBytes, bytes);
-        byte[] low = Arrays.copyOfRange(result, 0, 4);
-        byte[] high = Arrays.copyOfRange(result, 4, 8);
-        ArrayUtils.reverse(low);
-        ArrayUtils.reverse(high);
+	/**
+	 * Generate namespace id.
+	 *
+	 * @param namespacePath Namespace path.
+	 * @return Namespace id.
+	 */
+	public static BigInteger generateNamespaceId(final String namespacePath) {
+		List<BigInteger> namespaceList = generateNamespacePath(namespacePath);
+		return namespaceList.get(namespaceList.size() - 1);
+	}
 
-        byte[] last = ArrayUtils.addAll(high, low);
+	/**
+	 * Generate namespace id.
+	 *
+	 * @param namespacePath Namespace path.
+	 * @return List of namespace id.
+	 */
+	public static List<BigInteger> generateNamespacePath(final String namespacePath) {
+		String[] parts = namespacePath.split(Pattern.quote("."));
+		List<BigInteger> path = new ArrayList<>();
 
-        return new BigInteger(last);
-    }
+		if (parts.length == 0) {
+			throw new IllegalIdentifierException("invalid namespace path");
+		} else if (parts.length > 3) {
+			throw new IllegalIdentifierException("too many parts");
+		}
 
-    public static List<BigInteger> generateNamespacePath(String name) {
-        String[] parts = name.split(Pattern.quote("."));
-        List<BigInteger> path = new ArrayList<BigInteger>();
+		BigInteger namespaceId = BigInteger.valueOf(0);
+		for (int i = 0; i < parts.length; i++) {
+			namespaceId = generateNamespaceId(parts[i], namespaceId);
+			path.add(namespaceId);
+		}
+		return path;
+	}
 
-        if (parts.length == 0) {
-            throw new IllegalIdentifierException("invalid namespace name");
-        } else if (parts.length > 3) {
-            throw new IllegalIdentifierException("too many parts");
-        }
-
-        BigInteger namespaceId = BigInteger.valueOf(0);
-
-
-        for (int i = 0; i < parts.length; i++) {
-            if (!parts[i].matches("^[a-z0-9][a-z0-9-_]*$")) {
-                throw new IllegalIdentifierException("invalid namespace name");
-            }
-            namespaceId = generateId(parts[i], namespaceId);
-            path.add(namespaceId);
-        }
-
-        return path;
-    }
-
-    public static BigInteger generateNamespaceId(String namespaceName) {
-        List<BigInteger> namespacePath = generateNamespacePath(namespaceName);
-        return namespacePath.get(namespacePath.size() - 1);
-    }
-
-    public static BigInteger generateSubNamespaceIdFromParentId(BigInteger parentId, String namespaceName) {
-        return generateId(namespaceName, parentId);
-    }
-
-    public static BigInteger generateMosaicId(String namespaceName, String mosaicName) {
-        if (mosaicName.length() == 0) {
-            throw new IllegalIdentifierException("having zero length");
-        }
-        List<BigInteger> namespacePath = generateNamespacePath(namespaceName);
-        BigInteger namespaceId = namespacePath.get(namespacePath.size() - 1);
-
-        if (!mosaicName.matches("^[a-z0-9][a-z0-9-_]*$")) {
-            throw new IllegalIdentifierException("invalid mosaic name");
-        }
-        return generateId(mosaicName, namespaceId);
-    }
+	/**
+	 * Gets hash in little endian.
+	 *
+	 * @param inputs Inputs to hash.
+	 * @return Hash value.
+	 */
+	private static byte[] getHashInLittleEndian(final byte[]... inputs) {
+		byte[] result = Hashes.sha3_256(inputs);
+		result = Arrays.copyOfRange(result, 0, 8);
+		ArrayUtils.reverse(result);
+		return result;
+	}
 }

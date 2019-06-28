@@ -18,47 +18,102 @@
 *** along with Catapult. If not, see <http://www.gnu.org/licenses/>.
 **/
 
-
 package io.nem.catapult.builders;
 
-import java.io.ByteArrayOutputStream;
 import java.io.DataInput;
-import java.io.DataOutputStream;
 
+/** Binary layout for a mosaic. */
 public class MosaicBuilder {
-    public long getMosaicid()  {
-        return this.mosaicId;
+    /** Mosaic identifier. */
+    private final MosaicIdDto mosaicId;
+    /** Mosaic amount. */
+    private final AmountDto amount;
+
+    /**
+     * Constructor - Creates an object from stream.
+     *
+     * @param stream Byte stream to use to serialize the object.
+     */
+    protected MosaicBuilder(final DataInput stream) {
+        this.mosaicId = MosaicIdDto.loadFromBinary(stream);
+        this.amount = AmountDto.loadFromBinary(stream);
     }
 
-    public void setMosaicid(long mosaicId)  {
+    /**
+     * Constructor.
+     *
+     * @param mosaicId Mosaic identifier.
+     * @param amount Mosaic amount.
+     */
+    protected MosaicBuilder(final MosaicIdDto mosaicId, final AmountDto amount) {
+        GeneratorUtils.notNull(mosaicId, "mosaicId is null");
+        GeneratorUtils.notNull(amount, "amount is null");
         this.mosaicId = mosaicId;
-    }
-
-    public long getAmount()  {
-        return this.amount;
-    }
-
-    public void setAmount(long amount)  {
         this.amount = amount;
     }
 
-    public static MosaicBuilder loadFromBinary(DataInput stream) throws Exception {
-        MosaicBuilder obj = new MosaicBuilder();
-        obj.setMosaicid(Long.reverseBytes(stream.readLong()));
-        obj.setAmount(Long.reverseBytes(stream.readLong()));
-        return obj;
+    /**
+     * Creates an instance of MosaicBuilder.
+     *
+     * @param mosaicId Mosaic identifier.
+     * @param amount Mosaic amount.
+     * @return Instance of MosaicBuilder.
+     */
+    public static MosaicBuilder create(final MosaicIdDto mosaicId, final AmountDto amount) {
+        return new MosaicBuilder(mosaicId, amount);
     }
 
-    public byte[] serialize() throws Exception {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        DataOutputStream stream = new DataOutputStream(bos);
-        stream.writeLong(Long.reverseBytes(this.getMosaicid()));
-        stream.writeLong(Long.reverseBytes(this.getAmount()));
-        stream.close();
-        return bos.toByteArray();
+    /**
+     * Gets mosaic identifier.
+     *
+     * @return Mosaic identifier.
+     */
+    public MosaicIdDto getMosaicId() {
+        return this.mosaicId;
     }
 
-    private long mosaicId;
-    private long amount;
+    /**
+     * Gets mosaic amount.
+     *
+     * @return Mosaic amount.
+     */
+    public AmountDto getAmount() {
+        return this.amount;
+    }
 
+    /**
+     * Gets the size of the object.
+     *
+     * @return Size in bytes.
+     */
+    public int getSize() {
+        int size = 0;
+        size += this.mosaicId.getSize();
+        size += this.amount.getSize();
+        return size;
+    }
+
+    /**
+     * Creates an instance of MosaicBuilder from a stream.
+     *
+     * @param stream Byte stream to use to serialize the object.
+     * @return Instance of MosaicBuilder.
+     */
+    public static MosaicBuilder loadFromBinary(final DataInput stream) {
+        return new MosaicBuilder(stream);
+    }
+
+    /**
+     * Serializes an object to bytes.
+     *
+     * @return Serialized bytes.
+     */
+    public byte[] serialize() {
+        return GeneratorUtils.serialize(dataOutputStream -> {
+            final byte[] mosaicIdBytes = this.mosaicId.serialize();
+            dataOutputStream.write(mosaicIdBytes, 0, mosaicIdBytes.length);
+            final byte[] amountBytes = this.amount.serialize();
+            dataOutputStream.write(amountBytes, 0, amountBytes.length);
+        });
+    }
 }

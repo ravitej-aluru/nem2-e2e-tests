@@ -18,108 +18,104 @@
 *** along with Catapult. If not, see <http://www.gnu.org/licenses/>.
 **/
 
-
 package io.nem.catapult.builders;
 
-import java.io.ByteArrayOutputStream;
 import java.io.DataInput;
-import java.io.DataOutputStream;
-import java.nio.ByteBuffer;
 
-public class EmbeddedAccountLinkTransactionBuilder {
-    public int getSize()  {
-        return this.size;
+/** Binary layout for an embedded account link transaction. */
+public final class EmbeddedAccountLinkTransactionBuilder extends EmbeddedTransactionBuilder {
+    /** Account link transaction body. */
+    private final AccountLinkTransactionBodyBuilder accountLinkTransactionBody;
+
+    /**
+     * Constructor - Creates an object from stream.
+     *
+     * @param stream Byte stream to use to serialize the object.
+     */
+    protected EmbeddedAccountLinkTransactionBuilder(final DataInput stream) {
+        super(stream);
+        this.accountLinkTransactionBody = AccountLinkTransactionBodyBuilder.loadFromBinary(stream);
     }
 
-    public void setSize(int size)  {
-        this.size = size;
+    /**
+     * Constructor.
+     *
+     * @param signer Entity signer's public key.
+     * @param version Entity version.
+     * @param type Entity type.
+     * @param remoteAccountKey Remote account key.
+     * @param linkAction Account link action.
+     */
+    protected EmbeddedAccountLinkTransactionBuilder(final KeyDto signer, final short version, final EntityTypeDto type, final KeyDto remoteAccountKey, final AccountLinkActionDto linkAction) {
+        super(signer, version, type);
+        this.accountLinkTransactionBody = AccountLinkTransactionBodyBuilder.create(remoteAccountKey, linkAction);
     }
 
-    public ByteBuffer getSigner()  {
-        return this.signer;
+    /**
+     * Creates an instance of EmbeddedAccountLinkTransactionBuilder.
+     *
+     * @param signer Entity signer's public key.
+     * @param version Entity version.
+     * @param type Entity type.
+     * @param remoteAccountKey Remote account key.
+     * @param linkAction Account link action.
+     * @return Instance of EmbeddedAccountLinkTransactionBuilder.
+     */
+    public static EmbeddedAccountLinkTransactionBuilder create(final KeyDto signer, final short version, final EntityTypeDto type, final KeyDto remoteAccountKey, final AccountLinkActionDto linkAction) {
+        return new EmbeddedAccountLinkTransactionBuilder(signer, version, type, remoteAccountKey, linkAction);
     }
 
-    public void setSigner(ByteBuffer signer)  {
-        if (signer == null)
-            throw new NullPointerException("signer");
-        
-        if (signer.array().length != 32)
-            throw new IllegalArgumentException("signer should be 32 bytes");
-        
-        this.signer = signer;
+    /**
+     * Gets remote account key.
+     *
+     * @return Remote account key.
+     */
+    public KeyDto getRemoteAccountKey() {
+        return this.accountLinkTransactionBody.getRemoteAccountKey();
     }
 
-    public short getVersion()  {
-        return this.version;
+    /**
+     * Gets account link action.
+     *
+     * @return Account link action.
+     */
+    public AccountLinkActionDto getLinkAction() {
+        return this.accountLinkTransactionBody.getLinkAction();
     }
 
-    public void setVersion(short version)  {
-        this.version = version;
+    /**
+     * Gets the size of the object.
+     *
+     * @return Size in bytes.
+     */
+    @Override
+    public int getSize() {
+        int size = super.getSize();
+        size += this.accountLinkTransactionBody.getSize();
+        return size;
     }
 
-    public EntityTypeBuilder getType()  {
-        return this.type;
+    /**
+     * Creates an instance of EmbeddedAccountLinkTransactionBuilder from a stream.
+     *
+     * @param stream Byte stream to use to serialize the object.
+     * @return Instance of EmbeddedAccountLinkTransactionBuilder.
+     */
+    public static EmbeddedAccountLinkTransactionBuilder loadFromBinary(final DataInput stream) {
+        return new EmbeddedAccountLinkTransactionBuilder(stream);
     }
 
-    public void setType(EntityTypeBuilder type)  {
-        this.type = type;
+    /**
+     * Serializes an object to bytes.
+     *
+     * @return Serialized bytes.
+     */
+    public byte[] serialize() {
+        return GeneratorUtils.serialize(dataOutputStream -> {
+            final byte[] superBytes = super.serialize();
+            dataOutputStream.write(superBytes, 0, superBytes.length);
+            final byte[] accountLinkTransactionBodyBytes = this.accountLinkTransactionBody.serialize();
+            dataOutputStream.write(accountLinkTransactionBodyBytes, 0, accountLinkTransactionBodyBytes.length);
+        });
     }
-
-    public ByteBuffer getRemoteaccountkey()  {
-        return this.remoteAccountKey;
-    }
-
-    public void setRemoteaccountkey(ByteBuffer remoteAccountKey)  {
-        if (remoteAccountKey == null)
-            throw new NullPointerException("remoteAccountKey");
-        
-        if (remoteAccountKey.array().length != 32)
-            throw new IllegalArgumentException("remoteAccountKey should be 32 bytes");
-        
-        this.remoteAccountKey = remoteAccountKey;
-    }
-
-    public AccountLinkActionBuilder getLinkaction()  {
-        return this.linkAction;
-    }
-
-    public void setLinkaction(AccountLinkActionBuilder linkAction)  {
-        this.linkAction = linkAction;
-    }
-
-    public static EmbeddedAccountLinkTransactionBuilder loadFromBinary(DataInput stream) throws Exception {
-        EmbeddedAccountLinkTransactionBuilder obj = new EmbeddedAccountLinkTransactionBuilder();
-        obj.setSize(Integer.reverseBytes(stream.readInt()));
-        obj.signer = ByteBuffer.allocate(32);
-        stream.readFully(obj.signer.array());
-        obj.setVersion(Short.reverseBytes(stream.readShort()));
-        obj.setType(EntityTypeBuilder.loadFromBinary(stream));
-        obj.remoteAccountKey = ByteBuffer.allocate(32);
-        stream.readFully(obj.remoteAccountKey.array());
-        obj.setLinkaction(AccountLinkActionBuilder.loadFromBinary(stream));
-        return obj;
-    }
-
-    public byte[] serialize() throws Exception {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        DataOutputStream stream = new DataOutputStream(bos);
-        stream.writeInt(Integer.reverseBytes(this.getSize()));
-        stream.write(this.signer.array(), 0, this.signer.array().length);
-        stream.writeShort(Short.reverseBytes(this.getVersion()));
-        byte[] type = this.getType().serialize();
-        stream.write(type, 0, type.length);
-        stream.write(this.remoteAccountKey.array(), 0, this.remoteAccountKey.array().length);
-        byte[] linkAction = this.getLinkaction().serialize();
-        stream.write(linkAction, 0, linkAction.length);
-        stream.close();
-        return bos.toByteArray();
-    }
-
-    private int size;
-    private ByteBuffer signer;
-    private short version;
-    private EntityTypeBuilder type;
-    private ByteBuffer remoteAccountKey;
-    private AccountLinkActionBuilder linkAction;
-
 }

@@ -18,197 +18,176 @@
 *** along with Catapult. If not, see <http://www.gnu.org/licenses/>.
 **/
 
-
 package io.nem.catapult.builders;
 
-import java.io.ByteArrayOutputStream;
 import java.io.DataInput;
-import java.io.DataOutputStream;
 import java.nio.ByteBuffer;
 
-public class RegisterNamespaceTransactionBuilder {
-    public int getSize()  {
-        return this.size;
+/** Binary layout for a non-embedded register namespace transaction. */
+public final class RegisterNamespaceTransactionBuilder extends TransactionBuilder {
+    /** Register namespace transaction body. */
+    private final RegisterNamespaceTransactionBodyBuilder registerNamespaceTransactionBody;
+
+    /**
+     * Constructor - Creates an object from stream.
+     *
+     * @param stream Byte stream to use to serialize the object.
+     */
+    protected RegisterNamespaceTransactionBuilder(final DataInput stream) {
+        super(stream);
+        this.registerNamespaceTransactionBody = RegisterNamespaceTransactionBodyBuilder.loadFromBinary(stream);
     }
 
-    public void setSize(int size)  {
-        this.size = size;
+    /**
+     * Constructor.
+     *
+     * @param signature Entity signature.
+     * @param signer Entity signer's public key.
+     * @param version Entity version.
+     * @param type Entity type.
+     * @param fee Transaction fee.
+     * @param deadline Transaction deadline.
+     * @param duration Namespace duration.
+     * @param namespaceId Id of the namespace.
+     * @param name Namespace name.
+     */
+    protected RegisterNamespaceTransactionBuilder(final SignatureDto signature, final KeyDto signer, final short version, final EntityTypeDto type, final AmountDto fee, final TimestampDto deadline, final BlockDurationDto duration, final NamespaceIdDto namespaceId, final ByteBuffer name) {
+        super(signature, signer, version, type, fee, deadline);
+        this.registerNamespaceTransactionBody = RegisterNamespaceTransactionBodyBuilder.create(duration, namespaceId, name);
     }
 
-    public ByteBuffer getSignature()  {
-        return this.signature;
+    /**
+     * Constructor.
+     *
+     * @param signature Entity signature.
+     * @param signer Entity signer's public key.
+     * @param version Entity version.
+     * @param type Entity type.
+     * @param fee Transaction fee.
+     * @param deadline Transaction deadline.
+     * @param parentId Id of the parent namespace.
+     * @param namespaceId Id of the namespace.
+     * @param name Namespace name.
+     */
+    protected RegisterNamespaceTransactionBuilder(final SignatureDto signature, final KeyDto signer, final short version, final EntityTypeDto type, final AmountDto fee, final TimestampDto deadline, final NamespaceIdDto parentId, final NamespaceIdDto namespaceId, final ByteBuffer name) {
+        super(signature, signer, version, type, fee, deadline);
+        this.registerNamespaceTransactionBody = RegisterNamespaceTransactionBodyBuilder.create(parentId, namespaceId, name);
     }
 
-    public void setSignature(ByteBuffer signature)  {
-        if (signature == null)
-            throw new NullPointerException("signature");
-        
-        if (signature.array().length != 64)
-            throw new IllegalArgumentException("signature should be 64 bytes");
-        
-        this.signature = signature;
+    /**
+     * Creates an instance of RegisterNamespaceTransactionBuilder.
+     *
+     * @param signature Entity signature.
+     * @param signer Entity signer's public key.
+     * @param version Entity version.
+     * @param type Entity type.
+     * @param fee Transaction fee.
+     * @param deadline Transaction deadline.
+     * @param duration Namespace duration.
+     * @param namespaceId Id of the namespace.
+     * @param name Namespace name.
+     * @return Instance of RegisterNamespaceTransactionBuilder.
+     */
+    public static RegisterNamespaceTransactionBuilder create(final SignatureDto signature, final KeyDto signer, final short version, final EntityTypeDto type, final AmountDto fee, final TimestampDto deadline, final BlockDurationDto duration, final NamespaceIdDto namespaceId, final ByteBuffer name) {
+        return new RegisterNamespaceTransactionBuilder(signature, signer, version, type, fee, deadline, duration, namespaceId, name);
     }
 
-    public ByteBuffer getSigner()  {
-        return this.signer;
+    /**
+     * Creates an instance of RegisterNamespaceTransactionBuilder.
+     *
+     * @param signature Entity signature.
+     * @param signer Entity signer's public key.
+     * @param version Entity version.
+     * @param type Entity type.
+     * @param fee Transaction fee.
+     * @param deadline Transaction deadline.
+     * @param parentId Id of the parent namespace.
+     * @param namespaceId Id of the namespace.
+     * @param name Namespace name.
+     * @return Instance of RegisterNamespaceTransactionBuilder.
+     */
+    public static RegisterNamespaceTransactionBuilder create(final SignatureDto signature, final KeyDto signer, final short version, final EntityTypeDto type, final AmountDto fee, final TimestampDto deadline, final NamespaceIdDto parentId, final NamespaceIdDto namespaceId, final ByteBuffer name) {
+        return new RegisterNamespaceTransactionBuilder(signature, signer, version, type, fee, deadline, parentId, namespaceId, name);
     }
 
-    public void setSigner(ByteBuffer signer)  {
-        if (signer == null)
-            throw new NullPointerException("signer");
-        
-        if (signer.array().length != 32)
-            throw new IllegalArgumentException("signer should be 32 bytes");
-        
-        this.signer = signer;
+    /**
+     * Gets type of the registered namespace.
+     *
+     * @return Type of the registered namespace.
+     */
+    public NamespaceTypeDto getNamespaceType() {
+        return this.registerNamespaceTransactionBody.getNamespaceType();
     }
 
-    public short getVersion()  {
-        return this.version;
+    /**
+     * Gets namespace duration.
+     *
+     * @return Namespace duration.
+     */
+    public BlockDurationDto getDuration() {
+        return this.registerNamespaceTransactionBody.getDuration();
     }
 
-    public void setVersion(short version)  {
-        this.version = version;
+    /**
+     * Gets id of the parent namespace.
+     *
+     * @return Id of the parent namespace.
+     */
+    public NamespaceIdDto getParentId() {
+        return this.registerNamespaceTransactionBody.getParentId();
     }
 
-    public EntityTypeBuilder getType()  {
-        return this.type;
+    /**
+     * Gets id of the namespace.
+     *
+     * @return Id of the namespace.
+     */
+    public NamespaceIdDto getNamespaceId() {
+        return this.registerNamespaceTransactionBody.getNamespaceId();
     }
 
-    public void setType(EntityTypeBuilder type)  {
-        this.type = type;
+    /**
+     * Gets namespace name.
+     *
+     * @return Namespace name.
+     */
+    public ByteBuffer getName() {
+        return this.registerNamespaceTransactionBody.getName();
     }
 
-    public long getFee()  {
-        return this.fee;
+    /**
+     * Gets the size of the object.
+     *
+     * @return Size in bytes.
+     */
+    @Override
+    public int getSize() {
+        int size = super.getSize();
+        size += this.registerNamespaceTransactionBody.getSize();
+        return size;
     }
 
-    public void setFee(long fee)  {
-        this.fee = fee;
+    /**
+     * Creates an instance of RegisterNamespaceTransactionBuilder from a stream.
+     *
+     * @param stream Byte stream to use to serialize the object.
+     * @return Instance of RegisterNamespaceTransactionBuilder.
+     */
+    public static RegisterNamespaceTransactionBuilder loadFromBinary(final DataInput stream) {
+        return new RegisterNamespaceTransactionBuilder(stream);
     }
 
-    public long getDeadline()  {
-        return this.deadline;
+    /**
+     * Serializes an object to bytes.
+     *
+     * @return Serialized bytes.
+     */
+    public byte[] serialize() {
+        return GeneratorUtils.serialize(dataOutputStream -> {
+            final byte[] superBytes = super.serialize();
+            dataOutputStream.write(superBytes, 0, superBytes.length);
+            final byte[] registerNamespaceTransactionBodyBytes = this.registerNamespaceTransactionBody.serialize();
+            dataOutputStream.write(registerNamespaceTransactionBodyBytes, 0, registerNamespaceTransactionBodyBytes.length);
+        });
     }
-
-    public void setDeadline(long deadline)  {
-        this.deadline = deadline;
-    }
-
-    public NamespaceTypeBuilder getNamespacetype()  {
-        return this.namespaceType;
-    }
-
-    public void setNamespacetype(NamespaceTypeBuilder namespaceType)  {
-        this.namespaceType = namespaceType;
-    }
-
-    public long getDuration()  {
-        if (namespaceType != NamespaceTypeBuilder.ROOT)
-            throw new IllegalStateException();
-
-        return this.duration;
-    }
-
-    public void setDuration(long duration)  {
-        if (namespaceType != NamespaceTypeBuilder.ROOT)
-            throw new IllegalStateException();
-
-        this.duration = duration;
-    }
-
-    public long getParentid()  {
-        if (namespaceType != NamespaceTypeBuilder.CHILD)
-            throw new IllegalStateException();
-
-        return this.parentId;
-    }
-
-    public void setParentid(long parentId)  {
-        if (namespaceType != NamespaceTypeBuilder.CHILD)
-            throw new IllegalStateException();
-        
-        this.parentId = parentId;
-    }
-
-    public long getNamespaceid()  {
-        return this.namespaceId;
-    }
-
-    public void setNamespaceid(long namespaceId)  {
-        this.namespaceId = namespaceId;
-    }
-
-    public ByteBuffer getName()  {
-        return this.name;
-    }
-
-    public void setName(ByteBuffer name)  {
-        if (name == null)
-            throw new NullPointerException("name");
-        
-        
-        this.name = name;
-    }
-
-    public static RegisterNamespaceTransactionBuilder loadFromBinary(DataInput stream) throws Exception {
-        RegisterNamespaceTransactionBuilder obj = new RegisterNamespaceTransactionBuilder();
-        obj.setSize(Integer.reverseBytes(stream.readInt()));
-        obj.signature = ByteBuffer.allocate(64);
-        stream.readFully(obj.signature.array());
-        obj.signer = ByteBuffer.allocate(32);
-        stream.readFully(obj.signer.array());
-        obj.setVersion(Short.reverseBytes(stream.readShort()));
-        obj.setType(EntityTypeBuilder.loadFromBinary(stream));
-        obj.setFee(Long.reverseBytes(stream.readLong()));
-        obj.setDeadline(Long.reverseBytes(stream.readLong()));
-        obj.setNamespacetype(NamespaceTypeBuilder.loadFromBinary(stream));
-        if (obj.getNamespacetype() == NamespaceTypeBuilder.ROOT)
-            obj.setDuration(Long.reverseBytes(stream.readLong()));
-        if (obj.getNamespacetype() == NamespaceTypeBuilder.CHILD)
-            obj.setParentid(Long.reverseBytes(stream.readLong()));
-        obj.setNamespaceid(Long.reverseBytes(stream.readLong()));
-        byte namespaceNameSize = stream.readByte();
-        obj.name = ByteBuffer.allocate(namespaceNameSize);
-        stream.readFully(obj.name.array());
-        return obj;
-    }
-
-    public byte[] serialize() throws Exception {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        DataOutputStream stream = new DataOutputStream(bos);
-        stream.writeInt(Integer.reverseBytes(this.getSize()));
-        stream.write(this.signature.array(), 0, this.signature.array().length);
-        stream.write(this.signer.array(), 0, this.signer.array().length);
-        stream.writeShort(Short.reverseBytes(this.getVersion()));
-        byte[] type = this.getType().serialize();
-        stream.write(type, 0, type.length);
-        stream.writeLong(Long.reverseBytes(this.getFee()));
-        stream.writeLong(Long.reverseBytes(this.getDeadline()));
-        byte[] namespaceType = this.getNamespacetype().serialize();
-        stream.write(namespaceType, 0, namespaceType.length);
-        if (this.getNamespacetype() == NamespaceTypeBuilder.ROOT)
-            stream.writeLong(Long.reverseBytes(this.getDuration()));
-        if (this.getNamespacetype() == NamespaceTypeBuilder.CHILD)
-            stream.writeLong(Long.reverseBytes(this.getParentid()));
-        stream.writeLong(Long.reverseBytes(this.getNamespaceid()));
-        stream.writeByte((byte)this.name.array().length);
-        stream.write(this.name.array(), 0, this.name.array().length);
-        stream.close();
-        return bos.toByteArray();
-    }
-
-    private int size;
-    private ByteBuffer signature;
-    private ByteBuffer signer;
-    private short version;
-    private EntityTypeBuilder type;
-    private long fee;
-    private long deadline;
-    private NamespaceTypeBuilder namespaceType;
-    private long duration;
-    private long parentId;
-    private long namespaceId;
-    private ByteBuffer name;
-
 }

@@ -18,56 +18,102 @@
 *** along with Catapult. If not, see <http://www.gnu.org/licenses/>.
 **/
 
-
 package io.nem.catapult.builders;
 
-import java.io.ByteArrayOutputStream;
 import java.io.DataInput;
-import java.io.DataOutputStream;
-import java.nio.ByteBuffer;
 
+/** Binary layout for a cosignatory modification. */
 public class CosignatoryModificationBuilder {
-    public CosignatoryModificationTypeBuilder getModificationtype()  {
-        return this.modificationType;
+    /** Modification type. */
+    private final CosignatoryModificationTypeDto modificationType;
+    /** Cosignatory account public key. */
+    private final KeyDto cosignatoryPublicKey;
+
+    /**
+     * Constructor - Creates an object from stream.
+     *
+     * @param stream Byte stream to use to serialize the object.
+     */
+    protected CosignatoryModificationBuilder(final DataInput stream) {
+        this.modificationType = CosignatoryModificationTypeDto.loadFromBinary(stream);
+        this.cosignatoryPublicKey = KeyDto.loadFromBinary(stream);
     }
 
-    public void setModificationtype(CosignatoryModificationTypeBuilder modificationType)  {
+    /**
+     * Constructor.
+     *
+     * @param modificationType Modification type.
+     * @param cosignatoryPublicKey Cosignatory account public key.
+     */
+    protected CosignatoryModificationBuilder(final CosignatoryModificationTypeDto modificationType, final KeyDto cosignatoryPublicKey) {
+        GeneratorUtils.notNull(modificationType, "modificationType is null");
+        GeneratorUtils.notNull(cosignatoryPublicKey, "cosignatoryPublicKey is null");
         this.modificationType = modificationType;
-    }
-
-    public ByteBuffer getCosignatorypublickey()  {
-        return this.cosignatoryPublicKey;
-    }
-
-    public void setCosignatorypublickey(ByteBuffer cosignatoryPublicKey)  {
-        if (cosignatoryPublicKey == null)
-            throw new NullPointerException("cosignatoryPublicKey");
-        
-        if (cosignatoryPublicKey.array().length != 32)
-            throw new IllegalArgumentException("cosignatoryPublicKey should be 32 bytes");
-        
         this.cosignatoryPublicKey = cosignatoryPublicKey;
     }
 
-    public static CosignatoryModificationBuilder loadFromBinary(DataInput stream) throws Exception {
-        CosignatoryModificationBuilder obj = new CosignatoryModificationBuilder();
-        obj.setModificationtype(CosignatoryModificationTypeBuilder.loadFromBinary(stream));
-        obj.cosignatoryPublicKey = ByteBuffer.allocate(32);
-        stream.readFully(obj.cosignatoryPublicKey.array());
-        return obj;
+    /**
+     * Creates an instance of CosignatoryModificationBuilder.
+     *
+     * @param modificationType Modification type.
+     * @param cosignatoryPublicKey Cosignatory account public key.
+     * @return Instance of CosignatoryModificationBuilder.
+     */
+    public static CosignatoryModificationBuilder create(final CosignatoryModificationTypeDto modificationType, final KeyDto cosignatoryPublicKey) {
+        return new CosignatoryModificationBuilder(modificationType, cosignatoryPublicKey);
     }
 
-    public byte[] serialize() throws Exception {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        DataOutputStream stream = new DataOutputStream(bos);
-        byte[] modificationType = this.getModificationtype().serialize();
-        stream.write(modificationType, 0, modificationType.length);
-        stream.write(this.cosignatoryPublicKey.array(), 0, this.cosignatoryPublicKey.array().length);
-        stream.close();
-        return bos.toByteArray();
+    /**
+     * Gets modification type.
+     *
+     * @return Modification type.
+     */
+    public CosignatoryModificationTypeDto getModificationType() {
+        return this.modificationType;
     }
 
-    private CosignatoryModificationTypeBuilder modificationType;
-    private ByteBuffer cosignatoryPublicKey;
+    /**
+     * Gets cosignatory account public key.
+     *
+     * @return Cosignatory account public key.
+     */
+    public KeyDto getCosignatoryPublicKey() {
+        return this.cosignatoryPublicKey;
+    }
 
+    /**
+     * Gets the size of the object.
+     *
+     * @return Size in bytes.
+     */
+    public int getSize() {
+        int size = 0;
+        size += this.modificationType.getSize();
+        size += this.cosignatoryPublicKey.getSize();
+        return size;
+    }
+
+    /**
+     * Creates an instance of CosignatoryModificationBuilder from a stream.
+     *
+     * @param stream Byte stream to use to serialize the object.
+     * @return Instance of CosignatoryModificationBuilder.
+     */
+    public static CosignatoryModificationBuilder loadFromBinary(final DataInput stream) {
+        return new CosignatoryModificationBuilder(stream);
+    }
+
+    /**
+     * Serializes an object to bytes.
+     *
+     * @return Serialized bytes.
+     */
+    public byte[] serialize() {
+        return GeneratorUtils.serialize(dataOutputStream -> {
+            final byte[] modificationTypeBytes = this.modificationType.serialize();
+            dataOutputStream.write(modificationTypeBytes, 0, modificationTypeBytes.length);
+            final byte[] cosignatoryPublicKeyBytes = this.cosignatoryPublicKey.serialize();
+            dataOutputStream.write(cosignatoryPublicKeyBytes, 0, cosignatoryPublicKeyBytes.length);
+        });
+    }
 }

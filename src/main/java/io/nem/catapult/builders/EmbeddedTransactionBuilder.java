@@ -18,78 +18,137 @@
 *** along with Catapult. If not, see <http://www.gnu.org/licenses/>.
 **/
 
-
 package io.nem.catapult.builders;
 
-import java.io.ByteArrayOutputStream;
 import java.io.DataInput;
-import java.io.DataOutputStream;
-import java.nio.ByteBuffer;
 
+/** Binary layout for an embedded transaction. */
 public class EmbeddedTransactionBuilder {
-    public int getSize()  {
-        return this.size;
+    /** Entity size. */
+    private int size;
+    /** Entity signer's public key. */
+    private final KeyDto signer;
+    /** Entity version. */
+    private final short version;
+    /** Entity type. */
+    private final EntityTypeDto type;
+
+    /**
+     * Constructor - Creates an object from stream.
+     *
+     * @param stream Byte stream to use to serialize the object.
+     */
+    protected EmbeddedTransactionBuilder(final DataInput stream) {
+        try {
+            this.size = Integer.reverseBytes(stream.readInt());
+            this.signer = KeyDto.loadFromBinary(stream);
+            this.version = Short.reverseBytes(stream.readShort());
+            this.type = EntityTypeDto.loadFromBinary(stream);
+        } catch(Exception e) {
+            throw GeneratorUtils.getExceptionToPropagate(e);
+        }
     }
 
-    public void setSize(int size)  {
-        this.size = size;
-    }
-
-    public ByteBuffer getSigner()  {
-        return this.signer;
-    }
-
-    public void setSigner(ByteBuffer signer)  {
-        if (signer == null)
-            throw new NullPointerException("signer");
-        
-        if (signer.array().length != 32)
-            throw new IllegalArgumentException("signer should be 32 bytes");
-        
+    /**
+     * Constructor.
+     *
+     * @param signer Entity signer's public key.
+     * @param version Entity version.
+     * @param type Entity type.
+     */
+    protected EmbeddedTransactionBuilder(final KeyDto signer, final short version, final EntityTypeDto type) {
+        GeneratorUtils.notNull(signer, "signer is null");
+        GeneratorUtils.notNull(type, "type is null");
         this.signer = signer;
-    }
-
-    public short getVersion()  {
-        return this.version;
-    }
-
-    public void setVersion(short version)  {
         this.version = version;
-    }
-
-    public EntityTypeBuilder getType()  {
-        return this.type;
-    }
-
-    public void setType(EntityTypeBuilder type)  {
         this.type = type;
     }
 
-    public static EmbeddedTransactionBuilder loadFromBinary(DataInput stream) throws Exception {
-        EmbeddedTransactionBuilder obj = new EmbeddedTransactionBuilder();
-        obj.setSize(Integer.reverseBytes(stream.readInt()));
-        obj.signer = ByteBuffer.allocate(32);
-        stream.readFully(obj.signer.array());
-        obj.setVersion(Short.reverseBytes(stream.readShort()));
-        obj.setType(EntityTypeBuilder.loadFromBinary(stream));
-        return obj;
+    /**
+     * Creates an instance of EmbeddedTransactionBuilder.
+     *
+     * @param signer Entity signer's public key.
+     * @param version Entity version.
+     * @param type Entity type.
+     * @return Instance of EmbeddedTransactionBuilder.
+     */
+    public static EmbeddedTransactionBuilder create(final KeyDto signer, final short version, final EntityTypeDto type) {
+        return new EmbeddedTransactionBuilder(signer, version, type);
     }
 
-    public byte[] serialize() throws Exception {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        DataOutputStream stream = new DataOutputStream(bos);
-        stream.writeInt(Integer.reverseBytes(this.getSize()));
-        stream.write(this.signer.array(), 0, this.signer.array().length);
-        stream.writeShort(Short.reverseBytes(this.getVersion()));
-        byte[] type = this.getType().serialize();
-        stream.write(type, 0, type.length);
-        stream.close();
-        return bos.toByteArray();
+    /**
+     * Gets the size if created from a stream otherwise zero.
+     *
+     * @return Object size from stream.
+     */
+    protected int getStreamSize() {
+        return this.size;
     }
 
-    private int size;
-    private ByteBuffer signer;
-    private short version;
-    private EntityTypeBuilder type;
+    /**
+     * Gets entity signer's public key.
+     *
+     * @return Entity signer's public key.
+     */
+    public KeyDto getSigner() {
+        return this.signer;
+    }
 
+    /**
+     * Gets entity version.
+     *
+     * @return Entity version.
+     */
+    public short getVersion() {
+        return this.version;
+    }
+
+    /**
+     * Gets entity type.
+     *
+     * @return Entity type.
+     */
+    public EntityTypeDto getType() {
+        return this.type;
+    }
+
+    /**
+     * Gets the size of the object.
+     *
+     * @return Size in bytes.
+     */
+    public int getSize() {
+        int size = 0;
+        size += 4; // size
+        size += this.signer.getSize();
+        size += 2; // version
+        size += this.type.getSize();
+        return size;
+    }
+
+    /**
+     * Creates an instance of EmbeddedTransactionBuilder from a stream.
+     *
+     * @param stream Byte stream to use to serialize the object.
+     * @return Instance of EmbeddedTransactionBuilder.
+     */
+    public static EmbeddedTransactionBuilder loadFromBinary(final DataInput stream) {
+        return new EmbeddedTransactionBuilder(stream);
+    }
+
+    /**
+     * Serializes an object to bytes.
+     *
+     * @return Serialized bytes.
+     */
+    public byte[] serialize() {
+        return GeneratorUtils.serialize(dataOutputStream -> {
+            dataOutputStream.writeInt(Integer.reverseBytes(this.getSize()));
+            final byte[] signerBytes = this.signer.serialize();
+            dataOutputStream.write(signerBytes, 0, signerBytes.length);
+            dataOutputStream.writeShort(Short.reverseBytes(this.getVersion()));
+            final byte[] typeBytes = this.type.serialize();
+            dataOutputStream.write(typeBytes, 0, typeBytes.length);
+        });
+    }
 }

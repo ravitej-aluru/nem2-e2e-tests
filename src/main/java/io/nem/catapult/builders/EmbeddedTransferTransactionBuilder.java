@@ -18,134 +18,117 @@
 *** along with Catapult. If not, see <http://www.gnu.org/licenses/>.
 **/
 
-
 package io.nem.catapult.builders;
 
-import java.io.ByteArrayOutputStream;
 import java.io.DataInput;
-import java.io.DataOutputStream;
+import java.util.ArrayList;
 import java.nio.ByteBuffer;
 
-public class EmbeddedTransferTransactionBuilder {
-    public int getSize()  {
-        return this.size;
+/** Binary layout for an embedded transfer transaction. */
+public final class EmbeddedTransferTransactionBuilder extends EmbeddedTransactionBuilder {
+    /** Transfer transaction body. */
+    private final TransferTransactionBodyBuilder transferTransactionBody;
+
+    /**
+     * Constructor - Creates an object from stream.
+     *
+     * @param stream Byte stream to use to serialize the object.
+     */
+    protected EmbeddedTransferTransactionBuilder(final DataInput stream) {
+        super(stream);
+        this.transferTransactionBody = TransferTransactionBodyBuilder.loadFromBinary(stream);
     }
 
-    public void setSize(int size)  {
-        this.size = size;
+    /**
+     * Constructor.
+     *
+     * @param signer Entity signer's public key.
+     * @param version Entity version.
+     * @param type Entity type.
+     * @param recipient Transaction recipient.
+     * @param message Transaction message.
+     * @param mosaics Attached mosaics.
+     */
+    protected EmbeddedTransferTransactionBuilder(final KeyDto signer, final short version, final EntityTypeDto type, final UnresolvedAddressDto recipient, final ByteBuffer message, final ArrayList<UnresolvedMosaicBuilder> mosaics) {
+        super(signer, version, type);
+        this.transferTransactionBody = TransferTransactionBodyBuilder.create(recipient, message, mosaics);
     }
 
-    public ByteBuffer getSigner()  {
-        return this.signer;
+    /**
+     * Creates an instance of EmbeddedTransferTransactionBuilder.
+     *
+     * @param signer Entity signer's public key.
+     * @param version Entity version.
+     * @param type Entity type.
+     * @param recipient Transaction recipient.
+     * @param message Transaction message.
+     * @param mosaics Attached mosaics.
+     * @return Instance of EmbeddedTransferTransactionBuilder.
+     */
+    public static EmbeddedTransferTransactionBuilder create(final KeyDto signer, final short version, final EntityTypeDto type, final UnresolvedAddressDto recipient, final ByteBuffer message, final ArrayList<UnresolvedMosaicBuilder> mosaics) {
+        return new EmbeddedTransferTransactionBuilder(signer, version, type, recipient, message, mosaics);
     }
 
-    public void setSigner(ByteBuffer signer)  {
-        if (signer == null)
-            throw new NullPointerException("signer");
-        
-        if (signer.array().length != 32)
-            throw new IllegalArgumentException("signer should be 32 bytes");
-        
-        this.signer = signer;
+    /**
+     * Gets transaction recipient.
+     *
+     * @return Transaction recipient.
+     */
+    public UnresolvedAddressDto getRecipient() {
+        return this.transferTransactionBody.getRecipient();
     }
 
-    public short getVersion()  {
-        return this.version;
+    /**
+     * Gets transaction message.
+     *
+     * @return Transaction message.
+     */
+    public ByteBuffer getMessage() {
+        return this.transferTransactionBody.getMessage();
     }
 
-    public void setVersion(short version)  {
-        this.version = version;
+    /**
+     * Gets attached mosaics.
+     *
+     * @return Attached mosaics.
+     */
+    public ArrayList<UnresolvedMosaicBuilder> getMosaics() {
+        return this.transferTransactionBody.getMosaics();
     }
 
-    public EntityTypeBuilder getType()  {
-        return this.type;
+    /**
+     * Gets the size of the object.
+     *
+     * @return Size in bytes.
+     */
+    @Override
+    public int getSize() {
+        int size = super.getSize();
+        size += this.transferTransactionBody.getSize();
+        return size;
     }
 
-    public void setType(EntityTypeBuilder type)  {
-        this.type = type;
+    /**
+     * Creates an instance of EmbeddedTransferTransactionBuilder from a stream.
+     *
+     * @param stream Byte stream to use to serialize the object.
+     * @return Instance of EmbeddedTransferTransactionBuilder.
+     */
+    public static EmbeddedTransferTransactionBuilder loadFromBinary(final DataInput stream) {
+        return new EmbeddedTransferTransactionBuilder(stream);
     }
 
-    public ByteBuffer getRecipient()  {
-        return this.recipient;
+    /**
+     * Serializes an object to bytes.
+     *
+     * @return Serialized bytes.
+     */
+    public byte[] serialize() {
+        return GeneratorUtils.serialize(dataOutputStream -> {
+            final byte[] superBytes = super.serialize();
+            dataOutputStream.write(superBytes, 0, superBytes.length);
+            final byte[] transferTransactionBodyBytes = this.transferTransactionBody.serialize();
+            dataOutputStream.write(transferTransactionBodyBytes, 0, transferTransactionBodyBytes.length);
+        });
     }
-
-    public void setRecipient(ByteBuffer recipient)  {
-        if (recipient == null)
-            throw new NullPointerException("recipient");
-        
-        if (recipient.array().length != 25)
-            throw new IllegalArgumentException("recipient should be 25 bytes");
-        
-        this.recipient = recipient;
-    }
-
-    public ByteBuffer getMessage()  {
-        return this.message;
-    }
-
-    public void setMessage(ByteBuffer message)  {
-        if (message == null)
-            throw new NullPointerException("message");
-        
-        
-        this.message = message;
-    }
-
-    public java.util.ArrayList<UnresolvedMosaicBuilder> getMosaics()  {
-        return (java.util.ArrayList<UnresolvedMosaicBuilder>)this.mosaics;
-    }
-
-    public void setMosaics(java.util.ArrayList<UnresolvedMosaicBuilder> mosaics)  {
-        this.mosaics = mosaics;
-    }
-
-    public static EmbeddedTransferTransactionBuilder loadFromBinary(DataInput stream) throws Exception {
-        EmbeddedTransferTransactionBuilder obj = new EmbeddedTransferTransactionBuilder();
-        obj.setSize(Integer.reverseBytes(stream.readInt()));
-        obj.signer = ByteBuffer.allocate(32);
-        stream.readFully(obj.signer.array());
-        obj.setVersion(Short.reverseBytes(stream.readShort()));
-        obj.setType(EntityTypeBuilder.loadFromBinary(stream));
-        obj.recipient = ByteBuffer.allocate(25);
-        stream.readFully(obj.recipient.array());
-        short messageSize = Short.reverseBytes(stream.readShort());
-        byte mosaicsCount = stream.readByte();
-        obj.message = ByteBuffer.allocate(messageSize);
-        stream.readFully(obj.message.array());
-        java.util.ArrayList<UnresolvedMosaicBuilder> mosaics = new java.util.ArrayList<UnresolvedMosaicBuilder>(mosaicsCount);
-        for (int i = 0; i < mosaicsCount; i++) {
-            mosaics.add(UnresolvedMosaicBuilder.loadFromBinary(stream));
-        }
-        obj.setMosaics(mosaics);
-        return obj;
-    }
-
-    public byte[] serialize() throws Exception {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        DataOutputStream stream = new DataOutputStream(bos);
-        stream.writeInt(Integer.reverseBytes(this.getSize()));
-        stream.write(this.signer.array(), 0, this.signer.array().length);
-        stream.writeShort(Short.reverseBytes(this.getVersion()));
-        byte[] type = this.getType().serialize();
-        stream.write(type, 0, type.length);
-        stream.write(this.recipient.array(), 0, this.recipient.array().length);
-        stream.writeShort(Short.reverseBytes((short)this.message.array().length));
-        stream.writeByte((byte)this.mosaics.size());
-        stream.write(this.message.array(), 0, this.message.array().length);
-        for (int i = 0; i < this.mosaics.size(); i++) {
-            byte[] ser = this.mosaics.get(i).serialize();
-            stream.write(ser, 0, ser.length);
-        }
-        stream.close();
-        return bos.toByteArray();
-    }
-
-    private int size;
-    private ByteBuffer signer;
-    private short version;
-    private EntityTypeBuilder type;
-    private ByteBuffer recipient;
-    private ByteBuffer message;
-    private java.util.ArrayList<UnresolvedMosaicBuilder> mosaics;
-
 }

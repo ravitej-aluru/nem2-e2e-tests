@@ -18,149 +18,137 @@
 *** along with Catapult. If not, see <http://www.gnu.org/licenses/>.
 **/
 
-
 package io.nem.catapult.builders;
 
-import java.io.ByteArrayOutputStream;
 import java.io.DataInput;
-import java.io.DataOutputStream;
-import java.nio.ByteBuffer;
 
-public class EmbeddedSecretLockTransactionBuilder {
-    public int getSize()  {
-        return this.size;
+/** Binary layout for an embedded secret lock transaction. */
+public final class EmbeddedSecretLockTransactionBuilder extends EmbeddedTransactionBuilder {
+    /** Secret lock transaction body. */
+    private final SecretLockTransactionBodyBuilder secretLockTransactionBody;
+
+    /**
+     * Constructor - Creates an object from stream.
+     *
+     * @param stream Byte stream to use to serialize the object.
+     */
+    protected EmbeddedSecretLockTransactionBuilder(final DataInput stream) {
+        super(stream);
+        this.secretLockTransactionBody = SecretLockTransactionBodyBuilder.loadFromBinary(stream);
     }
 
-    public void setSize(int size)  {
-        this.size = size;
+    /**
+     * Constructor.
+     *
+     * @param signer Entity signer's public key.
+     * @param version Entity version.
+     * @param type Entity type.
+     * @param mosaic Lock mosaic.
+     * @param duration Number of blocks for which a lock should be valid.
+     * @param hashAlgorithm Hash alghoritm.
+     * @param secret Secret.
+     * @param recipient Recipient of the locked mosaic.
+     */
+    protected EmbeddedSecretLockTransactionBuilder(final KeyDto signer, final short version, final EntityTypeDto type, final UnresolvedMosaicBuilder mosaic, final BlockDurationDto duration, final LockHashAlgorithmDto hashAlgorithm, final Hash256Dto secret, final UnresolvedAddressDto recipient) {
+        super(signer, version, type);
+        this.secretLockTransactionBody = SecretLockTransactionBodyBuilder.create(mosaic, duration, hashAlgorithm, secret, recipient);
     }
 
-    public ByteBuffer getSigner()  {
-        return this.signer;
+    /**
+     * Creates an instance of EmbeddedSecretLockTransactionBuilder.
+     *
+     * @param signer Entity signer's public key.
+     * @param version Entity version.
+     * @param type Entity type.
+     * @param mosaic Lock mosaic.
+     * @param duration Number of blocks for which a lock should be valid.
+     * @param hashAlgorithm Hash alghoritm.
+     * @param secret Secret.
+     * @param recipient Recipient of the locked mosaic.
+     * @return Instance of EmbeddedSecretLockTransactionBuilder.
+     */
+    public static EmbeddedSecretLockTransactionBuilder create(final KeyDto signer, final short version, final EntityTypeDto type, final UnresolvedMosaicBuilder mosaic, final BlockDurationDto duration, final LockHashAlgorithmDto hashAlgorithm, final Hash256Dto secret, final UnresolvedAddressDto recipient) {
+        return new EmbeddedSecretLockTransactionBuilder(signer, version, type, mosaic, duration, hashAlgorithm, secret, recipient);
     }
 
-    public void setSigner(ByteBuffer signer)  {
-        if (signer == null)
-            throw new NullPointerException("signer");
-        
-        if (signer.array().length != 32)
-            throw new IllegalArgumentException("signer should be 32 bytes");
-        
-        this.signer = signer;
+    /**
+     * Gets lock mosaic.
+     *
+     * @return Lock mosaic.
+     */
+    public UnresolvedMosaicBuilder getMosaic() {
+        return this.secretLockTransactionBody.getMosaic();
     }
 
-    public short getVersion()  {
-        return this.version;
+    /**
+     * Gets number of blocks for which a lock should be valid.
+     *
+     * @return Number of blocks for which a lock should be valid.
+     */
+    public BlockDurationDto getDuration() {
+        return this.secretLockTransactionBody.getDuration();
     }
 
-    public void setVersion(short version)  {
-        this.version = version;
+    /**
+     * Gets hash alghoritm.
+     *
+     * @return Hash alghoritm.
+     */
+    public LockHashAlgorithmDto getHashAlgorithm() {
+        return this.secretLockTransactionBody.getHashAlgorithm();
     }
 
-    public EntityTypeBuilder getType()  {
-        return this.type;
+    /**
+     * Gets secret.
+     *
+     * @return Secret.
+     */
+    public Hash256Dto getSecret() {
+        return this.secretLockTransactionBody.getSecret();
     }
 
-    public void setType(EntityTypeBuilder type)  {
-        this.type = type;
+    /**
+     * Gets recipient of the locked mosaic.
+     *
+     * @return Recipient of the locked mosaic.
+     */
+    public UnresolvedAddressDto getRecipient() {
+        return this.secretLockTransactionBody.getRecipient();
     }
 
-    public UnresolvedMosaicBuilder getMosaic()  {
-        return this.mosaic;
+    /**
+     * Gets the size of the object.
+     *
+     * @return Size in bytes.
+     */
+    @Override
+    public int getSize() {
+        int size = super.getSize();
+        size += this.secretLockTransactionBody.getSize();
+        return size;
     }
 
-    public void setMosaic(UnresolvedMosaicBuilder mosaic)  {
-        this.mosaic = mosaic;
+    /**
+     * Creates an instance of EmbeddedSecretLockTransactionBuilder from a stream.
+     *
+     * @param stream Byte stream to use to serialize the object.
+     * @return Instance of EmbeddedSecretLockTransactionBuilder.
+     */
+    public static EmbeddedSecretLockTransactionBuilder loadFromBinary(final DataInput stream) {
+        return new EmbeddedSecretLockTransactionBuilder(stream);
     }
 
-    public long getDuration()  {
-        return this.duration;
+    /**
+     * Serializes an object to bytes.
+     *
+     * @return Serialized bytes.
+     */
+    public byte[] serialize() {
+        return GeneratorUtils.serialize(dataOutputStream -> {
+            final byte[] superBytes = super.serialize();
+            dataOutputStream.write(superBytes, 0, superBytes.length);
+            final byte[] secretLockTransactionBodyBytes = this.secretLockTransactionBody.serialize();
+            dataOutputStream.write(secretLockTransactionBodyBytes, 0, secretLockTransactionBodyBytes.length);
+        });
     }
-
-    public void setDuration(long duration)  {
-        this.duration = duration;
-    }
-
-    public LockHashAlgorithmBuilder getHashalgorithm()  {
-        return this.hashAlgorithm;
-    }
-
-    public void setHashalgorithm(LockHashAlgorithmBuilder hashAlgorithm)  {
-        this.hashAlgorithm = hashAlgorithm;
-    }
-
-    public ByteBuffer getSecret()  {
-        return this.secret;
-    }
-
-    public void setSecret(ByteBuffer secret)  {
-        if (secret == null)
-            throw new NullPointerException("secret");
-        
-        if (secret.array().length != 32)
-            throw new IllegalArgumentException("secret should be 32 bytes");
-        
-        this.secret = secret;
-    }
-
-    public ByteBuffer getRecipient()  {
-        return this.recipient;
-    }
-
-    public void setRecipient(ByteBuffer recipient)  {
-        if (recipient == null)
-            throw new NullPointerException("recipient");
-        
-        if (recipient.array().length != 25)
-            throw new IllegalArgumentException("recipient should be 25 bytes");
-        
-        this.recipient = recipient;
-    }
-
-    public static EmbeddedSecretLockTransactionBuilder loadFromBinary(DataInput stream) throws Exception {
-        EmbeddedSecretLockTransactionBuilder obj = new EmbeddedSecretLockTransactionBuilder();
-        obj.setSize(Integer.reverseBytes(stream.readInt()));
-        obj.signer = ByteBuffer.allocate(32);
-        stream.readFully(obj.signer.array());
-        obj.setVersion(Short.reverseBytes(stream.readShort()));
-        obj.setType(EntityTypeBuilder.loadFromBinary(stream));
-        obj.setMosaic(UnresolvedMosaicBuilder.loadFromBinary(stream));
-        obj.setDuration(Long.reverseBytes(stream.readLong()));
-        obj.setHashalgorithm(LockHashAlgorithmBuilder.loadFromBinary(stream));
-        obj.secret = ByteBuffer.allocate(32);
-        stream.readFully(obj.secret.array());
-        obj.recipient = ByteBuffer.allocate(25);
-        stream.readFully(obj.recipient.array());
-        return obj;
-    }
-
-    public byte[] serialize() throws Exception {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        DataOutputStream stream = new DataOutputStream(bos);
-        stream.writeInt(Integer.reverseBytes(this.getSize()));
-        stream.write(this.signer.array(), 0, this.signer.array().length);
-        stream.writeShort(Short.reverseBytes(this.getVersion()));
-        byte[] type = this.getType().serialize();
-        stream.write(type, 0, type.length);
-        byte[] mosaic = this.getMosaic().serialize();
-        stream.write(mosaic, 0, mosaic.length);
-        stream.writeLong(Long.reverseBytes(this.getDuration()));
-        byte[] hashAlgorithm = this.getHashalgorithm().serialize();
-        stream.write(hashAlgorithm, 0, hashAlgorithm.length);
-        stream.write(this.secret.array(), 0, this.secret.array().length);
-        stream.write(this.recipient.array(), 0, this.recipient.array().length);
-        stream.close();
-        return bos.toByteArray();
-    }
-
-    private int size;
-    private ByteBuffer signer;
-    private short version;
-    private EntityTypeBuilder type;
-    private UnresolvedMosaicBuilder mosaic;
-    private long duration;
-    private LockHashAlgorithmBuilder hashAlgorithm;
-    private ByteBuffer secret;
-    private ByteBuffer recipient;
-
 }

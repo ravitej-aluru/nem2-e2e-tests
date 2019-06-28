@@ -18,152 +18,121 @@
 *** along with Catapult. If not, see <http://www.gnu.org/licenses/>.
 **/
 
-
 package io.nem.catapult.builders;
 
-import java.io.ByteArrayOutputStream;
 import java.io.DataInput;
-import java.io.DataOutputStream;
-import java.nio.ByteBuffer;
 
-public class MosaicSupplyChangeTransactionBuilder {
-    public int getSize()  {
-        return this.size;
+/** Binary layout for a non-embedded mosaic supply change transaction. */
+public final class MosaicSupplyChangeTransactionBuilder extends TransactionBuilder {
+    /** Mosaic supply change transaction body. */
+    private final MosaicSupplyChangeTransactionBodyBuilder mosaicSupplyChangeTransactionBody;
+
+    /**
+     * Constructor - Creates an object from stream.
+     *
+     * @param stream Byte stream to use to serialize the object.
+     */
+    protected MosaicSupplyChangeTransactionBuilder(final DataInput stream) {
+        super(stream);
+        this.mosaicSupplyChangeTransactionBody = MosaicSupplyChangeTransactionBodyBuilder.loadFromBinary(stream);
     }
 
-    public void setSize(int size)  {
-        this.size = size;
+    /**
+     * Constructor.
+     *
+     * @param signature Entity signature.
+     * @param signer Entity signer's public key.
+     * @param version Entity version.
+     * @param type Entity type.
+     * @param fee Transaction fee.
+     * @param deadline Transaction deadline.
+     * @param mosaicId Id of the affected mosaic.
+     * @param direction Supply change direction.
+     * @param delta Amount of the change.
+     */
+    protected MosaicSupplyChangeTransactionBuilder(final SignatureDto signature, final KeyDto signer, final short version, final EntityTypeDto type, final AmountDto fee, final TimestampDto deadline, final UnresolvedMosaicIdDto mosaicId, final MosaicSupplyChangeDirectionDto direction, final AmountDto delta) {
+        super(signature, signer, version, type, fee, deadline);
+        this.mosaicSupplyChangeTransactionBody = MosaicSupplyChangeTransactionBodyBuilder.create(mosaicId, direction, delta);
     }
 
-    public ByteBuffer getSignature()  {
-        return this.signature;
+    /**
+     * Creates an instance of MosaicSupplyChangeTransactionBuilder.
+     *
+     * @param signature Entity signature.
+     * @param signer Entity signer's public key.
+     * @param version Entity version.
+     * @param type Entity type.
+     * @param fee Transaction fee.
+     * @param deadline Transaction deadline.
+     * @param mosaicId Id of the affected mosaic.
+     * @param direction Supply change direction.
+     * @param delta Amount of the change.
+     * @return Instance of MosaicSupplyChangeTransactionBuilder.
+     */
+    public static MosaicSupplyChangeTransactionBuilder create(final SignatureDto signature, final KeyDto signer, final short version, final EntityTypeDto type, final AmountDto fee, final TimestampDto deadline, final UnresolvedMosaicIdDto mosaicId, final MosaicSupplyChangeDirectionDto direction, final AmountDto delta) {
+        return new MosaicSupplyChangeTransactionBuilder(signature, signer, version, type, fee, deadline, mosaicId, direction, delta);
     }
 
-    public void setSignature(ByteBuffer signature)  {
-        if (signature == null)
-            throw new NullPointerException("signature");
-        
-        if (signature.array().length != 64)
-            throw new IllegalArgumentException("signature should be 64 bytes");
-        
-        this.signature = signature;
+    /**
+     * Gets id of the affected mosaic.
+     *
+     * @return Id of the affected mosaic.
+     */
+    public UnresolvedMosaicIdDto getMosaicId() {
+        return this.mosaicSupplyChangeTransactionBody.getMosaicId();
     }
 
-    public ByteBuffer getSigner()  {
-        return this.signer;
+    /**
+     * Gets supply change direction.
+     *
+     * @return Supply change direction.
+     */
+    public MosaicSupplyChangeDirectionDto getDirection() {
+        return this.mosaicSupplyChangeTransactionBody.getDirection();
     }
 
-    public void setSigner(ByteBuffer signer)  {
-        if (signer == null)
-            throw new NullPointerException("signer");
-        
-        if (signer.array().length != 32)
-            throw new IllegalArgumentException("signer should be 32 bytes");
-        
-        this.signer = signer;
+    /**
+     * Gets amount of the change.
+     *
+     * @return Amount of the change.
+     */
+    public AmountDto getDelta() {
+        return this.mosaicSupplyChangeTransactionBody.getDelta();
     }
 
-    public short getVersion()  {
-        return this.version;
+    /**
+     * Gets the size of the object.
+     *
+     * @return Size in bytes.
+     */
+    @Override
+    public int getSize() {
+        int size = super.getSize();
+        size += this.mosaicSupplyChangeTransactionBody.getSize();
+        return size;
     }
 
-    public void setVersion(short version)  {
-        this.version = version;
+    /**
+     * Creates an instance of MosaicSupplyChangeTransactionBuilder from a stream.
+     *
+     * @param stream Byte stream to use to serialize the object.
+     * @return Instance of MosaicSupplyChangeTransactionBuilder.
+     */
+    public static MosaicSupplyChangeTransactionBuilder loadFromBinary(final DataInput stream) {
+        return new MosaicSupplyChangeTransactionBuilder(stream);
     }
 
-    public EntityTypeBuilder getType()  {
-        return this.type;
+    /**
+     * Serializes an object to bytes.
+     *
+     * @return Serialized bytes.
+     */
+    public byte[] serialize() {
+        return GeneratorUtils.serialize(dataOutputStream -> {
+            final byte[] superBytes = super.serialize();
+            dataOutputStream.write(superBytes, 0, superBytes.length);
+            final byte[] mosaicSupplyChangeTransactionBodyBytes = this.mosaicSupplyChangeTransactionBody.serialize();
+            dataOutputStream.write(mosaicSupplyChangeTransactionBodyBytes, 0, mosaicSupplyChangeTransactionBodyBytes.length);
+        });
     }
-
-    public void setType(EntityTypeBuilder type)  {
-        this.type = type;
-    }
-
-    public long getFee()  {
-        return this.fee;
-    }
-
-    public void setFee(long fee)  {
-        this.fee = fee;
-    }
-
-    public long getDeadline()  {
-        return this.deadline;
-    }
-
-    public void setDeadline(long deadline)  {
-        this.deadline = deadline;
-    }
-
-    public long getMosaicid()  {
-        return this.mosaicId;
-    }
-
-    public void setMosaicid(long mosaicId)  {
-        this.mosaicId = mosaicId;
-    }
-
-    public MosaicSupplyChangeDirectionBuilder getDirection()  {
-        return this.direction;
-    }
-
-    public void setDirection(MosaicSupplyChangeDirectionBuilder direction)  {
-        this.direction = direction;
-    }
-
-    public long getDelta()  {
-        return this.delta;
-    }
-
-    public void setDelta(long delta)  {
-        this.delta = delta;
-    }
-
-    public static MosaicSupplyChangeTransactionBuilder loadFromBinary(DataInput stream) throws Exception {
-        MosaicSupplyChangeTransactionBuilder obj = new MosaicSupplyChangeTransactionBuilder();
-        obj.setSize(Integer.reverseBytes(stream.readInt()));
-        obj.signature = ByteBuffer.allocate(64);
-        stream.readFully(obj.signature.array());
-        obj.signer = ByteBuffer.allocate(32);
-        stream.readFully(obj.signer.array());
-        obj.setVersion(Short.reverseBytes(stream.readShort()));
-        obj.setType(EntityTypeBuilder.loadFromBinary(stream));
-        obj.setFee(Long.reverseBytes(stream.readLong()));
-        obj.setDeadline(Long.reverseBytes(stream.readLong()));
-        obj.setMosaicid(Long.reverseBytes(stream.readLong()));
-        obj.setDirection(MosaicSupplyChangeDirectionBuilder.loadFromBinary(stream));
-        obj.setDelta(Long.reverseBytes(stream.readLong()));
-        return obj;
-    }
-
-    public byte[] serialize() throws Exception {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        DataOutputStream stream = new DataOutputStream(bos);
-        stream.writeInt(Integer.reverseBytes(this.getSize()));
-        stream.write(this.signature.array(), 0, this.signature.array().length);
-        stream.write(this.signer.array(), 0, this.signer.array().length);
-        stream.writeShort(Short.reverseBytes(this.getVersion()));
-        byte[] type = this.getType().serialize();
-        stream.write(type, 0, type.length);
-        stream.writeLong(Long.reverseBytes(this.getFee()));
-        stream.writeLong(Long.reverseBytes(this.getDeadline()));
-        stream.writeLong(Long.reverseBytes(this.getMosaicid()));
-        byte[] direction = this.getDirection().serialize();
-        stream.write(direction, 0, direction.length);
-        stream.writeLong(Long.reverseBytes(this.getDelta()));
-        stream.close();
-        return bos.toByteArray();
-    }
-
-    private int size;
-    private ByteBuffer signature;
-    private ByteBuffer signer;
-    private short version;
-    private EntityTypeBuilder type;
-    private long fee;
-    private long deadline;
-    private long mosaicId;
-    private MosaicSupplyChangeDirectionBuilder direction;
-    private long delta;
-
 }

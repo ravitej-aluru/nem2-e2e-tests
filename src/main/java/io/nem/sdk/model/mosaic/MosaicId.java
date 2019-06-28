@@ -16,7 +16,10 @@
 
 package io.nem.sdk.model.mosaic;
 
+import io.nem.sdk.model.account.PublicAccount;
 import io.nem.sdk.model.transaction.IdGenerator;
+import io.nem.sdk.model.transaction.UInt64;
+import io.nem.sdk.model.transaction.UInt64Id;
 
 import java.math.BigInteger;
 import java.util.Objects;
@@ -27,65 +30,112 @@ import java.util.Optional;
  *
  * @since 1.0
  */
-public class MosaicId {
-    private final BigInteger id;
-    private final Optional<String> fullName;
+public class MosaicId implements UInt64Id {
+	private final BigInteger id;
+	private final Optional<String> fullName;
 
-    /**
-     * Create MosaicId from mosaic and namespace string name (ex: nem:xem or domain.subdom.subdome:token)
-     *
-     * @param id
-     * @throws IllegalIdentifierException MosaicId identifier
-     */
-    public MosaicId(String id) {
-        if (id.isEmpty()) throw new IllegalIdentifierException(id + " is not valid");
-        if (!id.contains(":")) throw new IllegalIdentifierException(id + " is not valid");
-        String[] parts = id.split(":");
-        if (parts.length != 2) throw new IllegalIdentifierException(id + " is not valid");
-        String namespaceName = parts[0];
-        String mosaicName = parts[1];
-        this.id = IdGenerator.generateMosaicId(namespaceName, mosaicName);
-        this.fullName = Optional.of(id);
-    }
+	/**
+	 * Create MosaicId from mosaic Hex string
+	 *
+	 * @param hex
+	 * @throws IllegalIdentifierException MosaicId identifier
+	 */
+	public MosaicId(String hex) {
+		if (!hex.matches("^[0-9A-Fa-f]{16}$")) {
+			throw new IllegalIdentifierException("invalid hex string");
+		}
+		this.id = new BigInteger(hex, 16);
+		this.fullName = Optional.empty();
+	}
 
-    /**
-     * Create MosaicId from biginteger id
-     *
-     * @param id
-     */
-    public MosaicId(BigInteger id) {
-        this.id = id;
-        this.fullName = Optional.empty();
-    }
+	/**
+	 * Create MosaicId from BigInteger id
+	 *
+	 * @param id
+	 */
+	public MosaicId(BigInteger id) {
+		this.id = id;
+		this.fullName = Optional.empty();
+	}
 
-    /**
-     * Returns mosaic biginteger id
-     *
-     * @return mosaic biginteger id
-     */
-    public BigInteger getId() {
-        return id;
-    }
+	/**
+	 * Create MosaicId from a MosaicNonce and a PublicAccount
+	 *
+	 * @param mosaicNonce
+	 * @param owner
+	 */
+	public MosaicId(MosaicNonce mosaicNonce, PublicAccount owner) {
+		this.id = IdGenerator.generateMosaicId(mosaicNonce.getNonce(), owner.getPublicKey().getBytes());
+		this.fullName = Optional.empty();
+	}
 
-    /**
-     * Returns optional mosaic full name, with namespace name (ex: nem:xem)
-     *
-     * @return namespace full name
-     */
-    public Optional<String> getFullName() {
-        return fullName;
-    }
+	/**
+	 * Create MosaicId from a MosaicNonce and a PublicAccount
+	 *
+	 * @param mosaicNonce
+	 * @param owner
+	 * @return
+	 */
+	public static MosaicId createFromNonce(MosaicNonce mosaicNonce, PublicAccount owner) {
 
-    /**
-     * Compares mosaicIds for equality.
-     *
-     * @return boolean
-     */
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof MosaicId)) return false;
-        MosaicId mosaicId1 = (MosaicId) o;
-        return Objects.equals(id, mosaicId1.id);
-    }
+		return new MosaicId(mosaicNonce, owner);
+	}
+
+	/**
+	 * Returns mosaic BigInteger id
+	 *
+	 * @return mosaic BigInteger id
+	 */
+	public BigInteger getId() {
+
+		return id;
+	}
+
+	/**
+	 * Returns mosaic id as a long
+	 *
+	 * @return id long
+	 */
+	public long getIdAsLong() {
+
+		return this.id.longValue();
+	}
+
+	/**
+	 * Returns mosaic id as a hexadecimal string
+	 *
+	 * @return
+	 */
+	public String getIdAsHex() {
+
+		return UInt64.bigIntegerToHex(this.id);
+	}
+
+	/**
+	 * Returns optional mosaic alias full name (ex: nem.xem)
+	 *
+	 * @return namespace full name
+	 */
+	public Optional<String> getFullName() {
+
+		return fullName;
+	}
+
+	/**
+	 * Compares mosaicIds for equality.
+	 *
+	 * @return boolean
+	 */
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (!(o instanceof MosaicId)) {
+			return false;
+		}
+		MosaicId mosaicId1 = (MosaicId) o;
+
+		return Objects.equals(id, mosaicId1.id);
+	}
 }

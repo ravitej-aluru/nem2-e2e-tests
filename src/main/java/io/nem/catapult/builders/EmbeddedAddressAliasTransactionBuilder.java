@@ -18,119 +18,115 @@
 *** along with Catapult. If not, see <http://www.gnu.org/licenses/>.
 **/
 
-
 package io.nem.catapult.builders;
 
-import java.io.ByteArrayOutputStream;
 import java.io.DataInput;
-import java.io.DataOutputStream;
-import java.nio.ByteBuffer;
 
-public class EmbeddedAddressAliasTransactionBuilder {
-    public int getSize()  {
-        return this.size;
+/** Binary layout for an embedded address alias transaction. */
+public final class EmbeddedAddressAliasTransactionBuilder extends EmbeddedTransactionBuilder {
+    /** Address alias transaction body. */
+    private final AddressAliasTransactionBodyBuilder addressAliasTransactionBody;
+
+    /**
+     * Constructor - Creates an object from stream.
+     *
+     * @param stream Byte stream to use to serialize the object.
+     */
+    protected EmbeddedAddressAliasTransactionBuilder(final DataInput stream) {
+        super(stream);
+        this.addressAliasTransactionBody = AddressAliasTransactionBodyBuilder.loadFromBinary(stream);
     }
 
-    public void setSize(int size)  {
-        this.size = size;
+    /**
+     * Constructor.
+     *
+     * @param signer Entity signer's public key.
+     * @param version Entity version.
+     * @param type Entity type.
+     * @param aliasAction Alias action.
+     * @param namespaceId Id of a namespace that will become an alias.
+     * @param address Aliased address.
+     */
+    protected EmbeddedAddressAliasTransactionBuilder(final KeyDto signer, final short version, final EntityTypeDto type, final AliasActionDto aliasAction, final NamespaceIdDto namespaceId, final AddressDto address) {
+        super(signer, version, type);
+        this.addressAliasTransactionBody = AddressAliasTransactionBodyBuilder.create(aliasAction, namespaceId, address);
     }
 
-    public ByteBuffer getSigner()  {
-        return this.signer;
+    /**
+     * Creates an instance of EmbeddedAddressAliasTransactionBuilder.
+     *
+     * @param signer Entity signer's public key.
+     * @param version Entity version.
+     * @param type Entity type.
+     * @param aliasAction Alias action.
+     * @param namespaceId Id of a namespace that will become an alias.
+     * @param address Aliased address.
+     * @return Instance of EmbeddedAddressAliasTransactionBuilder.
+     */
+    public static EmbeddedAddressAliasTransactionBuilder create(final KeyDto signer, final short version, final EntityTypeDto type, final AliasActionDto aliasAction, final NamespaceIdDto namespaceId, final AddressDto address) {
+        return new EmbeddedAddressAliasTransactionBuilder(signer, version, type, aliasAction, namespaceId, address);
     }
 
-    public void setSigner(ByteBuffer signer)  {
-        if (signer == null)
-            throw new NullPointerException("signer");
-        
-        if (signer.array().length != 32)
-            throw new IllegalArgumentException("signer should be 32 bytes");
-        
-        this.signer = signer;
+    /**
+     * Gets alias action.
+     *
+     * @return Alias action.
+     */
+    public AliasActionDto getAliasAction() {
+        return this.addressAliasTransactionBody.getAliasAction();
     }
 
-    public short getVersion()  {
-        return this.version;
+    /**
+     * Gets id of a namespace that will become an alias.
+     *
+     * @return Id of a namespace that will become an alias.
+     */
+    public NamespaceIdDto getNamespaceId() {
+        return this.addressAliasTransactionBody.getNamespaceId();
     }
 
-    public void setVersion(short version)  {
-        this.version = version;
+    /**
+     * Gets aliased address.
+     *
+     * @return Aliased address.
+     */
+    public AddressDto getAddress() {
+        return this.addressAliasTransactionBody.getAddress();
     }
 
-    public EntityTypeBuilder getType()  {
-        return this.type;
+    /**
+     * Gets the size of the object.
+     *
+     * @return Size in bytes.
+     */
+    @Override
+    public int getSize() {
+        int size = super.getSize();
+        size += this.addressAliasTransactionBody.getSize();
+        return size;
     }
 
-    public void setType(EntityTypeBuilder type)  {
-        this.type = type;
+    /**
+     * Creates an instance of EmbeddedAddressAliasTransactionBuilder from a stream.
+     *
+     * @param stream Byte stream to use to serialize the object.
+     * @return Instance of EmbeddedAddressAliasTransactionBuilder.
+     */
+    public static EmbeddedAddressAliasTransactionBuilder loadFromBinary(final DataInput stream) {
+        return new EmbeddedAddressAliasTransactionBuilder(stream);
     }
 
-    public AliasActionBuilder getAliasaction()  {
-        return this.aliasAction;
+    /**
+     * Serializes an object to bytes.
+     *
+     * @return Serialized bytes.
+     */
+    public byte[] serialize() {
+        return GeneratorUtils.serialize(dataOutputStream -> {
+            final byte[] superBytes = super.serialize();
+            dataOutputStream.write(superBytes, 0, superBytes.length);
+            final byte[] addressAliasTransactionBodyBytes = this.addressAliasTransactionBody.serialize();
+            dataOutputStream.write(addressAliasTransactionBodyBytes, 0, addressAliasTransactionBodyBytes.length);
+        });
     }
-
-    public void setAliasaction(AliasActionBuilder aliasAction)  {
-        this.aliasAction = aliasAction;
-    }
-
-    public long getNamespaceid()  {
-        return this.namespaceId;
-    }
-
-    public void setNamespaceid(long namespaceId)  {
-        this.namespaceId = namespaceId;
-    }
-
-    public ByteBuffer getAddress()  {
-        return this.address;
-    }
-
-    public void setAddress(ByteBuffer address)  {
-        if (address == null)
-            throw new NullPointerException("address");
-        
-        if (address.array().length != 25)
-            throw new IllegalArgumentException("address should be 25 bytes");
-        
-        this.address = address;
-    }
-
-    public static EmbeddedAddressAliasTransactionBuilder loadFromBinary(DataInput stream) throws Exception {
-        EmbeddedAddressAliasTransactionBuilder obj = new EmbeddedAddressAliasTransactionBuilder();
-        obj.setSize(Integer.reverseBytes(stream.readInt()));
-        obj.signer = ByteBuffer.allocate(32);
-        stream.readFully(obj.signer.array());
-        obj.setVersion(Short.reverseBytes(stream.readShort()));
-        obj.setType(EntityTypeBuilder.loadFromBinary(stream));
-        obj.setAliasaction(AliasActionBuilder.loadFromBinary(stream));
-        obj.setNamespaceid(Long.reverseBytes(stream.readLong()));
-        obj.address = ByteBuffer.allocate(25);
-        stream.readFully(obj.address.array());
-        return obj;
-    }
-
-    public byte[] serialize() throws Exception {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        DataOutputStream stream = new DataOutputStream(bos);
-        stream.writeInt(Integer.reverseBytes(this.getSize()));
-        stream.write(this.signer.array(), 0, this.signer.array().length);
-        stream.writeShort(Short.reverseBytes(this.getVersion()));
-        byte[] type = this.getType().serialize();
-        stream.write(type, 0, type.length);
-        byte[] aliasAction = this.getAliasaction().serialize();
-        stream.write(aliasAction, 0, aliasAction.length);
-        stream.writeLong(Long.reverseBytes(this.getNamespaceid()));
-        stream.write(this.address.array(), 0, this.address.array().length);
-        stream.close();
-        return bos.toByteArray();
-    }
-
-    private int size;
-    private ByteBuffer signer;
-    private short version;
-    private EntityTypeBuilder type;
-    private AliasActionBuilder aliasAction;
-    private long namespaceId;
-    private ByteBuffer address;
-
 }

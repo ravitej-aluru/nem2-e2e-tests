@@ -18,119 +18,115 @@
 *** along with Catapult. If not, see <http://www.gnu.org/licenses/>.
 **/
 
-
 package io.nem.catapult.builders;
 
-import java.io.ByteArrayOutputStream;
 import java.io.DataInput;
-import java.io.DataOutputStream;
-import java.nio.ByteBuffer;
 
-public class EmbeddedHashLockTransactionBuilder {
-    public int getSize()  {
-        return this.size;
+/** Binary layout for an embedded hash lock transaction. */
+public final class EmbeddedHashLockTransactionBuilder extends EmbeddedTransactionBuilder {
+    /** Hash lock transaction body. */
+    private final HashLockTransactionBodyBuilder hashLockTransactionBody;
+
+    /**
+     * Constructor - Creates an object from stream.
+     *
+     * @param stream Byte stream to use to serialize the object.
+     */
+    protected EmbeddedHashLockTransactionBuilder(final DataInput stream) {
+        super(stream);
+        this.hashLockTransactionBody = HashLockTransactionBodyBuilder.loadFromBinary(stream);
     }
 
-    public void setSize(int size)  {
-        this.size = size;
+    /**
+     * Constructor.
+     *
+     * @param signer Entity signer's public key.
+     * @param version Entity version.
+     * @param type Entity type.
+     * @param mosaic Lock mosaic.
+     * @param duration Number of blocks for which a lock should be valid.
+     * @param hash Lock hash.
+     */
+    protected EmbeddedHashLockTransactionBuilder(final KeyDto signer, final short version, final EntityTypeDto type, final UnresolvedMosaicBuilder mosaic, final BlockDurationDto duration, final Hash256Dto hash) {
+        super(signer, version, type);
+        this.hashLockTransactionBody = HashLockTransactionBodyBuilder.create(mosaic, duration, hash);
     }
 
-    public ByteBuffer getSigner()  {
-        return this.signer;
+    /**
+     * Creates an instance of EmbeddedHashLockTransactionBuilder.
+     *
+     * @param signer Entity signer's public key.
+     * @param version Entity version.
+     * @param type Entity type.
+     * @param mosaic Lock mosaic.
+     * @param duration Number of blocks for which a lock should be valid.
+     * @param hash Lock hash.
+     * @return Instance of EmbeddedHashLockTransactionBuilder.
+     */
+    public static EmbeddedHashLockTransactionBuilder create(final KeyDto signer, final short version, final EntityTypeDto type, final UnresolvedMosaicBuilder mosaic, final BlockDurationDto duration, final Hash256Dto hash) {
+        return new EmbeddedHashLockTransactionBuilder(signer, version, type, mosaic, duration, hash);
     }
 
-    public void setSigner(ByteBuffer signer)  {
-        if (signer == null)
-            throw new NullPointerException("signer");
-        
-        if (signer.array().length != 32)
-            throw new IllegalArgumentException("signer should be 32 bytes");
-        
-        this.signer = signer;
+    /**
+     * Gets lock mosaic.
+     *
+     * @return Lock mosaic.
+     */
+    public UnresolvedMosaicBuilder getMosaic() {
+        return this.hashLockTransactionBody.getMosaic();
     }
 
-    public short getVersion()  {
-        return this.version;
+    /**
+     * Gets number of blocks for which a lock should be valid.
+     *
+     * @return Number of blocks for which a lock should be valid.
+     */
+    public BlockDurationDto getDuration() {
+        return this.hashLockTransactionBody.getDuration();
     }
 
-    public void setVersion(short version)  {
-        this.version = version;
+    /**
+     * Gets lock hash.
+     *
+     * @return Lock hash.
+     */
+    public Hash256Dto getHash() {
+        return this.hashLockTransactionBody.getHash();
     }
 
-    public EntityTypeBuilder getType()  {
-        return this.type;
+    /**
+     * Gets the size of the object.
+     *
+     * @return Size in bytes.
+     */
+    @Override
+    public int getSize() {
+        int size = super.getSize();
+        size += this.hashLockTransactionBody.getSize();
+        return size;
     }
 
-    public void setType(EntityTypeBuilder type)  {
-        this.type = type;
+    /**
+     * Creates an instance of EmbeddedHashLockTransactionBuilder from a stream.
+     *
+     * @param stream Byte stream to use to serialize the object.
+     * @return Instance of EmbeddedHashLockTransactionBuilder.
+     */
+    public static EmbeddedHashLockTransactionBuilder loadFromBinary(final DataInput stream) {
+        return new EmbeddedHashLockTransactionBuilder(stream);
     }
 
-    public UnresolvedMosaicBuilder getMosaic()  {
-        return this.mosaic;
+    /**
+     * Serializes an object to bytes.
+     *
+     * @return Serialized bytes.
+     */
+    public byte[] serialize() {
+        return GeneratorUtils.serialize(dataOutputStream -> {
+            final byte[] superBytes = super.serialize();
+            dataOutputStream.write(superBytes, 0, superBytes.length);
+            final byte[] hashLockTransactionBodyBytes = this.hashLockTransactionBody.serialize();
+            dataOutputStream.write(hashLockTransactionBodyBytes, 0, hashLockTransactionBodyBytes.length);
+        });
     }
-
-    public void setMosaic(UnresolvedMosaicBuilder mosaic)  {
-        this.mosaic = mosaic;
-    }
-
-    public long getDuration()  {
-        return this.duration;
-    }
-
-    public void setDuration(long duration)  {
-        this.duration = duration;
-    }
-
-    public ByteBuffer getHash()  {
-        return this.hash;
-    }
-
-    public void setHash(ByteBuffer hash)  {
-        if (hash == null)
-            throw new NullPointerException("hash");
-        
-        if (hash.array().length != 32)
-            throw new IllegalArgumentException("hash should be 32 bytes");
-        
-        this.hash = hash;
-    }
-
-    public static EmbeddedHashLockTransactionBuilder loadFromBinary(DataInput stream) throws Exception {
-        EmbeddedHashLockTransactionBuilder obj = new EmbeddedHashLockTransactionBuilder();
-        obj.setSize(Integer.reverseBytes(stream.readInt()));
-        obj.signer = ByteBuffer.allocate(32);
-        stream.readFully(obj.signer.array());
-        obj.setVersion(Short.reverseBytes(stream.readShort()));
-        obj.setType(EntityTypeBuilder.loadFromBinary(stream));
-        obj.setMosaic(UnresolvedMosaicBuilder.loadFromBinary(stream));
-        obj.setDuration(Long.reverseBytes(stream.readLong()));
-        obj.hash = ByteBuffer.allocate(32);
-        stream.readFully(obj.hash.array());
-        return obj;
-    }
-
-    public byte[] serialize() throws Exception {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        DataOutputStream stream = new DataOutputStream(bos);
-        stream.writeInt(Integer.reverseBytes(this.getSize()));
-        stream.write(this.signer.array(), 0, this.signer.array().length);
-        stream.writeShort(Short.reverseBytes(this.getVersion()));
-        byte[] type = this.getType().serialize();
-        stream.write(type, 0, type.length);
-        byte[] mosaic = this.getMosaic().serialize();
-        stream.write(mosaic, 0, mosaic.length);
-        stream.writeLong(Long.reverseBytes(this.getDuration()));
-        stream.write(this.hash.array(), 0, this.hash.array().length);
-        stream.close();
-        return bos.toByteArray();
-    }
-
-    private int size;
-    private ByteBuffer signer;
-    private short version;
-    private EntityTypeBuilder type;
-    private UnresolvedMosaicBuilder mosaic;
-    private long duration;
-    private ByteBuffer hash;
-
 }

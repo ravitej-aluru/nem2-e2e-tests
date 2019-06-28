@@ -18,183 +18,145 @@
 *** along with Catapult. If not, see <http://www.gnu.org/licenses/>.
 **/
 
-
 package io.nem.catapult.builders;
 
-import java.io.ByteArrayOutputStream;
 import java.io.DataInput;
-import java.io.DataOutputStream;
-import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.EnumSet;
 
-public class MosaicDefinitionTransactionBuilder {
-    public int getSize()  {
-        return this.size;
+/** Binary layout for a non-embedded mosaic definition transaction. */
+public final class MosaicDefinitionTransactionBuilder extends TransactionBuilder {
+    /** Mosaic definition transaction body. */
+    private final MosaicDefinitionTransactionBodyBuilder mosaicDefinitionTransactionBody;
+
+    /**
+     * Constructor - Creates an object from stream.
+     *
+     * @param stream Byte stream to use to serialize the object.
+     */
+    protected MosaicDefinitionTransactionBuilder(final DataInput stream) {
+        super(stream);
+        this.mosaicDefinitionTransactionBody = MosaicDefinitionTransactionBodyBuilder.loadFromBinary(stream);
     }
 
-    public void setSize(int size)  {
-        this.size = size;
+    /**
+     * Constructor.
+     *
+     * @param signature Entity signature.
+     * @param signer Entity signer's public key.
+     * @param version Entity version.
+     * @param type Entity type.
+     * @param fee Transaction fee.
+     * @param deadline Transaction deadline.
+     * @param mosaicNonce Mosaic nonce.
+     * @param mosaicId Id of the mosaic.
+     * @param flags Mosaic flags.
+     * @param divisibility Mosaic divisibility.
+     * @param properties Optional properties.
+     */
+    protected MosaicDefinitionTransactionBuilder(final SignatureDto signature, final KeyDto signer, final short version, final EntityTypeDto type, final AmountDto fee, final TimestampDto deadline, final MosaicNonceDto mosaicNonce, final MosaicIdDto mosaicId, final EnumSet<MosaicFlagsDto> flags, final byte divisibility, final ArrayList<MosaicPropertyBuilder> properties) {
+        super(signature, signer, version, type, fee, deadline);
+        this.mosaicDefinitionTransactionBody = MosaicDefinitionTransactionBodyBuilder.create(mosaicNonce, mosaicId, flags, divisibility, properties);
     }
 
-    public ByteBuffer getSignature()  {
-        return this.signature;
+    /**
+     * Creates an instance of MosaicDefinitionTransactionBuilder.
+     *
+     * @param signature Entity signature.
+     * @param signer Entity signer's public key.
+     * @param version Entity version.
+     * @param type Entity type.
+     * @param fee Transaction fee.
+     * @param deadline Transaction deadline.
+     * @param mosaicNonce Mosaic nonce.
+     * @param mosaicId Id of the mosaic.
+     * @param flags Mosaic flags.
+     * @param divisibility Mosaic divisibility.
+     * @param properties Optional properties.
+     * @return Instance of MosaicDefinitionTransactionBuilder.
+     */
+    public static MosaicDefinitionTransactionBuilder create(final SignatureDto signature, final KeyDto signer, final short version, final EntityTypeDto type, final AmountDto fee, final TimestampDto deadline, final MosaicNonceDto mosaicNonce, final MosaicIdDto mosaicId, final EnumSet<MosaicFlagsDto> flags, final byte divisibility, final ArrayList<MosaicPropertyBuilder> properties) {
+        return new MosaicDefinitionTransactionBuilder(signature, signer, version, type, fee, deadline, mosaicNonce, mosaicId, flags, divisibility, properties);
     }
 
-    public void setSignature(ByteBuffer signature)  {
-        if (signature == null)
-            throw new NullPointerException("signature");
-        
-        if (signature.array().length != 64)
-            throw new IllegalArgumentException("signature should be 64 bytes");
-        
-        this.signature = signature;
+    /**
+     * Gets mosaic nonce.
+     *
+     * @return Mosaic nonce.
+     */
+    public MosaicNonceDto getMosaicNonce() {
+        return this.mosaicDefinitionTransactionBody.getMosaicNonce();
     }
 
-    public ByteBuffer getSigner()  {
-        return this.signer;
+    /**
+     * Gets id of the mosaic.
+     *
+     * @return Id of the mosaic.
+     */
+    public MosaicIdDto getMosaicId() {
+        return this.mosaicDefinitionTransactionBody.getMosaicId();
     }
 
-    public void setSigner(ByteBuffer signer)  {
-        if (signer == null)
-            throw new NullPointerException("signer");
-        
-        if (signer.array().length != 32)
-            throw new IllegalArgumentException("signer should be 32 bytes");
-        
-        this.signer = signer;
+    /**
+     * Gets mosaic flags.
+     *
+     * @return Mosaic flags.
+     */
+    public EnumSet<MosaicFlagsDto> getFlags() {
+        return this.mosaicDefinitionTransactionBody.getFlags();
     }
 
-    public short getVersion()  {
-        return this.version;
+    /**
+     * Gets mosaic divisibility.
+     *
+     * @return Mosaic divisibility.
+     */
+    public byte getDivisibility() {
+        return this.mosaicDefinitionTransactionBody.getDivisibility();
     }
 
-    public void setVersion(short version)  {
-        this.version = version;
+    /**
+     * Gets optional properties.
+     *
+     * @return Optional properties.
+     */
+    public ArrayList<MosaicPropertyBuilder> getProperties() {
+        return this.mosaicDefinitionTransactionBody.getProperties();
     }
 
-    public EntityTypeBuilder getType()  {
-        return this.type;
+    /**
+     * Gets the size of the object.
+     *
+     * @return Size in bytes.
+     */
+    @Override
+    public int getSize() {
+        int size = super.getSize();
+        size += this.mosaicDefinitionTransactionBody.getSize();
+        return size;
     }
 
-    public void setType(EntityTypeBuilder type)  {
-        this.type = type;
+    /**
+     * Creates an instance of MosaicDefinitionTransactionBuilder from a stream.
+     *
+     * @param stream Byte stream to use to serialize the object.
+     * @return Instance of MosaicDefinitionTransactionBuilder.
+     */
+    public static MosaicDefinitionTransactionBuilder loadFromBinary(final DataInput stream) {
+        return new MosaicDefinitionTransactionBuilder(stream);
     }
 
-    public long getFee()  {
-        return this.fee;
+    /**
+     * Serializes an object to bytes.
+     *
+     * @return Serialized bytes.
+     */
+    public byte[] serialize() {
+        return GeneratorUtils.serialize(dataOutputStream -> {
+            final byte[] superBytes = super.serialize();
+            dataOutputStream.write(superBytes, 0, superBytes.length);
+            final byte[] mosaicDefinitionTransactionBodyBytes = this.mosaicDefinitionTransactionBody.serialize();
+            dataOutputStream.write(mosaicDefinitionTransactionBodyBytes, 0, mosaicDefinitionTransactionBodyBytes.length);
+        });
     }
-
-    public void setFee(long fee)  {
-        this.fee = fee;
-    }
-
-    public long getDeadline()  {
-        return this.deadline;
-    }
-
-    public void setDeadline(long deadline)  {
-        this.deadline = deadline;
-    }
-
-    public int getMosaicnonce()  {
-        return this.mosaicNonce;
-    }
-
-    public void setMosaicnonce(int mosaicNonce)  {
-        this.mosaicNonce = mosaicNonce;
-    }
-
-    public long getMosaicid()  {
-        return this.mosaicId;
-    }
-
-    public void setMosaicid(long mosaicId)  {
-        this.mosaicId = mosaicId;
-    }
-
-    public MosaicFlagsBuilder getFlags()  {
-        return this.flags;
-    }
-
-    public void setFlags(MosaicFlagsBuilder flags)  {
-        this.flags = flags;
-    }
-
-    public byte getDivisibility()  {
-        return this.divisibility;
-    }
-
-    public void setDivisibility(byte divisibility)  {
-        this.divisibility = divisibility;
-    }
-
-    public java.util.ArrayList<MosaicPropertyBuilder> getProperties()  {
-        return (java.util.ArrayList<MosaicPropertyBuilder>)this.properties;
-    }
-
-    public void setProperties(java.util.ArrayList<MosaicPropertyBuilder> properties)  {
-        this.properties = properties;
-    }
-
-    public static MosaicDefinitionTransactionBuilder loadFromBinary(DataInput stream) throws Exception {
-        MosaicDefinitionTransactionBuilder obj = new MosaicDefinitionTransactionBuilder();
-        obj.setSize(Integer.reverseBytes(stream.readInt()));
-        obj.signature = ByteBuffer.allocate(64);
-        stream.readFully(obj.signature.array());
-        obj.signer = ByteBuffer.allocate(32);
-        stream.readFully(obj.signer.array());
-        obj.setVersion(Short.reverseBytes(stream.readShort()));
-        obj.setType(EntityTypeBuilder.loadFromBinary(stream));
-        obj.setFee(Long.reverseBytes(stream.readLong()));
-        obj.setDeadline(Long.reverseBytes(stream.readLong()));
-        obj.setMosaicnonce(Integer.reverseBytes(stream.readInt()));
-        obj.setMosaicid(Long.reverseBytes(stream.readLong()));
-        byte propertiesCount = stream.readByte();
-        obj.setFlags(MosaicFlagsBuilder.loadFromBinary(stream));
-        obj.setDivisibility(stream.readByte());
-        java.util.ArrayList<MosaicPropertyBuilder> properties = new java.util.ArrayList<MosaicPropertyBuilder>(propertiesCount);
-        for (int i = 0; i < propertiesCount; i++) {
-            properties.add(MosaicPropertyBuilder.loadFromBinary(stream));
-        }
-        obj.setProperties(properties);
-        return obj;
-    }
-
-    public byte[] serialize() throws Exception {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        DataOutputStream stream = new DataOutputStream(bos);
-        stream.writeInt(Integer.reverseBytes(this.getSize()));
-        stream.write(this.signature.array(), 0, this.signature.array().length);
-        stream.write(this.signer.array(), 0, this.signer.array().length);
-        stream.writeShort(Short.reverseBytes(this.getVersion()));
-        byte[] type = this.getType().serialize();
-        stream.write(type, 0, type.length);
-        stream.writeLong(Long.reverseBytes(this.getFee()));
-        stream.writeLong(Long.reverseBytes(this.getDeadline()));
-        stream.writeInt(Integer.reverseBytes(this.getMosaicnonce()));
-        stream.writeLong(Long.reverseBytes(this.getMosaicid()));
-        stream.writeByte((byte)this.properties.size());
-        byte[] flags = this.getFlags().serialize();
-        stream.write(flags, 0, flags.length);
-        stream.writeByte(this.getDivisibility());
-        for (int i = 0; i < this.properties.size(); i++) {
-            byte[] ser = this.properties.get(i).serialize();
-            stream.write(ser, 0, ser.length);
-        }
-        stream.close();
-        return bos.toByteArray();
-    }
-
-    private int size;
-    private ByteBuffer signature;
-    private ByteBuffer signer;
-    private short version;
-    private EntityTypeBuilder type;
-    private long fee;
-    private long deadline;
-    private int mosaicNonce;
-    private long mosaicId;
-    private MosaicFlagsBuilder flags;
-    private byte divisibility;
-    private java.util.ArrayList<MosaicPropertyBuilder> properties;
-
 }

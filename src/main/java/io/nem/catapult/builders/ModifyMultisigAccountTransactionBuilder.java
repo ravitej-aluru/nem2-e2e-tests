@@ -18,160 +18,122 @@
 *** along with Catapult. If not, see <http://www.gnu.org/licenses/>.
 **/
 
-
 package io.nem.catapult.builders;
 
-import java.io.ByteArrayOutputStream;
 import java.io.DataInput;
-import java.io.DataOutputStream;
-import java.nio.ByteBuffer;
+import java.util.ArrayList;
 
-public class ModifyMultisigAccountTransactionBuilder {
-    public int getSize()  {
-        return this.size;
+/** Binary layout for a non-embedded modify multisig account transaction. */
+public final class ModifyMultisigAccountTransactionBuilder extends TransactionBuilder {
+    /** Modify multisig account transaction body. */
+    private final ModifyMultisigAccountTransactionBodyBuilder modifyMultisigAccountTransactionBody;
+
+    /**
+     * Constructor - Creates an object from stream.
+     *
+     * @param stream Byte stream to use to serialize the object.
+     */
+    protected ModifyMultisigAccountTransactionBuilder(final DataInput stream) {
+        super(stream);
+        this.modifyMultisigAccountTransactionBody = ModifyMultisigAccountTransactionBodyBuilder.loadFromBinary(stream);
     }
 
-    public void setSize(int size)  {
-        this.size = size;
+    /**
+     * Constructor.
+     *
+     * @param signature Entity signature.
+     * @param signer Entity signer's public key.
+     * @param version Entity version.
+     * @param type Entity type.
+     * @param fee Transaction fee.
+     * @param deadline Transaction deadline.
+     * @param minRemovalDelta Relative change of the minimal number of cosignatories required when removing an account.
+     * @param minApprovalDelta Relative change of the minimal number of cosignatories required when approving a transaction.
+     * @param modifications Attached cosignatory modifications.
+     */
+    protected ModifyMultisigAccountTransactionBuilder(final SignatureDto signature, final KeyDto signer, final short version, final EntityTypeDto type, final AmountDto fee, final TimestampDto deadline, final byte minRemovalDelta, final byte minApprovalDelta, final ArrayList<CosignatoryModificationBuilder> modifications) {
+        super(signature, signer, version, type, fee, deadline);
+        this.modifyMultisigAccountTransactionBody = ModifyMultisigAccountTransactionBodyBuilder.create(minRemovalDelta, minApprovalDelta, modifications);
     }
 
-    public ByteBuffer getSignature()  {
-        return this.signature;
+    /**
+     * Creates an instance of ModifyMultisigAccountTransactionBuilder.
+     *
+     * @param signature Entity signature.
+     * @param signer Entity signer's public key.
+     * @param version Entity version.
+     * @param type Entity type.
+     * @param fee Transaction fee.
+     * @param deadline Transaction deadline.
+     * @param minRemovalDelta Relative change of the minimal number of cosignatories required when removing an account.
+     * @param minApprovalDelta Relative change of the minimal number of cosignatories required when approving a transaction.
+     * @param modifications Attached cosignatory modifications.
+     * @return Instance of ModifyMultisigAccountTransactionBuilder.
+     */
+    public static ModifyMultisigAccountTransactionBuilder create(final SignatureDto signature, final KeyDto signer, final short version, final EntityTypeDto type, final AmountDto fee, final TimestampDto deadline, final byte minRemovalDelta, final byte minApprovalDelta, final ArrayList<CosignatoryModificationBuilder> modifications) {
+        return new ModifyMultisigAccountTransactionBuilder(signature, signer, version, type, fee, deadline, minRemovalDelta, minApprovalDelta, modifications);
     }
 
-    public void setSignature(ByteBuffer signature)  {
-        if (signature == null)
-            throw new NullPointerException("signature");
-        
-        if (signature.array().length != 64)
-            throw new IllegalArgumentException("signature should be 64 bytes");
-        
-        this.signature = signature;
+    /**
+     * Gets relative change of the minimal number of cosignatories required when removing an account.
+     *
+     * @return Relative change of the minimal number of cosignatories required when removing an account.
+     */
+    public byte getMinRemovalDelta() {
+        return this.modifyMultisigAccountTransactionBody.getMinRemovalDelta();
     }
 
-    public ByteBuffer getSigner()  {
-        return this.signer;
+    /**
+     * Gets relative change of the minimal number of cosignatories required when approving a transaction.
+     *
+     * @return Relative change of the minimal number of cosignatories required when approving a transaction.
+     */
+    public byte getMinApprovalDelta() {
+        return this.modifyMultisigAccountTransactionBody.getMinApprovalDelta();
     }
 
-    public void setSigner(ByteBuffer signer)  {
-        if (signer == null)
-            throw new NullPointerException("signer");
-        
-        if (signer.array().length != 32)
-            throw new IllegalArgumentException("signer should be 32 bytes");
-        
-        this.signer = signer;
+    /**
+     * Gets attached cosignatory modifications.
+     *
+     * @return Attached cosignatory modifications.
+     */
+    public ArrayList<CosignatoryModificationBuilder> getModifications() {
+        return this.modifyMultisigAccountTransactionBody.getModifications();
     }
 
-    public short getVersion()  {
-        return this.version;
+    /**
+     * Gets the size of the object.
+     *
+     * @return Size in bytes.
+     */
+    @Override
+    public int getSize() {
+        int size = super.getSize();
+        size += this.modifyMultisigAccountTransactionBody.getSize();
+        return size;
     }
 
-    public void setVersion(short version)  {
-        this.version = version;
+    /**
+     * Creates an instance of ModifyMultisigAccountTransactionBuilder from a stream.
+     *
+     * @param stream Byte stream to use to serialize the object.
+     * @return Instance of ModifyMultisigAccountTransactionBuilder.
+     */
+    public static ModifyMultisigAccountTransactionBuilder loadFromBinary(final DataInput stream) {
+        return new ModifyMultisigAccountTransactionBuilder(stream);
     }
 
-    public EntityTypeBuilder getType()  {
-        return this.type;
+    /**
+     * Serializes an object to bytes.
+     *
+     * @return Serialized bytes.
+     */
+    public byte[] serialize() {
+        return GeneratorUtils.serialize(dataOutputStream -> {
+            final byte[] superBytes = super.serialize();
+            dataOutputStream.write(superBytes, 0, superBytes.length);
+            final byte[] modifyMultisigAccountTransactionBodyBytes = this.modifyMultisigAccountTransactionBody.serialize();
+            dataOutputStream.write(modifyMultisigAccountTransactionBodyBytes, 0, modifyMultisigAccountTransactionBodyBytes.length);
+        });
     }
-
-    public void setType(EntityTypeBuilder type)  {
-        this.type = type;
-    }
-
-    public long getFee()  {
-        return this.fee;
-    }
-
-    public void setFee(long fee)  {
-        this.fee = fee;
-    }
-
-    public long getDeadline()  {
-        return this.deadline;
-    }
-
-    public void setDeadline(long deadline)  {
-        this.deadline = deadline;
-    }
-
-    public byte getMinremovaldelta()  {
-        return this.minRemovalDelta;
-    }
-
-    public void setMinremovaldelta(byte minRemovalDelta)  {
-        this.minRemovalDelta = minRemovalDelta;
-    }
-
-    public byte getMinapprovaldelta()  {
-        return this.minApprovalDelta;
-    }
-
-    public void setMinapprovaldelta(byte minApprovalDelta)  {
-        this.minApprovalDelta = minApprovalDelta;
-    }
-
-    public java.util.ArrayList<CosignatoryModificationBuilder> getModifications()  {
-        return (java.util.ArrayList<CosignatoryModificationBuilder>)this.modifications;
-    }
-
-    public void setModifications(java.util.ArrayList<CosignatoryModificationBuilder> modifications)  {
-        this.modifications = modifications;
-    }
-
-    public static ModifyMultisigAccountTransactionBuilder loadFromBinary(DataInput stream) throws Exception {
-        ModifyMultisigAccountTransactionBuilder obj = new ModifyMultisigAccountTransactionBuilder();
-        obj.setSize(Integer.reverseBytes(stream.readInt()));
-        obj.signature = ByteBuffer.allocate(64);
-        stream.readFully(obj.signature.array());
-        obj.signer = ByteBuffer.allocate(32);
-        stream.readFully(obj.signer.array());
-        obj.setVersion(Short.reverseBytes(stream.readShort()));
-        obj.setType(EntityTypeBuilder.loadFromBinary(stream));
-        obj.setFee(Long.reverseBytes(stream.readLong()));
-        obj.setDeadline(Long.reverseBytes(stream.readLong()));
-        obj.setMinremovaldelta(stream.readByte());
-        obj.setMinapprovaldelta(stream.readByte());
-        byte modificationsCount = stream.readByte();
-        java.util.ArrayList<CosignatoryModificationBuilder> modifications = new java.util.ArrayList<CosignatoryModificationBuilder>(modificationsCount);
-        for (int i = 0; i < modificationsCount; i++) {
-            modifications.add(CosignatoryModificationBuilder.loadFromBinary(stream));
-        }
-        obj.setModifications(modifications);
-        return obj;
-    }
-
-    public byte[] serialize() throws Exception {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        DataOutputStream stream = new DataOutputStream(bos);
-        stream.writeInt(Integer.reverseBytes(this.getSize()));
-        stream.write(this.signature.array(), 0, this.signature.array().length);
-        stream.write(this.signer.array(), 0, this.signer.array().length);
-        stream.writeShort(Short.reverseBytes(this.getVersion()));
-        byte[] type = this.getType().serialize();
-        stream.write(type, 0, type.length);
-        stream.writeLong(Long.reverseBytes(this.getFee()));
-        stream.writeLong(Long.reverseBytes(this.getDeadline()));
-        stream.writeByte(this.getMinremovaldelta());
-        stream.writeByte(this.getMinapprovaldelta());
-        stream.writeByte((byte)this.modifications.size());
-        for (int i = 0; i < this.modifications.size(); i++) {
-            byte[] ser = this.modifications.get(i).serialize();
-            stream.write(ser, 0, ser.length);
-        }
-        stream.close();
-        return bos.toByteArray();
-    }
-
-    private int size;
-    private ByteBuffer signature;
-    private ByteBuffer signer;
-    private short version;
-    private EntityTypeBuilder type;
-    private long fee;
-    private long deadline;
-    private byte minRemovalDelta;
-    private byte minApprovalDelta;
-    private java.util.ArrayList<CosignatoryModificationBuilder> modifications;
-
 }
