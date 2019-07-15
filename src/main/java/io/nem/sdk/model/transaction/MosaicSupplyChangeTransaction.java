@@ -64,19 +64,31 @@ public class MosaicSupplyChangeTransaction extends Transaction {
 	}
 
 	/**
-	 * Create a mosaic supply change transaction object.
-	 *
-	 * @param deadline         The deadline to include the transaction.
-	 * @param mosaicId         The mosaic id.
-	 * @param mosaicSupplyType The supply type.
-	 * @param delta            The supply change in units for the mosaic.
-	 * @param networkType      The network type.
-	 * @return {@link MosaicSupplyChangeTransaction}
-	 */
-	public static MosaicSupplyChangeTransaction create(Deadline deadline, MosaicId mosaicId, MosaicSupplyType mosaicSupplyType,
-													   BigInteger delta, NetworkType networkType) {
-		return new MosaicSupplyChangeTransaction(networkType, TransactionVersion.MOSAIC_SUPPLY_CHANGE.getValue(), deadline,
-				BigInteger.valueOf(0), mosaicId, mosaicSupplyType, delta);
+	* Create a mosaic supply change transaction object.
+	*
+	* @param deadline Deadline to include the transaction.
+	* @param maxFee Max fee to pay to process the tx.
+	* @param mosaicId Mosaic id.
+	* @param mosaicSupplyType Supply type.
+	* @param delta Supply change in units for the mosaic.
+	* @param networkType Network type.
+	* @return {@link MosaicSupplyChangeTransaction}
+	*/
+	public static MosaicSupplyChangeTransaction create(
+	  Deadline deadline,
+	  BigInteger maxFee,
+	  MosaicId mosaicId,
+	  MosaicSupplyType mosaicSupplyType,
+	  BigInteger delta,
+	  NetworkType networkType) {
+	return new MosaicSupplyChangeTransaction(
+		networkType,
+		TransactionVersion.MOSAIC_SUPPLY_CHANGE.getValue(),
+		deadline,
+		maxFee,
+		mosaicId,
+		mosaicSupplyType,
+		delta);
 	}
 
 	/**

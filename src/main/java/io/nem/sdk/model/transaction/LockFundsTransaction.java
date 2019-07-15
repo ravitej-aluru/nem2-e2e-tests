@@ -67,19 +67,31 @@ public class LockFundsTransaction extends Transaction {
 	}
 
 	/**
-	 * Create a lock funds transaction object.
-	 *
-	 * @param deadline          The deadline to include the transaction.
-	 * @param mosaic            The locked mosaic.
-	 * @param duration          The funds lock duration.
-	 * @param signedTransaction The signed transaction for which funds are locked.
-	 * @param networkType       The network type.
-	 * @return a LockFundsTransaction instance
-	 */
-	public static LockFundsTransaction create(Deadline deadline, Mosaic mosaic, BigInteger duration, SignedTransaction signedTransaction,
-											  NetworkType networkType) {
-		return new LockFundsTransaction(networkType, TransactionVersion.LOCK.getValue(), deadline, BigInteger.valueOf(0), mosaic, duration,
-				signedTransaction);
+	* Create a lock funds transaction object.
+	*
+	* @param deadline Deadline to include the transaction.
+	* @param maxFee Max fee defined by the sender.
+	* @param mosaic Locked mosaic.
+	* @param duration Funds lock duration.
+	* @param signedTransaction Signed transaction for which funds are locked.
+	* @param networkType Network type.
+	* @return a LockFundsTransaction instance
+	*/
+	public static LockFundsTransaction create(
+	  final Deadline deadline,
+	  final BigInteger maxFee,
+	  final Mosaic mosaic,
+	  final BigInteger duration,
+	  final SignedTransaction signedTransaction,
+	  final NetworkType networkType) {
+	return new LockFundsTransaction(
+		networkType,
+		TransactionVersion.LOCK.getValue(),
+		deadline,
+		maxFee,
+		mosaic,
+		duration,
+		signedTransaction);
 	}
 
 	/**

@@ -70,27 +70,33 @@ public class MosaicDefinitionTransaction extends Transaction {
 	}
 
 	/**
-	 * Create a mosaic creation transaction object.
-	 *
-	 * @param deadline         The deadline to include the transaction.
-	 * @param maxFee           Max fee.
-	 * @param mosaicNonce      The mosaicNonce
-	 * @param mosaicId         The mosaicId.
-	 * @param mosaicProperties The mosaic properties.
-	 * @param networkType      The network type.
-	 * @return {@link MosaicDefinitionTransaction}
-	 */
-	public static MosaicDefinitionTransaction create(Deadline deadline, BigInteger maxFee, MosaicNonce mosaicNonce, MosaicId mosaicId,
-													 MosaicProperties mosaicProperties, NetworkType networkType) {
-		Validate.notNull(mosaicNonce, "MosaicNonce must not be null");
-		Validate.notNull(mosaicId, "MosaicId must not be null");
-		return new MosaicDefinitionTransaction(networkType,
-				TransactionVersion.MOSAIC_DEFINITION.getValue(),
-				deadline,
-				maxFee,
-				mosaicNonce,
-				mosaicId,
-				mosaicProperties);
+	* Create a mosaic creation transaction object.
+	*
+	* @param deadline The deadline to include the transaction.
+	* @param maxFee Max fee.
+	* @param mosaicNonce The mosaicNonce
+	* @param mosaicId The mosaicId.
+	* @param mosaicProperties The mosaic properties.
+	* @param networkType The network type.
+	* @return {@link MosaicDefinitionTransaction}
+	*/
+	public static MosaicDefinitionTransaction create(
+	  Deadline deadline,
+	  BigInteger maxFee,
+	  MosaicNonce mosaicNonce,
+	  MosaicId mosaicId,
+	  MosaicProperties mosaicProperties,
+	  NetworkType networkType) {
+	Validate.notNull(mosaicNonce, "MosaicNonce must not be null");
+	Validate.notNull(mosaicId, "MosaicId must not be null");
+	return new MosaicDefinitionTransaction(
+		networkType,
+		TransactionVersion.MOSAIC_DEFINITION.getValue(),
+		deadline,
+		maxFee,
+		mosaicNonce,
+		mosaicId,
+		mosaicProperties);
 	}
 
 	/**
