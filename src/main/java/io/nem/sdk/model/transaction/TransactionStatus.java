@@ -82,4 +82,23 @@ public class TransactionStatus {
 	public BigInteger getHeight() {
 		return height;
 	}
+  /**
+   * Gets the string representation.
+   *
+   * @return String.
+   */
+  @Override
+  public String toString() {
+    return "Group: "
+        + getGroup()
+        + " Status: "
+        + getStatus()
+        + " Hash: "
+        + getHash()
+        + " Deadline: "
+        + getDeadline().toString()
+        + " "
+        + "Height: "
+        + getHeight();
+  }
 }

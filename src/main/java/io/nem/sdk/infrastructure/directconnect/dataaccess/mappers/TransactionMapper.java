@@ -20,10 +20,12 @@
 
 package io.nem.sdk.infrastructure.directconnect.dataaccess.mappers;
 
+import io.nem.core.utils.HexEncoder;
 import io.nem.sdk.model.account.Address;
 import io.nem.sdk.model.account.PublicAccount;
 import io.nem.sdk.model.blockchain.NetworkType;
 import io.nem.sdk.model.mosaic.*;
+import io.nem.sdk.model.namespace.AliasAction;
 import io.nem.sdk.model.namespace.NamespaceId;
 import io.nem.sdk.model.namespace.NamespaceType;
 import io.nem.sdk.model.transaction.*;
@@ -102,6 +104,10 @@ public class TransactionMapper implements Function<JsonObject, Transaction> {
 			return new SecretLockTransactionMapper().apply(jsonObject);
 		} else if (type == TransactionType.SECRET_PROOF) {
 			return new SecretProofTransactionMapper().apply(jsonObject);
+        } else if (type == TransactionType.MOSAIC_ALIAS) {
+            return new MosaicAliasTransactionMapper().apply(jsonObject);
+        } else if (type == TransactionType.ADDRESS_ALIAS) {
+            return new AddressAliasTransactionMapper().apply(jsonObject);
 		}
 
 		throw new UnsupportedOperationException("Unimplemented Transaction type");
@@ -194,20 +200,17 @@ class TransferTransactionMapper extends TransactionMapper {
 			message = new PlainMessage(new String(Hex.decode(transaction.getJsonObject("message").getString("payload")),
 					StandardCharsets.UTF_8));
 		}
-
-		return new TransferTransaction(
-				networkType,
-				version,
-				deadline,
-				maxFee,
-				Optional.of(Address.createFromEncoded(transaction.getString("recipient"))),
-				Optional.empty(),
-				mosaics,
-				message,
-				transaction.getString("signature"),
-				new PublicAccount(transaction.getString("signer"), networkType),
-				transactionInfo);
-	}
+    final String recipient = transaction.getString("recipient");
+    if (recipient.startsWith("01")) {
+      final String namespaceString = recipient.substring(1, 10);
+      final byte[] bytes = HexEncoder.getBytes(namespaceString);
+      final BigInteger bigInteger = new BigInteger(bytes);
+      return new TransferTransaction(networkType, version, deadline, maxFee, new NamespaceId(bigInteger), mosaics, message,
+          transaction.getString("signature"), new PublicAccount(transaction.getString("signer"), networkType), transactionInfo);
+    }
+    return new TransferTransaction(networkType, version, deadline, maxFee, Address.createFromEncoded(recipient), mosaics, message,
+        transaction.getString("signature"), new PublicAccount(transaction.getString("signer"), networkType), transactionInfo);
+  }
 }
 
 /**
@@ -461,8 +464,56 @@ class SecretProofTransactionMapper extends TransactionMapper {
 				transaction.getString("proof"),
 				transaction.getString("signature"),
 				new PublicAccount(transaction.getString("signer"), networkType),
-				transactionInfo
-		);
-	}
+        transactionInfo);
+  }
 }
 
+/** Mosaic alias transaction mapper. */
+class MosaicAliasTransactionMapper extends TransactionMapper {
+  /**
+   * Converts from json to mosaic alias transaction.
+   *
+   * @param jsonObject Json object.
+   * @return Mosaic alias transaction.
+   */
+  @Override
+  public MosaicAliasTransaction apply(final JsonObject jsonObject) {
+    extractCommonProperties(jsonObject);
+    return new MosaicAliasTransaction(
+        networkType,
+        version,
+        deadline,
+        maxFee,
+        AliasAction.rawValueOf(transaction.getInteger("action").byteValue()),
+        new NamespaceId(extractBigInteger(transaction, "namespaceId")),
+        new MosaicId(extractBigInteger(transaction, "mosaicId")),
+        transaction.getString("signature"),
+        new PublicAccount(transaction.getString("signer"), networkType),
+        transactionInfo);
+  }
+}
+
+/** Address alias transaction mapper. */
+class AddressAliasTransactionMapper extends TransactionMapper {
+  /**
+   * Converts from json to Address alias transaction.
+   *
+   * @param jsonObject Json object.
+   * @return Address alias transaction.
+   */
+  @Override
+  public AddressAliasTransaction apply(final JsonObject jsonObject) {
+    extractCommonProperties(jsonObject);
+    return new AddressAliasTransaction(
+        networkType,
+        version,
+        deadline,
+        maxFee,
+        AliasAction.rawValueOf(transaction.getInteger("action").byteValue()),
+        new NamespaceId(extractBigInteger(transaction, "namespaceId")),
+        Address.createFromEncoded(transaction.getString("address")),
+        transaction.getString("signature"),
+        new PublicAccount(transaction.getString("signer"), networkType),
+        transactionInfo);
+  }
+}

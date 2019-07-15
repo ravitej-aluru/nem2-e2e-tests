@@ -59,4 +59,14 @@ public class SignedTransaction {
 	public TransactionType getType() {
 		return type;
 	}
+
+  /**
+   * Gets the string representation.
+   *
+   * @return String.
+   */
+  @Override
+  public String toString() {
+    return "hash: " + getHash() + " Type: " + getType() + " Payload: " + getPayload();
+  }
 }

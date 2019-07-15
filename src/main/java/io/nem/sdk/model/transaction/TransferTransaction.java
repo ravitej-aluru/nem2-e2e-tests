@@ -41,14 +41,55 @@ public class TransferTransaction extends Transaction {
 	private final Message message;
 	private final Optional<NamespaceId> namespaceId;
 
-	public TransferTransaction(final NetworkType networkType, final Integer version, final Deadline deadline, final BigInteger fee,
-							   final Optional<Address> recipient, final Optional<NamespaceId> namespaceId, final List<Mosaic> mosaics,
-							   final Message message, final String signature,
-							   final PublicAccount signer, final TransactionInfo transactionInfo) {
-		this(networkType, version, deadline, fee, recipient, namespaceId, mosaics, message, Optional.of(signature),
-				Optional.of(signer), Optional.of(transactionInfo));
-	}
+  public TransferTransaction(
+      final NetworkType networkType,
+      final Integer version,
+      final Deadline deadline,
+      final BigInteger fee,
+      final Address recipient,
+      final List<Mosaic> mosaics,
+      final Message message,
+      final String signature,
+      final PublicAccount signer,
+      final TransactionInfo transactionInfo) {
+    this(
+        networkType,
+        version,
+        deadline,
+        fee,
+        Optional.of(recipient),
+        Optional.empty(),
+        mosaics,
+        message,
+        Optional.of(signature),
+        Optional.of(signer),
+        Optional.of(transactionInfo));
+  }
 
+  public TransferTransaction(
+      final NetworkType networkType,
+      final Integer version,
+      final Deadline deadline,
+      final BigInteger fee,
+      final NamespaceId namespaceId,
+      final List<Mosaic> mosaics,
+      final Message message,
+      final String signature,
+      final PublicAccount signer,
+      final TransactionInfo transactionInfo) {
+    this(
+        networkType,
+        version,
+        deadline,
+        fee,
+        Optional.empty(),
+        Optional.of(namespaceId),
+        mosaics,
+        message,
+        Optional.of(signature),
+        Optional.of(signer),
+        Optional.of(transactionInfo));
+  }
 	private TransferTransaction(final NetworkType networkType, final Integer version, final Deadline deadline, final BigInteger fee,
 								final Optional<Address> recipient, final Optional<NamespaceId> namespaceId, final List<Mosaic> mosaics,
 								final Message message) {

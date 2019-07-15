@@ -21,9 +21,10 @@
 package io.nem.catapult.builders;
 
 import java.io.DataInput;
+import java.math.BigInteger;
 
 /** Binary layout for an unresolved mosaic. */
-public class UnresolvedMosaicBuilder {
+public class UnresolvedMosaicBuilder implements Comparable<UnresolvedMosaicBuilder> {
     /** Mosaic identifier. */
     private final UnresolvedMosaicIdDto mosaicId;
     /** Mosaic amount. */
@@ -116,4 +117,17 @@ public class UnresolvedMosaicBuilder {
             dataOutputStream.write(amountBytes, 0, amountBytes.length);
         });
     }
+
+    /**
+     * Compares unresolved mosaic.
+     *
+     * @param unresolvedMosaicBuilder Unresolved mosaic to compare.
+     * @return Zero of they are equal.
+     */
+  @Override
+  public int compareTo(UnresolvedMosaicBuilder unresolvedMosaicBuilder) {
+    return BigInteger.valueOf(getMosaicId().getUnresolvedMosaicId())
+        .compareTo(
+            BigInteger.valueOf(unresolvedMosaicBuilder.getMosaicId().getUnresolvedMosaicId()));
+  }
 }

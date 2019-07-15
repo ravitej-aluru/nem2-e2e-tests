@@ -40,23 +40,78 @@ public class MosaicAliasTransaction extends Transaction {
 	final private NamespaceId namespaceId;
 	final private MosaicId mosaicId;
 
-	/**
-	 * @param networkType     Network type.
-	 * @param version         Transaction version.
-	 * @param deadline        Deadline to include the transaction.
-	 * @param maxFee          Max fee defined by the sender.
-	 * @param aliasAction     Alias action.
-	 * @param namespaceId     Namespace id.
-	 * @param mosaicId        Mosaic id.
-	 * @param signature       Signature.
-	 * @param signer          Signer for the transaction.
-	 * @param transactionInfo Transaction info.
-	 */
-	public MosaicAliasTransaction(final NetworkType networkType, final int version, final Deadline deadline, final BigInteger maxFee,
-								  final AliasAction aliasAction, final NamespaceId namespaceId, final MosaicId mosaicId,
-								  final Optional<String> signature, final Optional<PublicAccount> signer,
-								  final Optional<TransactionInfo> transactionInfo) {
-		super(TransactionType.MOSAIC_ALIAS, networkType, version, deadline, maxFee, signature, signer, transactionInfo);
+  /**
+   * @param networkType Network type.
+   * @param version Transaction version.
+   * @param deadline Deadline to include the transaction.
+   * @param maxFee Max fee defined by the sender.
+   * @param aliasAction Alias action.
+   * @param namespaceId Namespace id.
+   * @param mosaicId Mosaic id.
+   * @param signature Signature.
+   * @param signer Signer for the transaction.
+   * @param transactionInfo Transaction info.
+   */
+  public MosaicAliasTransaction(
+      final NetworkType networkType,
+      final int version,
+      final Deadline deadline,
+      final BigInteger maxFee,
+      final AliasAction aliasAction,
+      final NamespaceId namespaceId,
+      final MosaicId mosaicId,
+      final String signature,
+      final PublicAccount signer,
+      final TransactionInfo transactionInfo) {
+    super(
+        TransactionType.MOSAIC_ALIAS,
+        networkType,
+        version,
+        deadline,
+        maxFee,
+        Optional.of(signature),
+        Optional.of(signer),
+        Optional.of(transactionInfo));
+    Validate.notNull(namespaceId, "namespaceId must not be null");
+    Validate.notNull(mosaicId, "mosaicId must not be null");
+
+    this.aliasAction = aliasAction;
+    this.namespaceId = namespaceId;
+    this.mosaicId = mosaicId;
+  }
+
+  /**
+   * @param networkType Network type.
+   * @param version Transaction version.
+   * @param deadline Deadline to include the transaction.
+   * @param maxFee Max fee defined by the sender.
+   * @param aliasAction Alias action.
+   * @param namespaceId Namespace id.
+   * @param mosaicId Mosaic id.
+   * @param signature Signature.
+   * @param signer Signer for the transaction.
+   * @param transactionInfo Transaction info.
+   */
+  private MosaicAliasTransaction(
+      final NetworkType networkType,
+      final int version,
+      final Deadline deadline,
+      final BigInteger maxFee,
+      final AliasAction aliasAction,
+      final NamespaceId namespaceId,
+      final MosaicId mosaicId,
+      final Optional<String> signature,
+      final Optional<PublicAccount> signer,
+      final Optional<TransactionInfo> transactionInfo) {
+    super(
+        TransactionType.MOSAIC_ALIAS,
+        networkType,
+        version,
+        deadline,
+        maxFee,
+        signature,
+        signer,
+        transactionInfo);
 		Validate.notNull(namespaceId, "namespaceId must not be null");
 		Validate.notNull(mosaicId, "mosaicId must not be null");
 
