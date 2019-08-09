@@ -21,7 +21,6 @@
 package io.nem.catapult.builders;
 
 import java.io.DataInput;
-import java.util.ArrayList;
 import java.util.EnumSet;
 
 /** Binary layout for an embedded mosaic definition transaction. */
@@ -45,15 +44,15 @@ public final class EmbeddedMosaicDefinitionTransactionBuilder extends EmbeddedTr
      * @param signer Entity signer's public key.
      * @param version Entity version.
      * @param type Entity type.
-     * @param mosaicNonce Mosaic nonce.
-     * @param mosaicId Id of the mosaic.
+     * @param nonce Mosaic nonce.
+     * @param id Mosaic identifier.
      * @param flags Mosaic flags.
      * @param divisibility Mosaic divisibility.
-     * @param properties Optional properties.
+     * @param duration Mosaic duration.
      */
-    protected EmbeddedMosaicDefinitionTransactionBuilder(final KeyDto signer, final short version, final EntityTypeDto type, final MosaicNonceDto mosaicNonce, final MosaicIdDto mosaicId, final EnumSet<MosaicFlagsDto> flags, final byte divisibility, final ArrayList<MosaicPropertyBuilder> properties) {
+    protected EmbeddedMosaicDefinitionTransactionBuilder(final KeyDto signer, final short version, final EntityTypeDto type, final MosaicNonceDto nonce, final MosaicIdDto id, final EnumSet<MosaicFlagsDto> flags, final byte divisibility, final BlockDurationDto duration) {
         super(signer, version, type);
-        this.mosaicDefinitionTransactionBody = MosaicDefinitionTransactionBodyBuilder.create(mosaicNonce, mosaicId, flags, divisibility, properties);
+        this.mosaicDefinitionTransactionBody = MosaicDefinitionTransactionBodyBuilder.create(nonce, id, flags, divisibility, duration);
     }
 
     /**
@@ -62,15 +61,15 @@ public final class EmbeddedMosaicDefinitionTransactionBuilder extends EmbeddedTr
      * @param signer Entity signer's public key.
      * @param version Entity version.
      * @param type Entity type.
-     * @param mosaicNonce Mosaic nonce.
-     * @param mosaicId Id of the mosaic.
+     * @param nonce Mosaic nonce.
+     * @param id Mosaic identifier.
      * @param flags Mosaic flags.
      * @param divisibility Mosaic divisibility.
-     * @param properties Optional properties.
+     * @param duration Mosaic duration.
      * @return Instance of EmbeddedMosaicDefinitionTransactionBuilder.
      */
-    public static EmbeddedMosaicDefinitionTransactionBuilder create(final KeyDto signer, final short version, final EntityTypeDto type, final MosaicNonceDto mosaicNonce, final MosaicIdDto mosaicId, final EnumSet<MosaicFlagsDto> flags, final byte divisibility, final ArrayList<MosaicPropertyBuilder> properties) {
-        return new EmbeddedMosaicDefinitionTransactionBuilder(signer, version, type, mosaicNonce, mosaicId, flags, divisibility, properties);
+    public static EmbeddedMosaicDefinitionTransactionBuilder create(final KeyDto signer, final short version, final EntityTypeDto type, final MosaicNonceDto nonce, final MosaicIdDto id, final EnumSet<MosaicFlagsDto> flags, final byte divisibility, final BlockDurationDto duration) {
+        return new EmbeddedMosaicDefinitionTransactionBuilder(signer, version, type, nonce, id, flags, divisibility, duration);
     }
 
     /**
@@ -78,17 +77,17 @@ public final class EmbeddedMosaicDefinitionTransactionBuilder extends EmbeddedTr
      *
      * @return Mosaic nonce.
      */
-    public MosaicNonceDto getMosaicNonce() {
-        return this.mosaicDefinitionTransactionBody.getMosaicNonce();
+    public MosaicNonceDto getNonce() {
+        return this.mosaicDefinitionTransactionBody.getNonce();
     }
 
     /**
-     * Gets id of the mosaic.
+     * Gets mosaic identifier.
      *
-     * @return Id of the mosaic.
+     * @return Mosaic identifier.
      */
-    public MosaicIdDto getMosaicId() {
-        return this.mosaicDefinitionTransactionBody.getMosaicId();
+    public MosaicIdDto getId() {
+        return this.mosaicDefinitionTransactionBody.getId();
     }
 
     /**
@@ -110,12 +109,12 @@ public final class EmbeddedMosaicDefinitionTransactionBuilder extends EmbeddedTr
     }
 
     /**
-     * Gets optional properties.
+     * Gets mosaic duration.
      *
-     * @return Optional properties.
+     * @return Mosaic duration.
      */
-    public ArrayList<MosaicPropertyBuilder> getProperties() {
-        return this.mosaicDefinitionTransactionBody.getProperties();
+    public BlockDurationDto getDuration() {
+        return this.mosaicDefinitionTransactionBody.getDuration();
     }
 
     /**

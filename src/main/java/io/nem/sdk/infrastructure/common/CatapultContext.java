@@ -21,7 +21,6 @@
 package io.nem.sdk.infrastructure.common;
 
 import io.nem.core.crypto.PublicKey;
-import io.nem.sdk.infrastructure.directconnect.dataaccess.dao.BlockchainDao;
 import io.nem.sdk.infrastructure.directconnect.dataaccess.database.common.CatapultMongoDbClient;
 import io.nem.sdk.infrastructure.directconnect.network.AuthenticatedSocket;
 import io.nem.sdk.infrastructure.directconnect.network.SocketClient;

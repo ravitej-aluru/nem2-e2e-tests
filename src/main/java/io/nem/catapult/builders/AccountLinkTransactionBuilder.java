@@ -46,12 +46,12 @@ public final class AccountLinkTransactionBuilder extends TransactionBuilder {
      * @param type Entity type.
      * @param fee Transaction fee.
      * @param deadline Transaction deadline.
-     * @param remoteAccountKey Remote account key.
+     * @param remoteAccountPublicKey Remote account public key.
      * @param linkAction Account link action.
      */
-    protected AccountLinkTransactionBuilder(final SignatureDto signature, final KeyDto signer, final short version, final EntityTypeDto type, final AmountDto fee, final TimestampDto deadline, final KeyDto remoteAccountKey, final AccountLinkActionDto linkAction) {
+    protected AccountLinkTransactionBuilder(final SignatureDto signature, final KeyDto signer, final short version, final EntityTypeDto type, final AmountDto fee, final TimestampDto deadline, final KeyDto remoteAccountPublicKey, final AccountLinkActionDto linkAction) {
         super(signature, signer, version, type, fee, deadline);
-        this.accountLinkTransactionBody = AccountLinkTransactionBodyBuilder.create(remoteAccountKey, linkAction);
+        this.accountLinkTransactionBody = AccountLinkTransactionBodyBuilder.create(remoteAccountPublicKey, linkAction);
     }
 
     /**
@@ -63,21 +63,21 @@ public final class AccountLinkTransactionBuilder extends TransactionBuilder {
      * @param type Entity type.
      * @param fee Transaction fee.
      * @param deadline Transaction deadline.
-     * @param remoteAccountKey Remote account key.
+     * @param remoteAccountPublicKey Remote account public key.
      * @param linkAction Account link action.
      * @return Instance of AccountLinkTransactionBuilder.
      */
-    public static AccountLinkTransactionBuilder create(final SignatureDto signature, final KeyDto signer, final short version, final EntityTypeDto type, final AmountDto fee, final TimestampDto deadline, final KeyDto remoteAccountKey, final AccountLinkActionDto linkAction) {
-        return new AccountLinkTransactionBuilder(signature, signer, version, type, fee, deadline, remoteAccountKey, linkAction);
+    public static AccountLinkTransactionBuilder create(final SignatureDto signature, final KeyDto signer, final short version, final EntityTypeDto type, final AmountDto fee, final TimestampDto deadline, final KeyDto remoteAccountPublicKey, final AccountLinkActionDto linkAction) {
+        return new AccountLinkTransactionBuilder(signature, signer, version, type, fee, deadline, remoteAccountPublicKey, linkAction);
     }
 
     /**
-     * Gets remote account key.
+     * Gets remote account public key.
      *
-     * @return Remote account key.
+     * @return Remote account public key.
      */
-    public KeyDto getRemoteAccountKey() {
-        return this.accountLinkTransactionBody.getRemoteAccountKey();
+    public KeyDto getRemoteAccountPublicKey() {
+        return this.accountLinkTransactionBody.getRemoteAccountPublicKey();
     }
 
     /**

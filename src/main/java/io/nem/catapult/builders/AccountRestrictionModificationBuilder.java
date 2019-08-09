@@ -24,8 +24,8 @@ import java.io.DataInput;
 
 /** Account restriction basic modification. */
 public class AccountRestrictionModificationBuilder {
-    /** Modification type. */
-    private final AccountRestrictionModificationTypeDto modificationType;
+    /** Modification action. */
+    private final AccountRestrictionModificationActionDto modificationAction;
 
     /**
      * Constructor - Creates an object from stream.
@@ -33,36 +33,36 @@ public class AccountRestrictionModificationBuilder {
      * @param stream Byte stream to use to serialize the object.
      */
     protected AccountRestrictionModificationBuilder(final DataInput stream) {
-        this.modificationType = AccountRestrictionModificationTypeDto.loadFromBinary(stream);
+        this.modificationAction = AccountRestrictionModificationActionDto.loadFromBinary(stream);
     }
 
     /**
      * Constructor.
      *
-     * @param modificationType Modification type.
+     * @param modificationAction Modification action.
      */
-    protected AccountRestrictionModificationBuilder(final AccountRestrictionModificationTypeDto modificationType) {
-        GeneratorUtils.notNull(modificationType, "modificationType is null");
-        this.modificationType = modificationType;
+    protected AccountRestrictionModificationBuilder(final AccountRestrictionModificationActionDto modificationAction) {
+        GeneratorUtils.notNull(modificationAction, "modificationAction is null");
+        this.modificationAction = modificationAction;
     }
 
     /**
      * Creates an instance of AccountRestrictionModificationBuilder.
      *
-     * @param modificationType Modification type.
+     * @param modificationAction Modification action.
      * @return Instance of AccountRestrictionModificationBuilder.
      */
-    public static AccountRestrictionModificationBuilder create(final AccountRestrictionModificationTypeDto modificationType) {
-        return new AccountRestrictionModificationBuilder(modificationType);
+    public static AccountRestrictionModificationBuilder create(final AccountRestrictionModificationActionDto modificationAction) {
+        return new AccountRestrictionModificationBuilder(modificationAction);
     }
 
     /**
-     * Gets Modification type.
+     * Gets modification action.
      *
-     * @return Modification type.
+     * @return Modification action.
      */
-    public AccountRestrictionModificationTypeDto getModificationType() {
-        return this.modificationType;
+    public AccountRestrictionModificationActionDto getModificationAction() {
+        return this.modificationAction;
     }
 
     /**
@@ -72,7 +72,7 @@ public class AccountRestrictionModificationBuilder {
      */
     public int getSize() {
         int size = 0;
-        size += this.modificationType.getSize();
+        size += this.modificationAction.getSize();
         return size;
     }
 
@@ -93,8 +93,8 @@ public class AccountRestrictionModificationBuilder {
      */
     public byte[] serialize() {
         return GeneratorUtils.serialize(dataOutputStream -> {
-            final byte[] modificationTypeBytes = this.modificationType.serialize();
-            dataOutputStream.write(modificationTypeBytes, 0, modificationTypeBytes.length);
+            final byte[] modificationActionBytes = this.modificationAction.serialize();
+            dataOutputStream.write(modificationActionBytes, 0, modificationActionBytes.length);
         });
     }
 }

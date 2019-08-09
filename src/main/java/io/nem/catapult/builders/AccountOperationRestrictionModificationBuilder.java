@@ -24,7 +24,7 @@ import java.io.DataInput;
 
 /** Account operation restriction modification. */
 public final class AccountOperationRestrictionModificationBuilder extends AccountRestrictionModificationBuilder {
-    /** Value. */
+    /** Transaction type restriction value. */
     private final EntityTypeDto value;
 
     /**
@@ -40,11 +40,11 @@ public final class AccountOperationRestrictionModificationBuilder extends Accoun
     /**
      * Constructor.
      *
-     * @param modificationType Modification type.
-     * @param value Value.
+     * @param modificationAction Modification action.
+     * @param value Transaction type restriction value.
      */
-    protected AccountOperationRestrictionModificationBuilder(final AccountRestrictionModificationTypeDto modificationType, final EntityTypeDto value) {
-        super(modificationType);
+    protected AccountOperationRestrictionModificationBuilder(final AccountRestrictionModificationActionDto modificationAction, final EntityTypeDto value) {
+        super(modificationAction);
         GeneratorUtils.notNull(value, "value is null");
         this.value = value;
     }
@@ -52,18 +52,18 @@ public final class AccountOperationRestrictionModificationBuilder extends Accoun
     /**
      * Creates an instance of AccountOperationRestrictionModificationBuilder.
      *
-     * @param modificationType Modification type.
-     * @param value Value.
+     * @param modificationAction Modification action.
+     * @param value Transaction type restriction value.
      * @return Instance of AccountOperationRestrictionModificationBuilder.
      */
-    public static AccountOperationRestrictionModificationBuilder create(final AccountRestrictionModificationTypeDto modificationType, final EntityTypeDto value) {
-        return new AccountOperationRestrictionModificationBuilder(modificationType, value);
+    public static AccountOperationRestrictionModificationBuilder create(final AccountRestrictionModificationActionDto modificationAction, final EntityTypeDto value) {
+        return new AccountOperationRestrictionModificationBuilder(modificationAction, value);
     }
 
     /**
-     * Gets Value.
+     * Gets transaction type restriction value.
      *
-     * @return Value.
+     * @return Transaction type restriction value.
      */
     public EntityTypeDto getValue() {
         return this.value;

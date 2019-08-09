@@ -193,53 +193,65 @@ public class RegisterNamespaceTransaction extends Transaction {
 		final ByteBuffer signerBuffer = ByteBuffer.allocate(32);
 		final ByteBuffer signatureBuffer = ByteBuffer.allocate(64);
 
-		RegisterNamespaceTransactionBuilder txBuilder;
-		if (namespaceType == NamespaceType.RootNamespace) {
-			txBuilder = RegisterNamespaceTransactionBuilder.create(new SignatureDto(signatureBuffer),
-					new KeyDto(signerBuffer), getNetworkVersion(),
-					EntityTypeDto.REGISTER_NAMESPACE_TRANSACTION,
-					new AmountDto(getFee().longValue()),
-					new TimestampDto(getDeadline().getInstant()),
-					new BlockDurationDto(getDuration().get().longValue()),
-					new NamespaceIdDto(getNamespaceId().getId().longValue()),
-					getNameBuffer());
+    NamespaceRegistrationTransactionBuilder txBuilder;
+    if (namespaceType == NamespaceType.RootNamespace) {
+      txBuilder =
+          NamespaceRegistrationTransactionBuilder.create(
+              new SignatureDto(signatureBuffer),
+              new KeyDto(signerBuffer),
+              getNetworkVersion(),
+              EntityTypeDto.REGISTER_NAMESPACE_TRANSACTION,
+              new AmountDto(getFee().longValue()),
+              new TimestampDto(getDeadline().getInstant()),
+              new BlockDurationDto(getDuration().get().longValue()),
+              new NamespaceIdDto(getNamespaceId().getId().longValue()),
+              getNameBuffer());
 
-		} else {
-			txBuilder = RegisterNamespaceTransactionBuilder.create(new SignatureDto(signatureBuffer),
-					new KeyDto(signerBuffer), getNetworkVersion(),
-					EntityTypeDto.REGISTER_NAMESPACE_TRANSACTION,
-					new AmountDto(getFee().longValue()),
-					new TimestampDto(getDeadline().getInstant()),
-					new NamespaceIdDto(getParentId().get().getId().longValue()),
-					new NamespaceIdDto(getNamespaceId().getId().longValue()),
-					getNameBuffer());
-		}
-		return txBuilder.serialize();
-	}
+    } else {
+      txBuilder =
+          NamespaceRegistrationTransactionBuilder.create(
+              new SignatureDto(signatureBuffer),
+              new KeyDto(signerBuffer),
+              getNetworkVersion(),
+              EntityTypeDto.REGISTER_NAMESPACE_TRANSACTION,
+              new AmountDto(getFee().longValue()),
+              new TimestampDto(getDeadline().getInstant()),
+              new NamespaceIdDto(getParentId().get().getId().longValue()),
+              new NamespaceIdDto(getNamespaceId().getId().longValue()),
+              getNameBuffer());
+    }
+    return txBuilder.serialize();
+  }
 
-	/**
-	 * Gets the embedded tx bytes.
-	 *
-	 * @return Embedded tx bytes
-	 */
-	byte[] generateEmbeddedBytes() {
-		EmbeddedRegisterNamespaceTransactionBuilder txBuilder;
-		if (namespaceType == NamespaceType.RootNamespace) {
-			txBuilder = EmbeddedRegisterNamespaceTransactionBuilder.create(new KeyDto(getSignerBytes().get()), getNetworkVersion(),
-					EntityTypeDto.REGISTER_NAMESPACE_TRANSACTION,
-					new BlockDurationDto(getDuration().get().longValue()),
-					new NamespaceIdDto(getNamespaceId().getId().longValue()),
-					getNameBuffer());
+  /**
+   * Gets the embedded tx bytes.
+   *
+   * @return Embedded tx bytes
+   */
+  byte[] generateEmbeddedBytes() {
+    EmbeddedNamespaceRegistrationTransactionBuilder txBuilder;
+    if (namespaceType == NamespaceType.RootNamespace) {
+      txBuilder =
+          EmbeddedNamespaceRegistrationTransactionBuilder.create(
+              new KeyDto(getSignerBytes().get()),
+              getNetworkVersion(),
+              EntityTypeDto.REGISTER_NAMESPACE_TRANSACTION,
+              new BlockDurationDto(getDuration().get().longValue()),
+              new NamespaceIdDto(getNamespaceId().getId().longValue()),
+              getNameBuffer());
 
-		} else {
-			txBuilder = EmbeddedRegisterNamespaceTransactionBuilder.create(new KeyDto(getSignerBytes().get()), getNetworkVersion(),
-					EntityTypeDto.REGISTER_NAMESPACE_TRANSACTION,
-					new NamespaceIdDto(getParentId().get().getId().longValue()),
-					new NamespaceIdDto(getNamespaceId().getId().longValue()),
-					getNameBuffer());
-		}
-		return txBuilder.serialize();
-	}
+    } else {
+      txBuilder =
+          EmbeddedNamespaceRegistrationTransactionBuilder.create(
+              new KeyDto(getSignerBytes().get()),
+              getNetworkVersion(),
+              EntityTypeDto.REGISTER_NAMESPACE_TRANSACTION,
+              new NamespaceIdDto(getParentId().get().getId().longValue()),
+              new NamespaceIdDto(getNamespaceId().getId().longValue()),
+              getNameBuffer());
+    }
+    return txBuilder.serialize();
+  }
 
 	/**
 	 * Gets namespace name buffer.

@@ -24,8 +24,8 @@ import java.io.DataInput;
 
 /** Account address restriction modification. */
 public final class AccountAddressRestrictionModificationBuilder extends AccountRestrictionModificationBuilder {
-    /** Value. */
-    private final AddressDto value;
+    /** Address restriction value. */
+    private final UnresolvedAddressDto value;
 
     /**
      * Constructor - Creates an object from stream.
@@ -34,17 +34,17 @@ public final class AccountAddressRestrictionModificationBuilder extends AccountR
      */
     protected AccountAddressRestrictionModificationBuilder(final DataInput stream) {
         super(stream);
-        this.value = AddressDto.loadFromBinary(stream);
+        this.value = UnresolvedAddressDto.loadFromBinary(stream);
     }
 
     /**
      * Constructor.
      *
-     * @param modificationType Modification type.
-     * @param value Value.
+     * @param modificationAction Modification action.
+     * @param value Address restriction value.
      */
-    protected AccountAddressRestrictionModificationBuilder(final AccountRestrictionModificationTypeDto modificationType, final AddressDto value) {
-        super(modificationType);
+    protected AccountAddressRestrictionModificationBuilder(final AccountRestrictionModificationActionDto modificationAction, final UnresolvedAddressDto value) {
+        super(modificationAction);
         GeneratorUtils.notNull(value, "value is null");
         this.value = value;
     }
@@ -52,20 +52,20 @@ public final class AccountAddressRestrictionModificationBuilder extends AccountR
     /**
      * Creates an instance of AccountAddressRestrictionModificationBuilder.
      *
-     * @param modificationType Modification type.
-     * @param value Value.
+     * @param modificationAction Modification action.
+     * @param value Address restriction value.
      * @return Instance of AccountAddressRestrictionModificationBuilder.
      */
-    public static AccountAddressRestrictionModificationBuilder create(final AccountRestrictionModificationTypeDto modificationType, final AddressDto value) {
-        return new AccountAddressRestrictionModificationBuilder(modificationType, value);
+    public static AccountAddressRestrictionModificationBuilder create(final AccountRestrictionModificationActionDto modificationAction, final UnresolvedAddressDto value) {
+        return new AccountAddressRestrictionModificationBuilder(modificationAction, value);
     }
 
     /**
-     * Gets Value.
+     * Gets address restriction value.
      *
-     * @return Value.
+     * @return Address restriction value.
      */
-    public AddressDto getValue() {
+    public UnresolvedAddressDto getValue() {
         return this.value;
     }
 

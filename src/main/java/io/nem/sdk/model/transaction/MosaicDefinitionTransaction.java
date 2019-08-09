@@ -136,33 +136,40 @@ public class MosaicDefinitionTransaction extends Transaction {
 		final ByteBuffer signerBuffer = ByteBuffer.allocate(32);
 		final ByteBuffer signatureBuffer = ByteBuffer.allocate(64);
 
-		MosaicDefinitionTransactionBuilder txBuilder =
-				MosaicDefinitionTransactionBuilder.create(new SignatureDto(signatureBuffer),
-						new KeyDto(signerBuffer), getNetworkVersion(),
-						EntityTypeDto.MOSAIC_DEFINITION_TRANSACTION,
-						new AmountDto(getFee().longValue()), new TimestampDto(getDeadline().getInstant()),
-						new MosaicNonceDto(getMosaicNonce().getNonceAsInt()),
-						new MosaicIdDto(getMosaicId().getId().longValue()),
-						getMosaicFlags(), (byte) getMosaicProperties().getDivisibility(),
-						getProperties());
-		return txBuilder.serialize();
-	}
+    MosaicDefinitionTransactionBuilder txBuilder =
+        MosaicDefinitionTransactionBuilder.create(
+            new SignatureDto(signatureBuffer),
+            new KeyDto(signerBuffer),
+            getNetworkVersion(),
+            EntityTypeDto.MOSAIC_DEFINITION_TRANSACTION,
+            new AmountDto(getFee().longValue()),
+            new TimestampDto(getDeadline().getInstant()),
+            new MosaicNonceDto(getMosaicNonce().getNonceAsInt()),
+            new MosaicIdDto(getMosaicId().getId().longValue()),
+            getMosaicFlags(),
+            (byte) getMosaicProperties().getDivisibility(),
+                getDuration());
+    return txBuilder.serialize();
+  }
 
-	/**
-	 * Gets the embedded tx bytes.
-	 *
-	 * @return Embedded tx bytes
-	 */
-	byte[] generateEmbeddedBytes() {
-		EmbeddedMosaicDefinitionTransactionBuilder txBuilder =
-				EmbeddedMosaicDefinitionTransactionBuilder.create(new KeyDto(getSignerBytes().get()), getNetworkVersion(),
-						EntityTypeDto.MOSAIC_DEFINITION_TRANSACTION,
-						new MosaicNonceDto(getMosaicNonce().getNonceAsInt()),
-						new MosaicIdDto(getMosaicId().getId().longValue()),
-						getMosaicFlags(), (byte) getMosaicProperties().getDivisibility(),
-						getProperties());
-		return txBuilder.serialize();
-	}
+  /**
+   * Gets the embedded tx bytes.
+   *
+   * @return Embedded tx bytes
+   */
+  byte[] generateEmbeddedBytes() {
+    EmbeddedMosaicDefinitionTransactionBuilder txBuilder =
+        EmbeddedMosaicDefinitionTransactionBuilder.create(
+            new KeyDto(getSignerBytes().get()),
+            getNetworkVersion(),
+            EntityTypeDto.MOSAIC_DEFINITION_TRANSACTION,
+            new MosaicNonceDto(getMosaicNonce().getNonceAsInt()),
+            new MosaicIdDto(getMosaicId().getId().longValue()),
+            getMosaicFlags(),
+            (byte) getMosaicProperties().getDivisibility(),
+                getDuration());
+    return txBuilder.serialize();
+  }
 
 	/**
 	 * Get the mosaic flags.
@@ -180,17 +187,13 @@ public class MosaicDefinitionTransaction extends Transaction {
 		return mosaicFlagsBuilder;
 	}
 
-	/**
-	 * Gets a list of properties.
-	 *
-	 * @return List of mosaic properties.
-	 */
-	private ArrayList<MosaicPropertyBuilder> getProperties() {
-		final ArrayList<MosaicPropertyBuilder> properties = new ArrayList<>();
-		if (mosaicProperties.getDuration().isPresent()) {
-			properties.add(MosaicPropertyBuilder.create(MosaicPropertyIdDto.DURATION,
-					mosaicProperties.getDuration().get().longValue()));
-		}
-		return properties;
-	}
+  /**
+   * Gets the duration.
+   *
+   * @return Duration.
+   */
+  private BlockDurationDto getDuration() {
+    final long duration = getMosaicProperties().getDuration().longValue();
+    return new BlockDurationDto(duration);
+  }
 }

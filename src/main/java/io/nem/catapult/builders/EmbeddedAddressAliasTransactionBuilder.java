@@ -44,7 +44,7 @@ public final class EmbeddedAddressAliasTransactionBuilder extends EmbeddedTransa
      * @param version Entity version.
      * @param type Entity type.
      * @param aliasAction Alias action.
-     * @param namespaceId Id of a namespace that will become an alias.
+     * @param namespaceId Identifier of the namespace that will become an alias.
      * @param address Aliased address.
      */
     protected EmbeddedAddressAliasTransactionBuilder(final KeyDto signer, final short version, final EntityTypeDto type, final AliasActionDto aliasAction, final NamespaceIdDto namespaceId, final AddressDto address) {
@@ -59,7 +59,7 @@ public final class EmbeddedAddressAliasTransactionBuilder extends EmbeddedTransa
      * @param version Entity version.
      * @param type Entity type.
      * @param aliasAction Alias action.
-     * @param namespaceId Id of a namespace that will become an alias.
+     * @param namespaceId Identifier of the namespace that will become an alias.
      * @param address Aliased address.
      * @return Instance of EmbeddedAddressAliasTransactionBuilder.
      */
@@ -77,9 +77,9 @@ public final class EmbeddedAddressAliasTransactionBuilder extends EmbeddedTransa
     }
 
     /**
-     * Gets id of a namespace that will become an alias.
+     * Gets identifier of the namespace that will become an alias.
      *
-     * @return Id of a namespace that will become an alias.
+     * @return Identifier of the namespace that will become an alias.
      */
     public NamespaceIdDto getNamespaceId() {
         return this.addressAliasTransactionBody.getNamespaceId();

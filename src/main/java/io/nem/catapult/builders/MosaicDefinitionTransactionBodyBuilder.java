@@ -21,21 +21,20 @@
 package io.nem.catapult.builders;
 
 import java.io.DataInput;
-import java.util.ArrayList;
 import java.util.EnumSet;
 
 /** Binary layout for a mosaic definition transaction. */
 final class MosaicDefinitionTransactionBodyBuilder {
     /** Mosaic nonce. */
-    private final MosaicNonceDto mosaicNonce;
-    /** Id of the mosaic. */
-    private final MosaicIdDto mosaicId;
+    private final MosaicNonceDto nonce;
+    /** Mosaic identifier. */
+    private final MosaicIdDto id;
     /** Mosaic flags. */
     private final EnumSet<MosaicFlagsDto> flags;
     /** Mosaic divisibility. */
     private final byte divisibility;
-    /** Optional properties. */
-    private final ArrayList<MosaicPropertyBuilder> properties;
+    /** Mosaic duration. */
+    private final BlockDurationDto duration;
 
     /**
      * Constructor - Creates an object from stream.
@@ -44,15 +43,11 @@ final class MosaicDefinitionTransactionBodyBuilder {
      */
     protected MosaicDefinitionTransactionBodyBuilder(final DataInput stream) {
         try {
-            this.mosaicNonce = MosaicNonceDto.loadFromBinary(stream);
-            this.mosaicId = MosaicIdDto.loadFromBinary(stream);
-            final byte propertiesCount = stream.readByte();
+            this.nonce = MosaicNonceDto.loadFromBinary(stream);
+            this.id = MosaicIdDto.loadFromBinary(stream);
             this.flags = GeneratorUtils.toSet(MosaicFlagsDto.class, stream.readByte());
             this.divisibility = stream.readByte();
-            this.properties = new java.util.ArrayList<>(propertiesCount);
-            for (int i = 0; i < propertiesCount; i++) {
-                properties.add(MosaicPropertyBuilder.loadFromBinary(stream));
-            }
+            this.duration = BlockDurationDto.loadFromBinary(stream);
         } catch(Exception e) {
             throw GeneratorUtils.getExceptionToPropagate(e);
         }
@@ -61,36 +56,36 @@ final class MosaicDefinitionTransactionBodyBuilder {
     /**
      * Constructor.
      *
-     * @param mosaicNonce Mosaic nonce.
-     * @param mosaicId Id of the mosaic.
+     * @param nonce Mosaic nonce.
+     * @param id Mosaic identifier.
      * @param flags Mosaic flags.
      * @param divisibility Mosaic divisibility.
-     * @param properties Optional properties.
+     * @param duration Mosaic duration.
      */
-    protected MosaicDefinitionTransactionBodyBuilder(final MosaicNonceDto mosaicNonce, final MosaicIdDto mosaicId, final EnumSet<MosaicFlagsDto> flags, final byte divisibility, final ArrayList<MosaicPropertyBuilder> properties) {
-        GeneratorUtils.notNull(mosaicNonce, "mosaicNonce is null");
-        GeneratorUtils.notNull(mosaicId, "mosaicId is null");
+    protected MosaicDefinitionTransactionBodyBuilder(final MosaicNonceDto nonce, final MosaicIdDto id, final EnumSet<MosaicFlagsDto> flags, final byte divisibility, final BlockDurationDto duration) {
+        GeneratorUtils.notNull(nonce, "nonce is null");
+        GeneratorUtils.notNull(id, "id is null");
         GeneratorUtils.notNull(flags, "flags is null");
-        GeneratorUtils.notNull(properties, "properties is null");
-        this.mosaicNonce = mosaicNonce;
-        this.mosaicId = mosaicId;
+        GeneratorUtils.notNull(duration, "duration is null");
+        this.nonce = nonce;
+        this.id = id;
         this.flags = flags;
         this.divisibility = divisibility;
-        this.properties = properties;
+        this.duration = duration;
     }
 
     /**
      * Creates an instance of MosaicDefinitionTransactionBodyBuilder.
      *
-     * @param mosaicNonce Mosaic nonce.
-     * @param mosaicId Id of the mosaic.
+     * @param nonce Mosaic nonce.
+     * @param id Mosaic identifier.
      * @param flags Mosaic flags.
      * @param divisibility Mosaic divisibility.
-     * @param properties Optional properties.
+     * @param duration Mosaic duration.
      * @return Instance of MosaicDefinitionTransactionBodyBuilder.
      */
-    public static MosaicDefinitionTransactionBodyBuilder create(final MosaicNonceDto mosaicNonce, final MosaicIdDto mosaicId, final EnumSet<MosaicFlagsDto> flags, final byte divisibility, final ArrayList<MosaicPropertyBuilder> properties) {
-        return new MosaicDefinitionTransactionBodyBuilder(mosaicNonce, mosaicId, flags, divisibility, properties);
+    public static MosaicDefinitionTransactionBodyBuilder create(final MosaicNonceDto nonce, final MosaicIdDto id, final EnumSet<MosaicFlagsDto> flags, final byte divisibility, final BlockDurationDto duration) {
+        return new MosaicDefinitionTransactionBodyBuilder(nonce, id, flags, divisibility, duration);
     }
 
     /**
@@ -98,17 +93,17 @@ final class MosaicDefinitionTransactionBodyBuilder {
      *
      * @return Mosaic nonce.
      */
-    public MosaicNonceDto getMosaicNonce() {
-        return this.mosaicNonce;
+    public MosaicNonceDto getNonce() {
+        return this.nonce;
     }
 
     /**
-     * Gets id of the mosaic.
+     * Gets mosaic identifier.
      *
-     * @return Id of the mosaic.
+     * @return Mosaic identifier.
      */
-    public MosaicIdDto getMosaicId() {
-        return this.mosaicId;
+    public MosaicIdDto getId() {
+        return this.id;
     }
 
     /**
@@ -130,12 +125,12 @@ final class MosaicDefinitionTransactionBodyBuilder {
     }
 
     /**
-     * Gets optional properties.
+     * Gets mosaic duration.
      *
-     * @return Optional properties.
+     * @return Mosaic duration.
      */
-    public ArrayList<MosaicPropertyBuilder> getProperties() {
-        return this.properties;
+    public BlockDurationDto getDuration() {
+        return this.duration;
     }
 
     /**
@@ -145,12 +140,11 @@ final class MosaicDefinitionTransactionBodyBuilder {
      */
     public int getSize() {
         int size = 0;
-        size += this.mosaicNonce.getSize();
-        size += this.mosaicId.getSize();
-        size += 1; // propertiesCount
+        size += this.nonce.getSize();
+        size += this.id.getSize();
         size += MosaicFlagsDto.values()[0].getSize(); // flags
         size += 1; // divisibility
-        size += this.properties.stream().mapToInt(o -> o.getSize()).sum();
+        size += this.duration.getSize();
         return size;
     }
 
@@ -171,18 +165,15 @@ final class MosaicDefinitionTransactionBodyBuilder {
      */
     public byte[] serialize() {
         return GeneratorUtils.serialize(dataOutputStream -> {
-            final byte[] mosaicNonceBytes = this.mosaicNonce.serialize();
-            dataOutputStream.write(mosaicNonceBytes, 0, mosaicNonceBytes.length);
-            final byte[] mosaicIdBytes = this.mosaicId.serialize();
-            dataOutputStream.write(mosaicIdBytes, 0, mosaicIdBytes.length);
-            dataOutputStream.writeByte((byte) this.properties.size());
+            final byte[] nonceBytes = this.nonce.serialize();
+            dataOutputStream.write(nonceBytes, 0, nonceBytes.length);
+            final byte[] idBytes = this.id.serialize();
+            dataOutputStream.write(idBytes, 0, idBytes.length);
             final byte bitMask = (byte) GeneratorUtils.toLong(MosaicFlagsDto.class, this.flags);
             dataOutputStream.writeByte(bitMask);
             dataOutputStream.writeByte(this.getDivisibility());
-            for (int i = 0; i < this.properties.size(); i++) {
-                final byte[] propertiesBytes = this.properties.get(i).serialize();
-                dataOutputStream.write(propertiesBytes, 0, propertiesBytes.length);
-            }
+            final byte[] durationBytes = this.duration.serialize();
+            dataOutputStream.write(durationBytes, 0, durationBytes.length);
         });
     }
 }

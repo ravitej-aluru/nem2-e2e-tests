@@ -23,7 +23,6 @@ package io.nem.catapult.builders;
 import java.io.DataInput;
 import java.util.ArrayList;
 import java.nio.ByteBuffer;
-import java.util.Collections;
 
 /** Binary layout for a transfer transaction. */
 final class TransferTransactionBodyBuilder {
@@ -69,7 +68,6 @@ final class TransferTransactionBodyBuilder {
         this.recipient = recipient;
         this.message = message;
         this.mosaics = mosaics;
-        Collections.sort(this.mosaics);
     }
 
     /**

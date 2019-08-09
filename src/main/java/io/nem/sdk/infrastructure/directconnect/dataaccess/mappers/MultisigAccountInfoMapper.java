@@ -47,20 +47,25 @@ public class MultisigAccountInfoMapper implements Function<JsonObject, MultisigA
 				Collectors.toList());
 	}
 
-	/**
-	 * Create a multisig account info object from json.
-	 *
-	 * @param jsonObject Json object.
-	 * @return Multisig account info.
-	 */
-	public MultisigAccountInfo apply(final JsonObject jsonObject) {
-		final JsonObject multisigJsonObject = jsonObject.getJsonObject("multisig");
-		final Address address = Address.createFromRawAddress(multisigJsonObject.getString("accountAddress"));
-		final PublicAccount account = new PublicAccount(multisigJsonObject.getString("account"), address.getNetworkType());
-		final int minApproval = multisigJsonObject.getInteger("minApproval");
-		final int minRemoval = multisigJsonObject.getInteger("minRemoval");
-		final List<PublicAccount> cosignatories = getPublicAccounts(multisigJsonObject, "cosignatories", address.getNetworkType());
-		final List<PublicAccount> multisigAccounts = getPublicAccounts(multisigJsonObject, "multisigAccounts", address.getNetworkType());
-		return new MultisigAccountInfo(account, minApproval, minRemoval, cosignatories, multisigAccounts);
-	}
+  /**
+   * Create a multisig account info object from json.
+   *
+   * @param jsonObject Json object.
+   * @return Multisig account info.
+   */
+  public MultisigAccountInfo apply(final JsonObject jsonObject) {
+    final JsonObject multisigJsonObject = jsonObject.getJsonObject("multisig");
+    final Address address =
+        Address.createFromEncoded(multisigJsonObject.getString("accountAddress"));
+    final PublicAccount account =
+        new PublicAccount(multisigJsonObject.getString("account"), address.getNetworkType());
+    final byte minApproval = multisigJsonObject.getInteger("minApproval").byteValue();
+    final byte minRemoval = multisigJsonObject.getInteger("minRemoval").byteValue();
+    final List<PublicAccount> cosignatories =
+        getPublicAccounts(multisigJsonObject, "cosignatories", address.getNetworkType());
+    final List<PublicAccount> multisigAccounts =
+        getPublicAccounts(multisigJsonObject, "multisigAccounts", address.getNetworkType());
+    return new MultisigAccountInfo(
+        account, minApproval, minRemoval, cosignatories, multisigAccounts);
+  }
 }

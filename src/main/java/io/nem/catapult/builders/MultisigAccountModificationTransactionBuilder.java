@@ -23,19 +23,19 @@ package io.nem.catapult.builders;
 import java.io.DataInput;
 import java.util.ArrayList;
 
-/** Binary layout for a non-embedded modify multisig account transaction. */
-public final class ModifyMultisigAccountTransactionBuilder extends TransactionBuilder {
-    /** Modify multisig account transaction body. */
-    private final ModifyMultisigAccountTransactionBodyBuilder modifyMultisigAccountTransactionBody;
+/** Binary layout for a non-embedded multisig account modification transaction. */
+public final class MultisigAccountModificationTransactionBuilder extends TransactionBuilder {
+    /** Multisig account modification transaction body. */
+    private final MultisigAccountModificationTransactionBodyBuilder multisigAccountModificationTransactionBody;
 
     /**
      * Constructor - Creates an object from stream.
      *
      * @param stream Byte stream to use to serialize the object.
      */
-    protected ModifyMultisigAccountTransactionBuilder(final DataInput stream) {
+    protected MultisigAccountModificationTransactionBuilder(final DataInput stream) {
         super(stream);
-        this.modifyMultisigAccountTransactionBody = ModifyMultisigAccountTransactionBodyBuilder.loadFromBinary(stream);
+        this.multisigAccountModificationTransactionBody = MultisigAccountModificationTransactionBodyBuilder.loadFromBinary(stream);
     }
 
     /**
@@ -51,13 +51,13 @@ public final class ModifyMultisigAccountTransactionBuilder extends TransactionBu
      * @param minApprovalDelta Relative change of the minimal number of cosignatories required when approving a transaction.
      * @param modifications Attached cosignatory modifications.
      */
-    protected ModifyMultisigAccountTransactionBuilder(final SignatureDto signature, final KeyDto signer, final short version, final EntityTypeDto type, final AmountDto fee, final TimestampDto deadline, final byte minRemovalDelta, final byte minApprovalDelta, final ArrayList<CosignatoryModificationBuilder> modifications) {
+    protected MultisigAccountModificationTransactionBuilder(final SignatureDto signature, final KeyDto signer, final short version, final EntityTypeDto type, final AmountDto fee, final TimestampDto deadline, final byte minRemovalDelta, final byte minApprovalDelta, final ArrayList<CosignatoryModificationBuilder> modifications) {
         super(signature, signer, version, type, fee, deadline);
-        this.modifyMultisigAccountTransactionBody = ModifyMultisigAccountTransactionBodyBuilder.create(minRemovalDelta, minApprovalDelta, modifications);
+        this.multisigAccountModificationTransactionBody = MultisigAccountModificationTransactionBodyBuilder.create(minRemovalDelta, minApprovalDelta, modifications);
     }
 
     /**
-     * Creates an instance of ModifyMultisigAccountTransactionBuilder.
+     * Creates an instance of MultisigAccountModificationTransactionBuilder.
      *
      * @param signature Entity signature.
      * @param signer Entity signer's public key.
@@ -68,10 +68,10 @@ public final class ModifyMultisigAccountTransactionBuilder extends TransactionBu
      * @param minRemovalDelta Relative change of the minimal number of cosignatories required when removing an account.
      * @param minApprovalDelta Relative change of the minimal number of cosignatories required when approving a transaction.
      * @param modifications Attached cosignatory modifications.
-     * @return Instance of ModifyMultisigAccountTransactionBuilder.
+     * @return Instance of MultisigAccountModificationTransactionBuilder.
      */
-    public static ModifyMultisigAccountTransactionBuilder create(final SignatureDto signature, final KeyDto signer, final short version, final EntityTypeDto type, final AmountDto fee, final TimestampDto deadline, final byte minRemovalDelta, final byte minApprovalDelta, final ArrayList<CosignatoryModificationBuilder> modifications) {
-        return new ModifyMultisigAccountTransactionBuilder(signature, signer, version, type, fee, deadline, minRemovalDelta, minApprovalDelta, modifications);
+    public static MultisigAccountModificationTransactionBuilder create(final SignatureDto signature, final KeyDto signer, final short version, final EntityTypeDto type, final AmountDto fee, final TimestampDto deadline, final byte minRemovalDelta, final byte minApprovalDelta, final ArrayList<CosignatoryModificationBuilder> modifications) {
+        return new MultisigAccountModificationTransactionBuilder(signature, signer, version, type, fee, deadline, minRemovalDelta, minApprovalDelta, modifications);
     }
 
     /**
@@ -80,7 +80,7 @@ public final class ModifyMultisigAccountTransactionBuilder extends TransactionBu
      * @return Relative change of the minimal number of cosignatories required when removing an account.
      */
     public byte getMinRemovalDelta() {
-        return this.modifyMultisigAccountTransactionBody.getMinRemovalDelta();
+        return this.multisigAccountModificationTransactionBody.getMinRemovalDelta();
     }
 
     /**
@@ -89,7 +89,7 @@ public final class ModifyMultisigAccountTransactionBuilder extends TransactionBu
      * @return Relative change of the minimal number of cosignatories required when approving a transaction.
      */
     public byte getMinApprovalDelta() {
-        return this.modifyMultisigAccountTransactionBody.getMinApprovalDelta();
+        return this.multisigAccountModificationTransactionBody.getMinApprovalDelta();
     }
 
     /**
@@ -98,7 +98,7 @@ public final class ModifyMultisigAccountTransactionBuilder extends TransactionBu
      * @return Attached cosignatory modifications.
      */
     public ArrayList<CosignatoryModificationBuilder> getModifications() {
-        return this.modifyMultisigAccountTransactionBody.getModifications();
+        return this.multisigAccountModificationTransactionBody.getModifications();
     }
 
     /**
@@ -109,18 +109,18 @@ public final class ModifyMultisigAccountTransactionBuilder extends TransactionBu
     @Override
     public int getSize() {
         int size = super.getSize();
-        size += this.modifyMultisigAccountTransactionBody.getSize();
+        size += this.multisigAccountModificationTransactionBody.getSize();
         return size;
     }
 
     /**
-     * Creates an instance of ModifyMultisigAccountTransactionBuilder from a stream.
+     * Creates an instance of MultisigAccountModificationTransactionBuilder from a stream.
      *
      * @param stream Byte stream to use to serialize the object.
-     * @return Instance of ModifyMultisigAccountTransactionBuilder.
+     * @return Instance of MultisigAccountModificationTransactionBuilder.
      */
-    public static ModifyMultisigAccountTransactionBuilder loadFromBinary(final DataInput stream) {
-        return new ModifyMultisigAccountTransactionBuilder(stream);
+    public static MultisigAccountModificationTransactionBuilder loadFromBinary(final DataInput stream) {
+        return new MultisigAccountModificationTransactionBuilder(stream);
     }
 
     /**
@@ -132,8 +132,8 @@ public final class ModifyMultisigAccountTransactionBuilder extends TransactionBu
         return GeneratorUtils.serialize(dataOutputStream -> {
             final byte[] superBytes = super.serialize();
             dataOutputStream.write(superBytes, 0, superBytes.length);
-            final byte[] modifyMultisigAccountTransactionBodyBytes = this.modifyMultisigAccountTransactionBody.serialize();
-            dataOutputStream.write(modifyMultisigAccountTransactionBodyBytes, 0, modifyMultisigAccountTransactionBodyBytes.length);
+            final byte[] multisigAccountModificationTransactionBodyBytes = this.multisigAccountModificationTransactionBody.serialize();
+            dataOutputStream.write(multisigAccountModificationTransactionBodyBytes, 0, multisigAccountModificationTransactionBodyBytes.length);
         });
     }
 }

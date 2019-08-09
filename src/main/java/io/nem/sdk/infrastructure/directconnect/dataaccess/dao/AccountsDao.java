@@ -24,15 +24,20 @@ import io.nem.sdk.infrastructure.common.AccountRepository;
 import io.nem.sdk.infrastructure.common.CatapultContext;
 import io.nem.sdk.infrastructure.directconnect.dataaccess.database.mongoDb.AccountsCollection;
 import io.nem.sdk.infrastructure.directconnect.dataaccess.database.mongoDb.MultisigsCollection;
+import io.nem.sdk.infrastructure.directconnect.dataaccess.database.mongoDb.PartialTransactionsCollection;
+import io.nem.sdk.infrastructure.directconnect.dataaccess.database.mongoDb.UnconfirmedTransactionsCollection;
 import io.nem.sdk.model.account.AccountInfo;
 import io.nem.sdk.model.account.Address;
 import io.nem.sdk.model.account.MultisigAccountInfo;
+import io.nem.sdk.model.account.PublicAccount;
+import io.nem.sdk.model.transaction.AggregateTransaction;
+import io.nem.sdk.model.transaction.Transaction;
 import io.reactivex.Observable;
 
+import java.util.List;
+import java.util.stream.Collectors;
 
-/**
- * Account dao repository.
- */
+/** Account dao repository. */
 public class AccountsDao implements AccountRepository {
 	/* Catapult context. */
 	final private CatapultContext catapultContext;
@@ -46,25 +51,69 @@ public class AccountsDao implements AccountRepository {
 		this.catapultContext = context;
 	}
 
-	/**
-	 * Gets account info form address
-	 *
-	 * @param address Account's address.
-	 * @return Account info.
-	 */
-	@Override
-	public Observable<AccountInfo> getAccountInfo(final Address address) {
-		return Observable.fromCallable(() -> new AccountsCollection(catapultContext).findByAddress(address.getByteBuffer().array()).get());
-	}
+  /**
+   * Gets account info form address
+   *
+   * @param address Account's address.
+   * @return Account info.
+   */
+  @Override
+  public Observable<AccountInfo> getAccountInfo(final Address address) {
+    return Observable.fromCallable(
+        () ->
+            new AccountsCollection(catapultContext)
+                .findByAddress(address.getByteBuffer().array())
+                .get());
+  }
 
-	/**
-	 * Gets Multisig account info for address.
-	 *
-	 * @param address Account's address.
-	 * @return Multisig account info.
-	 */
-	@Override
-	public Observable<MultisigAccountInfo> getMultisigAccountInfo(final Address address) {
-		return Observable.fromCallable(() -> new MultisigsCollection(catapultContext).findByAddress(address.getByteBuffer().array()).get());
-	}
+  /**
+   * Gets Multisig account info for address.
+   *
+   * @param address Account's address.
+   * @return Multisig account info.
+   */
+  @Override
+  public Observable<MultisigAccountInfo> getMultisigAccountInfo(final Address address) {
+    return Observable.fromCallable(
+        () ->
+            new MultisigsCollection(catapultContext)
+                .findByAddress(address.getByteBuffer().array())
+                .get());
+  }
+
+  /**
+   * Gets an list of transactions for which an account is the sender or has sign the transaction. A
+   * transaction is said to be aggregate bonded with respect to an account if there are missing
+   * signatures.
+   *
+   * @param publicAccount PublicAccount
+   * @return Observable of List<{@link Transaction}>
+   */
+  @Override
+  public Observable<List<AggregateTransaction>> aggregateBondedTransactions(
+      PublicAccount publicAccount) {
+    return Observable.fromCallable(
+        () ->
+            new PartialTransactionsCollection(catapultContext)
+                .findBySigner(publicAccount.getPublicKey().getBytes()).stream()
+                    .map(tx -> (AggregateTransaction) tx)
+                    .collect(Collectors.toList()));
+  }
+
+  /**
+   * Gets the list of transactions for which an account is the sender or receiver and which have not
+   * yet been included in a block. Unconfirmed transactions are those transactions that have not yet
+   * been included in a block. Unconfirmed transactions are not guaranteed to be included in any
+   * block.
+   *
+   * @param publicAccount PublicAccount
+   * @return Observable of List<{@link Transaction}>
+   */
+  @Override
+  public Observable<List<Transaction>> unconfirmedTransactions(PublicAccount publicAccount) {
+    return Observable.fromCallable(
+            () ->
+                    new UnconfirmedTransactionsCollection(catapultContext)
+                            .findBySigner(publicAccount.getPublicKey().getBytes()));
+  }
 }

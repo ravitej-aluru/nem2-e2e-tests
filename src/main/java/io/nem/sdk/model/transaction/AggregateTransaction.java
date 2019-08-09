@@ -18,7 +18,6 @@ package io.nem.sdk.model.transaction;
 
 import io.nem.catapult.builders.*;
 import io.nem.core.crypto.Signer;
-import io.nem.core.utils.ExceptionUtils;
 import io.nem.core.utils.HexEncoder;
 import io.nem.sdk.model.account.Account;
 import io.nem.sdk.model.account.PublicAccount;
@@ -138,9 +137,6 @@ public class AggregateTransaction extends Transaction {
 	 */
 	@Override
 	protected byte[] generateBytes() {
-		final int version = (int) Long.parseLong(
-				Integer.toHexString(getNetworkType().getValue()) + "0" + Integer.toHexString(getVersion()), 16);
-
 		byte[] transactionsBytes = new byte[0];
 		for (Transaction innerTransaction : innerTransactions) {
 			final byte[] transactionBytes = innerTransaction.toAggregateTransactionBytes();
@@ -165,12 +161,16 @@ public class AggregateTransaction extends Transaction {
 		final ByteBuffer signerBuffer = ByteBuffer.allocate(32);
 		final ByteBuffer signatureBuffer = ByteBuffer.allocate(64);
 
-		AggregateTransactionBuilder txBuilder =
-				AggregateTransactionBuilder.create(new SignatureDto(signatureBuffer),
-						new KeyDto(signerBuffer), (short) version,
-						EntityTypeDto.AGGREGATE_TRANSACTION,
-						new AmountDto(getFee().longValue()), new TimestampDto(getDeadline().getInstant()),
-						transactionsBuffer, cosignaturesBuffer);
+    AggregateTransactionBuilder txBuilder =
+        AggregateTransactionBuilder.create(
+            new SignatureDto(signatureBuffer),
+            new KeyDto(signerBuffer),
+            getNetworkVersion(),
+            EntityTypeDto.rawValueOf(getType().getValue()),
+            new AmountDto(getFee().longValue()),
+            new TimestampDto(getDeadline().getInstant()),
+            transactionsBuffer,
+            cosignaturesBuffer);
 		return txBuilder.serialize();
 	}
 

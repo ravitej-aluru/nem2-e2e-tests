@@ -24,20 +24,24 @@ import java.util.List;
  * @since 1.0
  */
 public class MultisigAccountInfo {
-	private final PublicAccount account;
-	private final int minApproval;
-	private final int minRemoval;
-	private final List<PublicAccount> cosignatories;
-	private final List<PublicAccount> multisigAccounts;
+  private final PublicAccount account;
+  private final byte minApproval;
+  private final byte minRemoval;
+  private final List<PublicAccount> cosignatories;
+  private final List<PublicAccount> multisigAccounts;
 
-	public MultisigAccountInfo(PublicAccount account, int minApproval, int minRemoval, List<PublicAccount> cosignatories,
-							   List<PublicAccount> multisigAccounts) {
-		this.account = account;
-		this.minApproval = minApproval;
-		this.minRemoval = minRemoval;
-		this.cosignatories = cosignatories;
-		this.multisigAccounts = multisigAccounts;
-	}
+  public MultisigAccountInfo(
+      PublicAccount account,
+      byte minApproval,
+      byte minRemoval,
+      List<PublicAccount> cosignatories,
+      List<PublicAccount> multisigAccounts) {
+    this.account = account;
+    this.minApproval = minApproval;
+    this.minRemoval = minRemoval;
+    this.cosignatories = cosignatories;
+    this.multisigAccounts = multisigAccounts;
+  }
 
 	/**
 	 * Returns account multisig public account.
@@ -48,23 +52,23 @@ public class MultisigAccountInfo {
 		return account;
 	}
 
-	/**
-	 * Returns number of signatures needed to approve a transaction.
-	 *
-	 * @return int
-	 */
-	public int getMinApproval() {
-		return minApproval;
-	}
+  /**
+   * Returns number of signatures needed to approve a transaction.
+   *
+   * @return byte
+   */
+  public byte getMinApproval() {
+    return minApproval;
+  }
 
-	/**
-	 * Returns number of signatures needed to remove a cosignatory.
-	 *
-	 * @return int
-	 */
-	public int getMinRemoval() {
-		return minRemoval;
-	}
+  /**
+   * Returns number of signatures needed to remove a cosignatory.
+   *
+   * @return byte
+   */
+  public byte getMinRemoval() {
+    return minRemoval;
+  }
 
 	/**
 	 * Returns multisig account cosignatories.

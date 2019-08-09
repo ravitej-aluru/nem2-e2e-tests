@@ -23,11 +23,14 @@ package io.nem.sdk.infrastructure.common;
 import io.nem.sdk.model.account.AccountInfo;
 import io.nem.sdk.model.account.Address;
 import io.nem.sdk.model.account.MultisigAccountInfo;
+import io.nem.sdk.model.account.PublicAccount;
+import io.nem.sdk.model.transaction.AggregateTransaction;
+import io.nem.sdk.model.transaction.Transaction;
 import io.reactivex.Observable;
 
-/**
- * Account interface repository.
- */
+import java.util.List;
+
+/** Account interface repository. */
 public interface AccountRepository {
 	/**
 	 * Gets an AccountInfo for an account.
@@ -37,11 +40,34 @@ public interface AccountRepository {
 	 */
 	Observable<AccountInfo> getAccountInfo(Address address);
 
-	/**
-	 * Gets a MultisigAccountInfo for an account.
-	 *
-	 * @param address Address
-	 * @return Observable of {@link MultisigAccountInfo}
-	 */
-	Observable<MultisigAccountInfo> getMultisigAccountInfo(Address address);
+  /**
+   * Gets a MultisigAccountInfo for an account.
+   *
+   * @param address Address
+   * @return Observable of {@link MultisigAccountInfo}
+   */
+  Observable<MultisigAccountInfo> getMultisigAccountInfo(Address address);
+
+  /**
+   * Gets an list of transactions for which an account is the sender or has sign the transaction.
+   * A transaction is said to be aggregate bonded with respect to an account if there are missing
+   * signatures.
+   *
+   * @param publicAccount PublicAccount
+   * @return Observable of List<{@link Transaction}>
+   */
+  Observable<List<AggregateTransaction>> aggregateBondedTransactions(PublicAccount publicAccount);
+
+
+  /**
+   * Gets the list of transactions for which an account is the sender or receiver and which have
+   * not yet been included in a block. Unconfirmed transactions are those transactions that have
+   * not yet been included in a block. Unconfirmed transactions are not guaranteed to be included
+   * in any block.
+   *
+   * @param publicAccount PublicAccount
+   * @return Observable of List<{@link Transaction}>
+   */
+  Observable<List<Transaction>> unconfirmedTransactions(PublicAccount publicAccount);
+
 }

@@ -26,7 +26,7 @@ import java.io.DataInput;
 final class AddressAliasTransactionBodyBuilder {
     /** Alias action. */
     private final AliasActionDto aliasAction;
-    /** Id of a namespace that will become an alias. */
+    /** Identifier of the namespace that will become an alias. */
     private final NamespaceIdDto namespaceId;
     /** Aliased address. */
     private final AddressDto address;
@@ -46,7 +46,7 @@ final class AddressAliasTransactionBodyBuilder {
      * Constructor.
      *
      * @param aliasAction Alias action.
-     * @param namespaceId Id of a namespace that will become an alias.
+     * @param namespaceId Identifier of the namespace that will become an alias.
      * @param address Aliased address.
      */
     protected AddressAliasTransactionBodyBuilder(final AliasActionDto aliasAction, final NamespaceIdDto namespaceId, final AddressDto address) {
@@ -62,7 +62,7 @@ final class AddressAliasTransactionBodyBuilder {
      * Creates an instance of AddressAliasTransactionBodyBuilder.
      *
      * @param aliasAction Alias action.
-     * @param namespaceId Id of a namespace that will become an alias.
+     * @param namespaceId Identifier of the namespace that will become an alias.
      * @param address Aliased address.
      * @return Instance of AddressAliasTransactionBodyBuilder.
      */
@@ -80,9 +80,9 @@ final class AddressAliasTransactionBodyBuilder {
     }
 
     /**
-     * Gets id of a namespace that will become an alias.
+     * Gets identifier of the namespace that will become an alias.
      *
-     * @return Id of a namespace that will become an alias.
+     * @return Identifier of the namespace that will become an alias.
      */
     public NamespaceIdDto getNamespaceId() {
         return this.namespaceId;

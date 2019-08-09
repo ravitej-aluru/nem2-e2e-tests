@@ -24,14 +24,10 @@ package io.nem.sdk.model.transaction;
  * Account link action.
  */
 public enum AccountLinkAction {
-	/**
-	 * Link account.
-	 */
-	LINK((byte) 0),
-	/**
-	 * Unlink account.
-	 */
-	UNLINK((byte) 1);
+  /** Unlink account. */
+  UNLINK((byte) 0),
+  /** Link account. */
+  LINK((byte) 1);
 
 	private final byte value;
 
@@ -44,22 +40,22 @@ public enum AccountLinkAction {
 		this.value = value;
 	}
 
-	/**
-	 * Gets enum value from raw.
-	 *
-	 * @param value Raw value.
-	 * @return Enum value.
-	 */
-	public static AccountLinkAction rawValueOf(final int value) {
-		switch (value) {
-			case 0:
-				return AccountLinkAction.LINK;
-			case 1:
-				return AccountLinkAction.UNLINK;
-			default:
-				throw new IllegalArgumentException(value + " is not a valid value");
-		}
-	}
+  /**
+   * Gets enum value from raw.
+   *
+   * @param value Raw value.
+   * @return Enum value.
+   */
+  public static AccountLinkAction rawValueOf(final int value) {
+    switch (value) {
+      case 0:
+        return AccountLinkAction.UNLINK;
+      case 1:
+        return AccountLinkAction.LINK;
+      default:
+        throw new IllegalArgumentException(value + " is not a valid value");
+    }
+  }
 
 	/**
 	 * Gets the raw value.

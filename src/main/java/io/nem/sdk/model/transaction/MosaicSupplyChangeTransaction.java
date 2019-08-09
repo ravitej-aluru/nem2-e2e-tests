@@ -128,29 +128,34 @@ public class MosaicSupplyChangeTransaction extends Transaction {
 		final ByteBuffer signerBuffer = ByteBuffer.allocate(32);
 		final ByteBuffer signatureBuffer = ByteBuffer.allocate(64);
 
-		MosaicSupplyChangeTransactionBuilder txBuilder =
-				MosaicSupplyChangeTransactionBuilder.create(new SignatureDto(signatureBuffer),
-						new KeyDto(signerBuffer), getNetworkVersion(),
-						EntityTypeDto.MOSAIC_SUPPLY_CHANGE_TRANSACTION,
-						new AmountDto(getFee().longValue()), new TimestampDto(getDeadline().getInstant()),
-						new UnresolvedMosaicIdDto(getMosaicId().getId().longValue()),
-						MosaicSupplyChangeDirectionDto.rawValueOf((byte) getMosaicSupplyType().getValue()),
-						new AmountDto(getDelta().longValue()));
-		return txBuilder.serialize();
-	}
+    MosaicSupplyChangeTransactionBuilder txBuilder =
+        MosaicSupplyChangeTransactionBuilder.create(
+            new SignatureDto(signatureBuffer),
+            new KeyDto(signerBuffer),
+            getNetworkVersion(),
+            EntityTypeDto.MOSAIC_SUPPLY_CHANGE_TRANSACTION,
+            new AmountDto(getFee().longValue()),
+            new TimestampDto(getDeadline().getInstant()),
+            new UnresolvedMosaicIdDto(getMosaicId().getId().longValue()),
+                MosaicSupplyChangeActionDto.rawValueOf((byte) getMosaicSupplyType().getValue()),
+            new AmountDto(getDelta().longValue()));
+    return txBuilder.serialize();
+  }
 
-	/**
-	 * Gets the embedded tx bytes.
-	 *
-	 * @return Embedded tx bytes
-	 */
-	byte[] generateEmbeddedBytes() {
-		EmbeddedMosaicSupplyChangeTransactionBuilder txBuilder =
-				EmbeddedMosaicSupplyChangeTransactionBuilder.create(new KeyDto(getSignerBytes().get()), getNetworkVersion(),
-						EntityTypeDto.MOSAIC_SUPPLY_CHANGE_TRANSACTION,
-						new UnresolvedMosaicIdDto(getMosaicId().getId().longValue()),
-						MosaicSupplyChangeDirectionDto.rawValueOf((byte) getMosaicSupplyType().getValue()),
-						new AmountDto(getDelta().longValue()));
-		return txBuilder.serialize();
-	}
+  /**
+   * Gets the embedded tx bytes.
+   *
+   * @return Embedded tx bytes
+   */
+  byte[] generateEmbeddedBytes() {
+    EmbeddedMosaicSupplyChangeTransactionBuilder txBuilder =
+        EmbeddedMosaicSupplyChangeTransactionBuilder.create(
+            new KeyDto(getSignerBytes().get()),
+            getNetworkVersion(),
+            EntityTypeDto.MOSAIC_SUPPLY_CHANGE_TRANSACTION,
+            new UnresolvedMosaicIdDto(getMosaicId().getId().longValue()),
+                MosaicSupplyChangeActionDto.rawValueOf((byte) getMosaicSupplyType().getValue()),
+            new AmountDto(getDelta().longValue()));
+    return txBuilder.serialize();
+  }
 }

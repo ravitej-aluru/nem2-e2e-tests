@@ -54,41 +54,46 @@ public class MosaicProperties {
 	 * After the duration finishes mosaic is inactive and can be renewed.
 	 * Duration is optional when defining the mosaic
 	 */
-	private final Optional<BigInteger> duration;
+  private final BigInteger duration;
 
-	private MosaicProperties(boolean supplyMutable, boolean transferable, int divisibility, Optional<BigInteger> duration) {
-		Validate.notNull(duration, "Duration cannot be null");
-		this.supplyMutable = supplyMutable;
-		this.transferable = transferable;
-		this.divisibility = divisibility;
-		this.duration = duration;
-	}
+  private MosaicProperties(
+      final boolean supplyMutable,
+      final boolean transferable,
+      final int divisibility,
+      final BigInteger duration) {
+    Validate.notNull(duration, "Duration cannot be null");
+    this.supplyMutable = supplyMutable;
+    this.transferable = transferable;
+    this.divisibility = divisibility;
+    this.duration = duration;
+  }
 
-	/**
-	 * Creates a mosaic properties.
-	 *
-	 * @param supplyMutable True supply can change.
-	 * @param transferable  True mosaic can be transfer.
-	 * @param divisibility  Decimal place of the mosaic.
-	 * @param duration      Duration in blocks a mosaic will be available.
-	 * @return Mosaic properties.
-	 */
-	public static MosaicProperties create(boolean supplyMutable, boolean transferable, int divisibility,
-										  BigInteger duration) {
-		return new MosaicProperties(supplyMutable, transferable, divisibility, Optional.of(duration));
-	}
+  /**
+   * Creates a mosaic properties.
+   *
+   * @param supplyMutable True supply can change.
+   * @param transferable True mosaic can be transfer.
+   * @param divisibility Decimal place of the mosaic.
+   * @param duration Duration in blocks a mosaic will be available.
+   * @return Mosaic properties.
+   */
+  public static MosaicProperties create(
+      boolean supplyMutable, boolean transferable, int divisibility, BigInteger duration) {
+    return new MosaicProperties(supplyMutable, transferable, divisibility, duration);
+  }
 
-	/**
-	 * Creates a mosaic properties.
-	 *
-	 * @param supplyMutable True supply can change.
-	 * @param transferable  True mosaic can be transfer.
-	 * @param divisibility  Decimal place of the mosaic.
-	 * @return Mosaic properties.
-	 */
-	public static MosaicProperties create(boolean supplyMutable, boolean transferable, int divisibility) {
-		return new MosaicProperties(supplyMutable, transferable, divisibility, Optional.empty());
-	}
+  /**
+   * Creates a mosaic properties.
+   *
+   * @param supplyMutable True supply can change.
+   * @param transferable True mosaic can be transfer.
+   * @param divisibility Decimal place of the mosaic.
+   * @return Mosaic properties.
+   */
+  public static MosaicProperties create(
+      boolean supplyMutable, boolean transferable, int divisibility) {
+    return new MosaicProperties(supplyMutable, transferable, divisibility, BigInteger.ZERO);
+  }
 
 	/**
 	 * Returns true if supply is mutable
@@ -108,14 +113,14 @@ public class MosaicProperties {
 		return transferable;
 	}
 
-	/**
-	 * Returns the number of blocks from height it will be active
-	 *
-	 * @return the number of blocks from height it will be active
-	 */
-	public Optional<BigInteger> getDuration() {
-		return duration;
-	}
+  /**
+   * Returns the number of blocks from height it will be active
+   *
+   * @return the number of blocks from height it will be active
+   */
+  public BigInteger getDuration() {
+    return duration;
+  }
 
 	/**
 	 * Returns the mosaic divisibility.

@@ -42,27 +42,22 @@ public class MosaicPropertiesMapper implements Function<JsonObject, MosaicProper
 		return ((flag >>> index) & 1) == 1;
 	}
 
-	/**
-	 * Converts a json object to mosaic properties.
-	 *
-	 * @param jsonObject Json Object.
-	 * @return Mosaic properties.
-	 */
-	@Override
-	public MosaicProperties apply(final JsonObject jsonObject) {
-		final JsonArray mosaicProperties = jsonObject.getJsonArray("properties");
-		final Long flags = mosaicProperties.getJsonObject(0).getLong("value");
-		Long duration = 0L;
-		if (mosaicProperties.size() > 2) {
-			duration = mosaicProperties.getJsonObject(2).getLong("value");
-		}
-		if (duration == 0) {
-			return MosaicProperties.create(getFlag(flags, 0),
-					getFlag(flags, 1),
-					mosaicProperties.getJsonObject(1).getLong("value").intValue());
-		}
-		return MosaicProperties.create(getFlag(flags, 0),
-				getFlag(flags, 1),
-				mosaicProperties.getJsonObject(1).getLong("value").intValue(), BigInteger.valueOf(duration));
-	}
+  /**
+   * Converts a json object to mosaic properties.
+   *
+   * @param jsonObject Json Object.
+   * @return Mosaic properties.
+   */
+  @Override
+  public MosaicProperties apply(final JsonObject jsonObject) {
+    final JsonObject mosaicProperties = jsonObject.containsKey("properties") ? jsonObject.getJsonObject("properties") : jsonObject;
+    final Long flags = mosaicProperties.getLong("flags");
+    final int divisibility = mosaicProperties.getInteger("divisibility");
+    final Long duration = mosaicProperties.getLong("duration");
+    return MosaicProperties.create(
+        getFlag(flags, 0),
+        getFlag(flags, 1),
+            divisibility,
+        BigInteger.valueOf(duration));
+  }
 }

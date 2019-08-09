@@ -96,7 +96,7 @@ public class TransactionStatus {
         + " Hash: "
         + getHash()
         + " Deadline: "
-        + getDeadline().toString()
+        + getDeadline().getInstant()
         + " "
         + "Height: "
         + getHeight();

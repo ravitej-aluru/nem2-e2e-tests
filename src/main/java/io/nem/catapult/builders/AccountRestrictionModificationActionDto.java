@@ -22,12 +22,12 @@ package io.nem.catapult.builders;
 
 import java.io.DataInput;
 
-/** Supply change directions. */
-public enum MosaicSupplyChangeDirectionDto {
-    /** Decreases the supply. */
-    DECREASE((byte) 0),
-    /** Increases the supply. */
-    INCREASE((byte) 1);
+/** Enumeration of account restriction modification actions. */
+public enum AccountRestrictionModificationActionDto {
+    /** Remove account restriction value. */
+    DEL((byte) 0),
+    /** Add account restriction value. */
+    ADD((byte) 1);
 
     /** Enum value. */
     private final byte value;
@@ -37,7 +37,7 @@ public enum MosaicSupplyChangeDirectionDto {
      *
      * @param value Enum value.
      */
-     MosaicSupplyChangeDirectionDto(final byte value) {
+     AccountRestrictionModificationActionDto(final byte value) {
         this.value = value;
     }
 
@@ -47,13 +47,13 @@ public enum MosaicSupplyChangeDirectionDto {
      * @param value Raw value of the enum.
      * @return Enum value.
      */
-    public static MosaicSupplyChangeDirectionDto rawValueOf(final byte value) {
-        for (MosaicSupplyChangeDirectionDto current : MosaicSupplyChangeDirectionDto.values()) {
+    public static AccountRestrictionModificationActionDto rawValueOf(final byte value) {
+        for (AccountRestrictionModificationActionDto current : AccountRestrictionModificationActionDto.values()) {
             if (value == current.value) {
                 return current;
             }
         }
-        throw new IllegalArgumentException(value + " was not a backing value for MosaicSupplyChangeDirectionDto.");
+        throw new IllegalArgumentException(value + " was not a backing value for AccountRestrictionModificationActionDto.");
     }
 
     /**
@@ -66,12 +66,12 @@ public enum MosaicSupplyChangeDirectionDto {
     }
 
     /**
-     * Creates an instance of MosaicSupplyChangeDirectionDto from a stream.
+     * Creates an instance of AccountRestrictionModificationActionDto from a stream.
      *
      * @param stream Byte stream to use to serialize the object.
-     * @return Instance of MosaicSupplyChangeDirectionDto.
+     * @return Instance of AccountRestrictionModificationActionDto.
      */
-    public static MosaicSupplyChangeDirectionDto loadFromBinary(final DataInput stream) {
+    public static AccountRestrictionModificationActionDto loadFromBinary(final DataInput stream) {
         try {
             final byte streamValue = stream.readByte();
             return rawValueOf(streamValue);

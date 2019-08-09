@@ -46,11 +46,11 @@ public final class SecretLockTransactionBuilder extends TransactionBuilder {
      * @param type Entity type.
      * @param fee Transaction fee.
      * @param deadline Transaction deadline.
-     * @param mosaic Lock mosaic.
+     * @param mosaic Locked mosaic.
      * @param duration Number of blocks for which a lock should be valid.
-     * @param hashAlgorithm Hash alghoritm.
+     * @param hashAlgorithm Hash algorithm.
      * @param secret Secret.
-     * @param recipient Recipient of the locked mosaic.
+     * @param recipient Locked mosaic recipient.
      */
     protected SecretLockTransactionBuilder(final SignatureDto signature, final KeyDto signer, final short version, final EntityTypeDto type, final AmountDto fee, final TimestampDto deadline, final UnresolvedMosaicBuilder mosaic, final BlockDurationDto duration, final LockHashAlgorithmDto hashAlgorithm, final Hash256Dto secret, final UnresolvedAddressDto recipient) {
         super(signature, signer, version, type, fee, deadline);
@@ -66,11 +66,11 @@ public final class SecretLockTransactionBuilder extends TransactionBuilder {
      * @param type Entity type.
      * @param fee Transaction fee.
      * @param deadline Transaction deadline.
-     * @param mosaic Lock mosaic.
+     * @param mosaic Locked mosaic.
      * @param duration Number of blocks for which a lock should be valid.
-     * @param hashAlgorithm Hash alghoritm.
+     * @param hashAlgorithm Hash algorithm.
      * @param secret Secret.
-     * @param recipient Recipient of the locked mosaic.
+     * @param recipient Locked mosaic recipient.
      * @return Instance of SecretLockTransactionBuilder.
      */
     public static SecretLockTransactionBuilder create(final SignatureDto signature, final KeyDto signer, final short version, final EntityTypeDto type, final AmountDto fee, final TimestampDto deadline, final UnresolvedMosaicBuilder mosaic, final BlockDurationDto duration, final LockHashAlgorithmDto hashAlgorithm, final Hash256Dto secret, final UnresolvedAddressDto recipient) {
@@ -78,9 +78,9 @@ public final class SecretLockTransactionBuilder extends TransactionBuilder {
     }
 
     /**
-     * Gets lock mosaic.
+     * Gets locked mosaic.
      *
-     * @return Lock mosaic.
+     * @return Locked mosaic.
      */
     public UnresolvedMosaicBuilder getMosaic() {
         return this.secretLockTransactionBody.getMosaic();
@@ -96,9 +96,9 @@ public final class SecretLockTransactionBuilder extends TransactionBuilder {
     }
 
     /**
-     * Gets hash alghoritm.
+     * Gets hash algorithm.
      *
-     * @return Hash alghoritm.
+     * @return Hash algorithm.
      */
     public LockHashAlgorithmDto getHashAlgorithm() {
         return this.secretLockTransactionBody.getHashAlgorithm();
@@ -114,9 +114,9 @@ public final class SecretLockTransactionBuilder extends TransactionBuilder {
     }
 
     /**
-     * Gets recipient of the locked mosaic.
+     * Gets locked mosaic recipient.
      *
-     * @return Recipient of the locked mosaic.
+     * @return Locked mosaic recipient.
      */
     public UnresolvedAddressDto getRecipient() {
         return this.secretLockTransactionBody.getRecipient();

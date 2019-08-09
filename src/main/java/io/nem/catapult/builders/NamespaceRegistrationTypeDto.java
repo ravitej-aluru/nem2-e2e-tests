@@ -22,12 +22,12 @@ package io.nem.catapult.builders;
 
 import java.io.DataInput;
 
-/** Account restriction modification type. */
-public enum AccountRestrictionModificationTypeDto {
-    /** Add account restriction value. */
-    ADD((byte) 0),
-    /** Remove account restriction value. */
-    DEL((byte) 1);
+/** Enumeration of namespace registration types. */
+public enum NamespaceRegistrationTypeDto {
+    /** Root namespace. */
+    ROOT((byte) 0),
+    /** Child namespace. */
+    CHILD((byte) 1);
 
     /** Enum value. */
     private final byte value;
@@ -37,7 +37,7 @@ public enum AccountRestrictionModificationTypeDto {
      *
      * @param value Enum value.
      */
-     AccountRestrictionModificationTypeDto(final byte value) {
+     NamespaceRegistrationTypeDto(final byte value) {
         this.value = value;
     }
 
@@ -47,13 +47,13 @@ public enum AccountRestrictionModificationTypeDto {
      * @param value Raw value of the enum.
      * @return Enum value.
      */
-    public static AccountRestrictionModificationTypeDto rawValueOf(final byte value) {
-        for (AccountRestrictionModificationTypeDto current : AccountRestrictionModificationTypeDto.values()) {
+    public static NamespaceRegistrationTypeDto rawValueOf(final byte value) {
+        for (NamespaceRegistrationTypeDto current : NamespaceRegistrationTypeDto.values()) {
             if (value == current.value) {
                 return current;
             }
         }
-        throw new IllegalArgumentException(value + " was not a backing value for AccountRestrictionModificationTypeDto.");
+        throw new IllegalArgumentException(value + " was not a backing value for NamespaceRegistrationTypeDto.");
     }
 
     /**
@@ -66,12 +66,12 @@ public enum AccountRestrictionModificationTypeDto {
     }
 
     /**
-     * Creates an instance of AccountRestrictionModificationTypeDto from a stream.
+     * Creates an instance of NamespaceRegistrationTypeDto from a stream.
      *
      * @param stream Byte stream to use to serialize the object.
-     * @return Instance of AccountRestrictionModificationTypeDto.
+     * @return Instance of NamespaceRegistrationTypeDto.
      */
-    public static AccountRestrictionModificationTypeDto loadFromBinary(final DataInput stream) {
+    public static NamespaceRegistrationTypeDto loadFromBinary(final DataInput stream) {
         try {
             final byte streamValue = stream.readByte();
             return rawValueOf(streamValue);

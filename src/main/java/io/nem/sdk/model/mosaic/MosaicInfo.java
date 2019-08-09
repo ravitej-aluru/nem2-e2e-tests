@@ -125,14 +125,14 @@ public class MosaicInfo {
 		return properties.isTransferable();
 	}
 
-	/**
-	 * Return the number of blocks from height it will be active
-	 *
-	 * @return the number of blocks from height it will be active
-	 */
-	public Optional<BigInteger> getDuration() {
-		return properties.getDuration();
-	}
+  /**
+   * Return the number of blocks from height it will be active
+   *
+   * @return the number of blocks from height it will be active
+   */
+  public BigInteger getDuration() {
+    return properties.getDuration();
+  }
 
 	/**
 	 * Returns the mosaic divisibility

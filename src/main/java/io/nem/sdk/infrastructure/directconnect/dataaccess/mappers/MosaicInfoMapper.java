@@ -54,14 +54,16 @@ public class MosaicInfoMapper implements Function<JsonObject, MosaicInfo> {
 	 */
 	public MosaicInfo apply(final JsonObject jsonObject) {
 
-		final String metaId = jsonObject.getJsonObject("meta").getString("id");
-		final JsonObject mosaicJsonObject = jsonObject.getJsonObject("mosaic");
-		final MosaicId mosaicId = new MosaicId(MapperUtils.extractBigInteger(mosaicJsonObject, "mosaicId"));
-		final BigInteger supply = MapperUtils.extractBigInteger(mosaicJsonObject, "supply");
-		final BigInteger height = MapperUtils.extractBigInteger(mosaicJsonObject, "height");
-		final PublicAccount owner = PublicAccount.createFromPublicKey(mosaicJsonObject.getString("owner"), networkType);
-		final int revision = mosaicJsonObject.getInteger("revision");
-		final MosaicProperties properties = new MosaicPropertiesMapper().apply(mosaicJsonObject);
-		return MosaicInfo.create(metaId, mosaicId, supply, height, owner, revision, properties);
-	}
+    final String metaId = jsonObject.getJsonObject("meta").getString("id");
+    final JsonObject mosaicJsonObject = jsonObject.getJsonObject("mosaic");
+    final MosaicId mosaicId =
+        new MosaicId(MapperUtils.extractBigInteger(mosaicJsonObject, "id"));
+    final BigInteger supply = MapperUtils.extractBigInteger(mosaicJsonObject, "supply");
+    final BigInteger height = MapperUtils.extractBigInteger(mosaicJsonObject, "height");
+    final PublicAccount owner =
+        PublicAccount.createFromPublicKey(mosaicJsonObject.getString("owner"), networkType);
+    final int revision = mosaicJsonObject.getInteger("revision");
+    final MosaicProperties properties = new MosaicPropertiesMapper().apply(mosaicJsonObject);
+    return MosaicInfo.create(metaId, mosaicId, supply, height, owner, revision, properties);
+  }
 }

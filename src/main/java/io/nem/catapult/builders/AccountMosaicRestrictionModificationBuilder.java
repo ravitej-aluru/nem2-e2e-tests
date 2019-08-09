@@ -24,8 +24,8 @@ import java.io.DataInput;
 
 /** Account mosaic restriction modification. */
 public final class AccountMosaicRestrictionModificationBuilder extends AccountRestrictionModificationBuilder {
-    /** Value. */
-    private final MosaicIdDto value;
+    /** Mosaic identifier restriction value. */
+    private final UnresolvedMosaicIdDto value;
 
     /**
      * Constructor - Creates an object from stream.
@@ -34,17 +34,17 @@ public final class AccountMosaicRestrictionModificationBuilder extends AccountRe
      */
     protected AccountMosaicRestrictionModificationBuilder(final DataInput stream) {
         super(stream);
-        this.value = MosaicIdDto.loadFromBinary(stream);
+        this.value = UnresolvedMosaicIdDto.loadFromBinary(stream);
     }
 
     /**
      * Constructor.
      *
-     * @param modificationType Modification type.
-     * @param value Value.
+     * @param modificationAction Modification action.
+     * @param value Mosaic identifier restriction value.
      */
-    protected AccountMosaicRestrictionModificationBuilder(final AccountRestrictionModificationTypeDto modificationType, final MosaicIdDto value) {
-        super(modificationType);
+    protected AccountMosaicRestrictionModificationBuilder(final AccountRestrictionModificationActionDto modificationAction, final UnresolvedMosaicIdDto value) {
+        super(modificationAction);
         GeneratorUtils.notNull(value, "value is null");
         this.value = value;
     }
@@ -52,20 +52,20 @@ public final class AccountMosaicRestrictionModificationBuilder extends AccountRe
     /**
      * Creates an instance of AccountMosaicRestrictionModificationBuilder.
      *
-     * @param modificationType Modification type.
-     * @param value Value.
+     * @param modificationAction Modification action.
+     * @param value Mosaic identifier restriction value.
      * @return Instance of AccountMosaicRestrictionModificationBuilder.
      */
-    public static AccountMosaicRestrictionModificationBuilder create(final AccountRestrictionModificationTypeDto modificationType, final MosaicIdDto value) {
-        return new AccountMosaicRestrictionModificationBuilder(modificationType, value);
+    public static AccountMosaicRestrictionModificationBuilder create(final AccountRestrictionModificationActionDto modificationAction, final UnresolvedMosaicIdDto value) {
+        return new AccountMosaicRestrictionModificationBuilder(modificationAction, value);
     }
 
     /**
-     * Gets Value.
+     * Gets mosaic identifier restriction value.
      *
-     * @return Value.
+     * @return Mosaic identifier restriction value.
      */
-    public MosaicIdDto getValue() {
+    public UnresolvedMosaicIdDto getValue() {
         return this.value;
     }
 

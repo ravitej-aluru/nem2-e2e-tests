@@ -39,45 +39,54 @@ public class TransactionStatusesCollection implements TransactionState {
 	/* Catapult collection */
 	final private CatapultCollection<TransactionStatusError, TransactionStatusErrorMapper> catapultCollection;
 
-	/**
-	 * Constructor.
-	 *
-	 * @param context Catapult context.
-	 */
-	public TransactionStatusesCollection(final CatapultContext context) {
-		catapultCollection =
-				new CatapultCollection<>(context.getCatapultMongoDbClient(), "transactionStatuses", TransactionStatusErrorMapper::new);
-		this.context = context;
-	}
+  /**
+   * Constructor.
+   *
+   * @param context Catapult context.
+   */
+  public TransactionStatusesCollection(final CatapultContext context) {
+    catapultCollection =
+        new CatapultCollection<>(
+            context.getCatapultMongoDbClient(),
+            "transactionStatuses",
+            TransactionStatusErrorMapper::new);
+    this.context = context;
+  }
 
-	/**
-	 * Find Transaction error status.
-	 *
-	 * @param transactionHash  Transaction hash.
-	 * @param timeoutInSeconds Timeout in seconds.
-	 * @return Transaction status error.
-	 */
-	public Optional<TransactionStatusError> findOne(final String transactionHash, final int timeoutInSeconds) {
-		final String keyName = "hash";
-		final byte[] keyValuebytes = HexEncoder.getBytes(transactionHash);
-		return catapultCollection.findOne(keyName, keyValuebytes, timeoutInSeconds);
-	}
+  /**
+   * Find Transaction error status.
+   *
+   * @param transactionHash Transaction hash.
+   * @param timeoutInSeconds Timeout in seconds.
+   * @return Transaction status error.
+   */
+  public Optional<TransactionStatusError> findOne(
+      final String transactionHash, final int timeoutInSeconds) {
+    final String keyName = "hash";
+    final byte[] keyValuebytes = HexEncoder.getBytes(transactionHash);
+    return catapultCollection.findOne(keyName, keyValuebytes, timeoutInSeconds);
+  }
 
-	/**
-	 * Gets the transaction status.
-	 *
-	 * @param hash Transaction hash.
-	 * @return Transaction status if found.
-	 */
-	@Override
-	public Optional<TransactionStatus> getStatus(final String hash) {
-		Optional<TransactionStatusError> statusError = findOne(hash, 0);
-		if (statusError.isPresent()) {
-			final TransactionStatusError transactionStatusError = statusError.get();
-			TransactionStatus status = new TransactionStatus("failed", transactionStatusError.getStatus(),
-					transactionStatusError.getHash(), transactionStatusError.getDeadline(), BigInteger.valueOf(0));
-			return Optional.of(status);
-		}
-		return Optional.empty();
-	}
+  /**
+   * Gets the transaction status.
+   *
+   * @param hash Transaction hash.
+   * @return Transaction status if found.
+   */
+  @Override
+  public Optional<TransactionStatus> getStatus(final String hash) {
+    Optional<TransactionStatusError> statusError = findOne(hash, 0);
+    if (statusError.isPresent()) {
+      final TransactionStatusError transactionStatusError = statusError.get();
+      TransactionStatus status =
+          new TransactionStatus(
+              "failed",
+              transactionStatusError.getStatus(),
+              transactionStatusError.getHash(),
+              transactionStatusError.getDeadline(),
+              BigInteger.valueOf(0));
+      return Optional.of(status);
+    }
+    return Optional.empty();
+  }
 }

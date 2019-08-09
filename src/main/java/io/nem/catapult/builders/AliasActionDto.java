@@ -22,12 +22,12 @@ package io.nem.catapult.builders;
 
 import java.io.DataInput;
 
-/** Alias transaction action. */
+/** Enumeration of alias actions. */
 public enum AliasActionDto {
-    /** Link alias. */
-    LINK((byte) 0),
     /** Unlink alias. */
-    UNLINK((byte) 1);
+    UNLINK((byte) 0),
+    /** Link alias. */
+    LINK((byte) 1);
 
     /** Enum value. */
     private final byte value;

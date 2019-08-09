@@ -47,7 +47,7 @@ public final class AddressAliasTransactionBuilder extends TransactionBuilder {
      * @param fee Transaction fee.
      * @param deadline Transaction deadline.
      * @param aliasAction Alias action.
-     * @param namespaceId Id of a namespace that will become an alias.
+     * @param namespaceId Identifier of the namespace that will become an alias.
      * @param address Aliased address.
      */
     protected AddressAliasTransactionBuilder(final SignatureDto signature, final KeyDto signer, final short version, final EntityTypeDto type, final AmountDto fee, final TimestampDto deadline, final AliasActionDto aliasAction, final NamespaceIdDto namespaceId, final AddressDto address) {
@@ -65,7 +65,7 @@ public final class AddressAliasTransactionBuilder extends TransactionBuilder {
      * @param fee Transaction fee.
      * @param deadline Transaction deadline.
      * @param aliasAction Alias action.
-     * @param namespaceId Id of a namespace that will become an alias.
+     * @param namespaceId Identifier of the namespace that will become an alias.
      * @param address Aliased address.
      * @return Instance of AddressAliasTransactionBuilder.
      */
@@ -83,9 +83,9 @@ public final class AddressAliasTransactionBuilder extends TransactionBuilder {
     }
 
     /**
-     * Gets id of a namespace that will become an alias.
+     * Gets identifier of the namespace that will become an alias.
      *
-     * @return Id of a namespace that will become an alias.
+     * @return Identifier of the namespace that will become an alias.
      */
     public NamespaceIdDto getNamespaceId() {
         return this.addressAliasTransactionBody.getNamespaceId();

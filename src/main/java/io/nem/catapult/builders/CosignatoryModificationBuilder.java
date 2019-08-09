@@ -24,8 +24,8 @@ import java.io.DataInput;
 
 /** Binary layout for a cosignatory modification. */
 public class CosignatoryModificationBuilder {
-    /** Modification type. */
-    private final CosignatoryModificationTypeDto modificationType;
+    /** Modification action. */
+    private final CosignatoryModificationActionDto modificationAction;
     /** Cosignatory account public key. */
     private final KeyDto cosignatoryPublicKey;
 
@@ -35,41 +35,41 @@ public class CosignatoryModificationBuilder {
      * @param stream Byte stream to use to serialize the object.
      */
     protected CosignatoryModificationBuilder(final DataInput stream) {
-        this.modificationType = CosignatoryModificationTypeDto.loadFromBinary(stream);
+        this.modificationAction = CosignatoryModificationActionDto.loadFromBinary(stream);
         this.cosignatoryPublicKey = KeyDto.loadFromBinary(stream);
     }
 
     /**
      * Constructor.
      *
-     * @param modificationType Modification type.
+     * @param modificationAction Modification action.
      * @param cosignatoryPublicKey Cosignatory account public key.
      */
-    protected CosignatoryModificationBuilder(final CosignatoryModificationTypeDto modificationType, final KeyDto cosignatoryPublicKey) {
-        GeneratorUtils.notNull(modificationType, "modificationType is null");
+    protected CosignatoryModificationBuilder(final CosignatoryModificationActionDto modificationAction, final KeyDto cosignatoryPublicKey) {
+        GeneratorUtils.notNull(modificationAction, "modificationAction is null");
         GeneratorUtils.notNull(cosignatoryPublicKey, "cosignatoryPublicKey is null");
-        this.modificationType = modificationType;
+        this.modificationAction = modificationAction;
         this.cosignatoryPublicKey = cosignatoryPublicKey;
     }
 
     /**
      * Creates an instance of CosignatoryModificationBuilder.
      *
-     * @param modificationType Modification type.
+     * @param modificationAction Modification action.
      * @param cosignatoryPublicKey Cosignatory account public key.
      * @return Instance of CosignatoryModificationBuilder.
      */
-    public static CosignatoryModificationBuilder create(final CosignatoryModificationTypeDto modificationType, final KeyDto cosignatoryPublicKey) {
-        return new CosignatoryModificationBuilder(modificationType, cosignatoryPublicKey);
+    public static CosignatoryModificationBuilder create(final CosignatoryModificationActionDto modificationAction, final KeyDto cosignatoryPublicKey) {
+        return new CosignatoryModificationBuilder(modificationAction, cosignatoryPublicKey);
     }
 
     /**
-     * Gets modification type.
+     * Gets modification action.
      *
-     * @return Modification type.
+     * @return Modification action.
      */
-    public CosignatoryModificationTypeDto getModificationType() {
-        return this.modificationType;
+    public CosignatoryModificationActionDto getModificationAction() {
+        return this.modificationAction;
     }
 
     /**
@@ -88,7 +88,7 @@ public class CosignatoryModificationBuilder {
      */
     public int getSize() {
         int size = 0;
-        size += this.modificationType.getSize();
+        size += this.modificationAction.getSize();
         size += this.cosignatoryPublicKey.getSize();
         return size;
     }
@@ -110,8 +110,8 @@ public class CosignatoryModificationBuilder {
      */
     public byte[] serialize() {
         return GeneratorUtils.serialize(dataOutputStream -> {
-            final byte[] modificationTypeBytes = this.modificationType.serialize();
-            dataOutputStream.write(modificationTypeBytes, 0, modificationTypeBytes.length);
+            final byte[] modificationActionBytes = this.modificationAction.serialize();
+            dataOutputStream.write(modificationActionBytes, 0, modificationActionBytes.length);
             final byte[] cosignatoryPublicKeyBytes = this.cosignatoryPublicKey.serialize();
             dataOutputStream.write(cosignatoryPublicKeyBytes, 0, cosignatoryPublicKeyBytes.length);
         });

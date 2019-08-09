@@ -55,7 +55,7 @@ public class MosaicsCollection {
 	 * @return Mosaic account info.
 	 */
 	public Optional<MosaicInfo> find(final long mosaicId) {
-		final String keyName = "mosaic.mosaicId";
+    final String keyName = "mosaic.id";
 		return catapultCollection.findOne(keyName, mosaicId, context.getDatabaseTimeoutInSeconds());
 	}
 }

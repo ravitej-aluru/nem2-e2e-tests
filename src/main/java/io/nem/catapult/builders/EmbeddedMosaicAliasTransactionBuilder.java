@@ -44,8 +44,8 @@ public final class EmbeddedMosaicAliasTransactionBuilder extends EmbeddedTransac
      * @param version Entity version.
      * @param type Entity type.
      * @param aliasAction Alias action.
-     * @param namespaceId Id of a namespace that will become an alias.
-     * @param mosaicId Aliased mosaic id.
+     * @param namespaceId Identifier of the namespace that will become an alias.
+     * @param mosaicId Aliased mosaic identifier.
      */
     protected EmbeddedMosaicAliasTransactionBuilder(final KeyDto signer, final short version, final EntityTypeDto type, final AliasActionDto aliasAction, final NamespaceIdDto namespaceId, final MosaicIdDto mosaicId) {
         super(signer, version, type);
@@ -59,8 +59,8 @@ public final class EmbeddedMosaicAliasTransactionBuilder extends EmbeddedTransac
      * @param version Entity version.
      * @param type Entity type.
      * @param aliasAction Alias action.
-     * @param namespaceId Id of a namespace that will become an alias.
-     * @param mosaicId Aliased mosaic id.
+     * @param namespaceId Identifier of the namespace that will become an alias.
+     * @param mosaicId Aliased mosaic identifier.
      * @return Instance of EmbeddedMosaicAliasTransactionBuilder.
      */
     public static EmbeddedMosaicAliasTransactionBuilder create(final KeyDto signer, final short version, final EntityTypeDto type, final AliasActionDto aliasAction, final NamespaceIdDto namespaceId, final MosaicIdDto mosaicId) {
@@ -77,18 +77,18 @@ public final class EmbeddedMosaicAliasTransactionBuilder extends EmbeddedTransac
     }
 
     /**
-     * Gets id of a namespace that will become an alias.
+     * Gets identifier of the namespace that will become an alias.
      *
-     * @return Id of a namespace that will become an alias.
+     * @return Identifier of the namespace that will become an alias.
      */
     public NamespaceIdDto getNamespaceId() {
         return this.mosaicAliasTransactionBody.getNamespaceId();
     }
 
     /**
-     * Gets aliased mosaic id.
+     * Gets aliased mosaic identifier.
      *
-     * @return Aliased mosaic id.
+     * @return Aliased mosaic identifier.
      */
     public MosaicIdDto getMosaicId() {
         return this.mosaicAliasTransactionBody.getMosaicId();

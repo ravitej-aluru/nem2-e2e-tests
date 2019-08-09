@@ -22,14 +22,16 @@ package io.nem.catapult.builders;
 
 import java.io.DataInput;
 
-/** Mosaic property flags. */
+/** Enumeration of mosaic property flags. */
 public enum MosaicFlagsDto implements BitMaskable {
     /** No flags present. */
     NONE((byte) 0),
-    /** Mosaic supply is mutable. */
+    /** Mosaic supports supply changes even when mosaic owner owns partial supply. */
     SUPPLY_MUTABLE((byte) 1),
-    /** Mosaic is transferable. */
-    TRANSFERABLE((byte) 2);
+    /** Mosaic supports transfers between arbitrary accounts \note when not set, mosaic can only be transferred to and from mosaic owner. */
+    TRANSFERABLE((byte) 2),
+    /** Mosaic supports custom restrictions configured by mosaic owner. */
+    RESTRICTABLE((byte) 4);
 
     /** Enum value. */
     private final byte value;

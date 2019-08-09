@@ -22,10 +22,22 @@ package io.nem.catapult.builders;
 
 import java.io.DataInput;
 
-/** Available mosaic property ids. */
-public enum MosaicPropertyIdDto {
-    /** Mosaic duration. */
-    DURATION((byte) 2);
+/** Enumeration of mosaic restriction types. */
+public enum MosaicRestrictionTypeDto {
+    /** Uninitialized value indicating no restriction. */
+    NONE((byte) 0),
+    /** Allow if equal. */
+    EQ((byte) 1),
+    /** Allow if not equal. */
+    NE((byte) 2),
+    /** Allow if less than. */
+    LT((byte) 3),
+    /** Allow if less than or equal. */
+    LE((byte) 4),
+    /** Allow if greater than. */
+    GT((byte) 5),
+    /** Allow if greater than or equal. */
+    GE((byte) 6);
 
     /** Enum value. */
     private final byte value;
@@ -35,7 +47,7 @@ public enum MosaicPropertyIdDto {
      *
      * @param value Enum value.
      */
-     MosaicPropertyIdDto(final byte value) {
+     MosaicRestrictionTypeDto(final byte value) {
         this.value = value;
     }
 
@@ -45,13 +57,13 @@ public enum MosaicPropertyIdDto {
      * @param value Raw value of the enum.
      * @return Enum value.
      */
-    public static MosaicPropertyIdDto rawValueOf(final byte value) {
-        for (MosaicPropertyIdDto current : MosaicPropertyIdDto.values()) {
+    public static MosaicRestrictionTypeDto rawValueOf(final byte value) {
+        for (MosaicRestrictionTypeDto current : MosaicRestrictionTypeDto.values()) {
             if (value == current.value) {
                 return current;
             }
         }
-        throw new IllegalArgumentException(value + " was not a backing value for MosaicPropertyIdDto.");
+        throw new IllegalArgumentException(value + " was not a backing value for MosaicRestrictionTypeDto.");
     }
 
     /**
@@ -64,12 +76,12 @@ public enum MosaicPropertyIdDto {
     }
 
     /**
-     * Creates an instance of MosaicPropertyIdDto from a stream.
+     * Creates an instance of MosaicRestrictionTypeDto from a stream.
      *
      * @param stream Byte stream to use to serialize the object.
-     * @return Instance of MosaicPropertyIdDto.
+     * @return Instance of MosaicRestrictionTypeDto.
      */
-    public static MosaicPropertyIdDto loadFromBinary(final DataInput stream) {
+    public static MosaicRestrictionTypeDto loadFromBinary(final DataInput stream) {
         try {
             final byte streamValue = stream.readByte();
             return rawValueOf(streamValue);

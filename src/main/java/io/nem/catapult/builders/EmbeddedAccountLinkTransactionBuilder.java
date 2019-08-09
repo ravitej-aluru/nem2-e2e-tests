@@ -43,12 +43,12 @@ public final class EmbeddedAccountLinkTransactionBuilder extends EmbeddedTransac
      * @param signer Entity signer's public key.
      * @param version Entity version.
      * @param type Entity type.
-     * @param remoteAccountKey Remote account key.
+     * @param remoteAccountPublicKey Remote account public key.
      * @param linkAction Account link action.
      */
-    protected EmbeddedAccountLinkTransactionBuilder(final KeyDto signer, final short version, final EntityTypeDto type, final KeyDto remoteAccountKey, final AccountLinkActionDto linkAction) {
+    protected EmbeddedAccountLinkTransactionBuilder(final KeyDto signer, final short version, final EntityTypeDto type, final KeyDto remoteAccountPublicKey, final AccountLinkActionDto linkAction) {
         super(signer, version, type);
-        this.accountLinkTransactionBody = AccountLinkTransactionBodyBuilder.create(remoteAccountKey, linkAction);
+        this.accountLinkTransactionBody = AccountLinkTransactionBodyBuilder.create(remoteAccountPublicKey, linkAction);
     }
 
     /**
@@ -57,21 +57,21 @@ public final class EmbeddedAccountLinkTransactionBuilder extends EmbeddedTransac
      * @param signer Entity signer's public key.
      * @param version Entity version.
      * @param type Entity type.
-     * @param remoteAccountKey Remote account key.
+     * @param remoteAccountPublicKey Remote account public key.
      * @param linkAction Account link action.
      * @return Instance of EmbeddedAccountLinkTransactionBuilder.
      */
-    public static EmbeddedAccountLinkTransactionBuilder create(final KeyDto signer, final short version, final EntityTypeDto type, final KeyDto remoteAccountKey, final AccountLinkActionDto linkAction) {
-        return new EmbeddedAccountLinkTransactionBuilder(signer, version, type, remoteAccountKey, linkAction);
+    public static EmbeddedAccountLinkTransactionBuilder create(final KeyDto signer, final short version, final EntityTypeDto type, final KeyDto remoteAccountPublicKey, final AccountLinkActionDto linkAction) {
+        return new EmbeddedAccountLinkTransactionBuilder(signer, version, type, remoteAccountPublicKey, linkAction);
     }
 
     /**
-     * Gets remote account key.
+     * Gets remote account public key.
      *
-     * @return Remote account key.
+     * @return Remote account public key.
      */
-    public KeyDto getRemoteAccountKey() {
-        return this.accountLinkTransactionBody.getRemoteAccountKey();
+    public KeyDto getRemoteAccountPublicKey() {
+        return this.accountLinkTransactionBody.getRemoteAccountPublicKey();
     }
 
     /**

@@ -272,7 +272,7 @@ public class TransferTransaction extends Transaction {
 	 */
 	private ByteBuffer getNamespaceIdAsUnresolveAddressBuffer() {
 		final ByteBuffer namespaceIdAlias = ByteBuffer.allocate(25);
-		final byte firstByte = 0x01;
+    final byte firstByte = (byte)(this.getNetworkType().getValue() | 0x01);
 		namespaceIdAlias.order(ByteOrder.LITTLE_ENDIAN);
 		namespaceIdAlias.put(firstByte);
 		namespaceIdAlias.putLong(namespaceId.get().getIdAsLong());

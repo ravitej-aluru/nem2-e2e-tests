@@ -24,11 +24,11 @@ import java.io.DataInput;
 
 /** Binary layout for a mosaic supply change transaction. */
 final class MosaicSupplyChangeTransactionBodyBuilder {
-    /** Id of the affected mosaic. */
+    /** Affected mosaic identifier. */
     private final UnresolvedMosaicIdDto mosaicId;
-    /** Supply change direction. */
-    private final MosaicSupplyChangeDirectionDto direction;
-    /** Amount of the change. */
+    /** Supply change action. */
+    private final MosaicSupplyChangeActionDto action;
+    /** Change amount. */
     private final AmountDto delta;
 
     /**
@@ -38,60 +38,60 @@ final class MosaicSupplyChangeTransactionBodyBuilder {
      */
     protected MosaicSupplyChangeTransactionBodyBuilder(final DataInput stream) {
         this.mosaicId = UnresolvedMosaicIdDto.loadFromBinary(stream);
-        this.direction = MosaicSupplyChangeDirectionDto.loadFromBinary(stream);
+        this.action = MosaicSupplyChangeActionDto.loadFromBinary(stream);
         this.delta = AmountDto.loadFromBinary(stream);
     }
 
     /**
      * Constructor.
      *
-     * @param mosaicId Id of the affected mosaic.
-     * @param direction Supply change direction.
-     * @param delta Amount of the change.
+     * @param mosaicId Affected mosaic identifier.
+     * @param action Supply change action.
+     * @param delta Change amount.
      */
-    protected MosaicSupplyChangeTransactionBodyBuilder(final UnresolvedMosaicIdDto mosaicId, final MosaicSupplyChangeDirectionDto direction, final AmountDto delta) {
+    protected MosaicSupplyChangeTransactionBodyBuilder(final UnresolvedMosaicIdDto mosaicId, final MosaicSupplyChangeActionDto action, final AmountDto delta) {
         GeneratorUtils.notNull(mosaicId, "mosaicId is null");
-        GeneratorUtils.notNull(direction, "direction is null");
+        GeneratorUtils.notNull(action, "action is null");
         GeneratorUtils.notNull(delta, "delta is null");
         this.mosaicId = mosaicId;
-        this.direction = direction;
+        this.action = action;
         this.delta = delta;
     }
 
     /**
      * Creates an instance of MosaicSupplyChangeTransactionBodyBuilder.
      *
-     * @param mosaicId Id of the affected mosaic.
-     * @param direction Supply change direction.
-     * @param delta Amount of the change.
+     * @param mosaicId Affected mosaic identifier.
+     * @param action Supply change action.
+     * @param delta Change amount.
      * @return Instance of MosaicSupplyChangeTransactionBodyBuilder.
      */
-    public static MosaicSupplyChangeTransactionBodyBuilder create(final UnresolvedMosaicIdDto mosaicId, final MosaicSupplyChangeDirectionDto direction, final AmountDto delta) {
-        return new MosaicSupplyChangeTransactionBodyBuilder(mosaicId, direction, delta);
+    public static MosaicSupplyChangeTransactionBodyBuilder create(final UnresolvedMosaicIdDto mosaicId, final MosaicSupplyChangeActionDto action, final AmountDto delta) {
+        return new MosaicSupplyChangeTransactionBodyBuilder(mosaicId, action, delta);
     }
 
     /**
-     * Gets id of the affected mosaic.
+     * Gets affected mosaic identifier.
      *
-     * @return Id of the affected mosaic.
+     * @return Affected mosaic identifier.
      */
     public UnresolvedMosaicIdDto getMosaicId() {
         return this.mosaicId;
     }
 
     /**
-     * Gets supply change direction.
+     * Gets supply change action.
      *
-     * @return Supply change direction.
+     * @return Supply change action.
      */
-    public MosaicSupplyChangeDirectionDto getDirection() {
-        return this.direction;
+    public MosaicSupplyChangeActionDto getAction() {
+        return this.action;
     }
 
     /**
-     * Gets amount of the change.
+     * Gets change amount.
      *
-     * @return Amount of the change.
+     * @return Change amount.
      */
     public AmountDto getDelta() {
         return this.delta;
@@ -105,7 +105,7 @@ final class MosaicSupplyChangeTransactionBodyBuilder {
     public int getSize() {
         int size = 0;
         size += this.mosaicId.getSize();
-        size += this.direction.getSize();
+        size += this.action.getSize();
         size += this.delta.getSize();
         return size;
     }
@@ -129,8 +129,8 @@ final class MosaicSupplyChangeTransactionBodyBuilder {
         return GeneratorUtils.serialize(dataOutputStream -> {
             final byte[] mosaicIdBytes = this.mosaicId.serialize();
             dataOutputStream.write(mosaicIdBytes, 0, mosaicIdBytes.length);
-            final byte[] directionBytes = this.direction.serialize();
-            dataOutputStream.write(directionBytes, 0, directionBytes.length);
+            final byte[] actionBytes = this.action.serialize();
+            dataOutputStream.write(actionBytes, 0, actionBytes.length);
             final byte[] deltaBytes = this.delta.serialize();
             dataOutputStream.write(deltaBytes, 0, deltaBytes.length);
         });

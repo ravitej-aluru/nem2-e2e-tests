@@ -62,7 +62,7 @@ public class LockFundsTransaction extends Transaction {
 		this.duration = duration;
 		this.signedTransaction = signedTransaction;
 		if (signedTransaction.getType() != TransactionType.AGGREGATE_BONDED) {
-			throw new IllegalArgumentException("Signed transaction must be Aggregate Bonded Transaction");
+      throw new IllegalArgumentException("Signed transaction must be Aggregate Bonded Transaction. Actual:" + signedTransaction.getType());
 		}
 	}
 
@@ -132,34 +132,41 @@ public class LockFundsTransaction extends Transaction {
 		final ByteBuffer signerBuffer = ByteBuffer.allocate(32);
 		final ByteBuffer signatureBuffer = ByteBuffer.allocate(64);
 
-		HashLockTransactionBuilder txBuilder =
-				HashLockTransactionBuilder.create(new SignatureDto(signatureBuffer),
-						new KeyDto(signerBuffer), getNetworkVersion(),
-						EntityTypeDto.HASH_LOCK_TRANSACTION,
-						new AmountDto(getFee().longValue()), new TimestampDto(getDeadline().getInstant()),
-						UnresolvedMosaicBuilder.create(new UnresolvedMosaicIdDto(
-										getMosaic().getId().getId().longValue()),
-								new AmountDto(getMosaic().getAmount().longValue())),
-						new BlockDurationDto(getDuration().longValue()), new Hash256Dto(getHashBuffer()));
-		return txBuilder.serialize();
-	}
+    HashLockTransactionBuilder txBuilder =
+        HashLockTransactionBuilder.create(
+            new SignatureDto(signatureBuffer),
+            new KeyDto(signerBuffer),
+            getNetworkVersion(),
+            EntityTypeDto.HASH_LOCK_TRANSACTION,
+            new AmountDto(getFee().longValue()),
+            new TimestampDto(getDeadline().getInstant()),
+            UnresolvedMosaicBuilder.create(
+                new UnresolvedMosaicIdDto(getMosaic().getId().getId().longValue()),
+                new AmountDto(getMosaic().getAmount().longValue())),
+            new BlockDurationDto(getDuration().longValue()),
+            new Hash256Dto(getHashBuffer()));
+    return txBuilder.serialize();
+  }
 
-	/**
-	 * Gets the embedded tx bytes.
-	 *
-	 * @return Embedded tx bytes
-	 */
-	@Override
-	byte[] generateEmbeddedBytes() {
-		EmbeddedHashLockTransactionBuilder txBuilder =
-				EmbeddedHashLockTransactionBuilder.create(new KeyDto(getSignerBytes().get()), getNetworkVersion(),
-						EntityTypeDto.HASH_LOCK_TRANSACTION,
-						UnresolvedMosaicBuilder.create(new UnresolvedMosaicIdDto(
-										getMosaic().getId().getId().longValue()),
-								new AmountDto(getMosaic().getAmount().longValue())),
-						new BlockDurationDto(getDuration().longValue()), new Hash256Dto(getHashBuffer()));
-		return txBuilder.serialize();
-	}
+  /**
+   * Gets the embedded tx bytes.
+   *
+   * @return Embedded tx bytes
+   */
+  @Override
+  byte[] generateEmbeddedBytes() {
+    EmbeddedHashLockTransactionBuilder txBuilder =
+        EmbeddedHashLockTransactionBuilder.create(
+            new KeyDto(getSignerBytes().get()),
+            getNetworkVersion(),
+            EntityTypeDto.HASH_LOCK_TRANSACTION,
+            UnresolvedMosaicBuilder.create(
+                new UnresolvedMosaicIdDto(getMosaic().getId().getId().longValue()),
+                new AmountDto(getMosaic().getAmount().longValue())),
+            new BlockDurationDto(getDuration().longValue()),
+            new Hash256Dto(getHashBuffer()));
+    return txBuilder.serialize();
+  }
 
 	/**
 	 * Gets hash buffer.

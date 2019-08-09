@@ -22,12 +22,12 @@ package io.nem.catapult.builders;
 
 import java.io.DataInput;
 
-/** Namespace types. */
-public enum NamespaceTypeDto {
-    /** A root namespace. */
-    ROOT((byte) 0),
-    /** A child namespace. */
-    CHILD((byte) 1);
+/** Enumeration of mosaic supply change actions. */
+public enum MosaicSupplyChangeActionDto {
+    /** Decreases the supply. */
+    DECREASE((byte) 0),
+    /** Increases the supply. */
+    INCREASE((byte) 1);
 
     /** Enum value. */
     private final byte value;
@@ -37,7 +37,7 @@ public enum NamespaceTypeDto {
      *
      * @param value Enum value.
      */
-     NamespaceTypeDto(final byte value) {
+     MosaicSupplyChangeActionDto(final byte value) {
         this.value = value;
     }
 
@@ -47,13 +47,13 @@ public enum NamespaceTypeDto {
      * @param value Raw value of the enum.
      * @return Enum value.
      */
-    public static NamespaceTypeDto rawValueOf(final byte value) {
-        for (NamespaceTypeDto current : NamespaceTypeDto.values()) {
+    public static MosaicSupplyChangeActionDto rawValueOf(final byte value) {
+        for (MosaicSupplyChangeActionDto current : MosaicSupplyChangeActionDto.values()) {
             if (value == current.value) {
                 return current;
             }
         }
-        throw new IllegalArgumentException(value + " was not a backing value for NamespaceTypeDto.");
+        throw new IllegalArgumentException(value + " was not a backing value for MosaicSupplyChangeActionDto.");
     }
 
     /**
@@ -66,12 +66,12 @@ public enum NamespaceTypeDto {
     }
 
     /**
-     * Creates an instance of NamespaceTypeDto from a stream.
+     * Creates an instance of MosaicSupplyChangeActionDto from a stream.
      *
      * @param stream Byte stream to use to serialize the object.
-     * @return Instance of NamespaceTypeDto.
+     * @return Instance of MosaicSupplyChangeActionDto.
      */
-    public static NamespaceTypeDto loadFromBinary(final DataInput stream) {
+    public static MosaicSupplyChangeActionDto loadFromBinary(final DataInput stream) {
         try {
             final byte streamValue = stream.readByte();
             return rawValueOf(streamValue);

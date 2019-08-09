@@ -66,25 +66,33 @@ public class ModifyMultisigAccountTransaction extends Transaction {
 		this.modifications = modifications;
 	}
 
-	/**
-	 * Create a modify multisig account transaction object.
-	 *
-	 * @param deadline         The deadline to include the transaction.
-	 * @param minApprovalDelta The min approval relative change.
-	 * @param minRemovalDelta  The min removal relative change.
-	 * @param modifications    The list of modifications.
-	 * @param networkType      The network type.
-	 * @return {@link ModifyMultisigAccountTransaction}
-	 */
-
-	public static ModifyMultisigAccountTransaction create(Deadline deadline, byte minApprovalDelta,
-														  byte minRemovalDelta,
-														  List<MultisigCosignatoryModification> modifications,
-														  NetworkType networkType) {
-		return new ModifyMultisigAccountTransaction(networkType, TransactionVersion.MODIFY_MULTISIG_ACCOUNT.getValue(), deadline,
-				BigInteger.valueOf(0), minApprovalDelta,
-				minRemovalDelta, modifications);
-	}
+  /**
+   * Create a modify multisig account transaction object.
+   *
+   * @param deadline The deadline to include the transaction.
+   * @param maxFee Max fee defined by the sender.
+   * @param minApprovalDelta The min approval relative change.
+   * @param minRemovalDelta The min removal relative change.
+   * @param modifications The list of modifications.
+   * @param networkType The network type.
+   * @return {@link ModifyMultisigAccountTransaction}
+   */
+  public static ModifyMultisigAccountTransaction create(
+      Deadline deadline,
+      final BigInteger maxFee,
+      byte minApprovalDelta,
+      byte minRemovalDelta,
+      List<MultisigCosignatoryModification> modifications,
+      NetworkType networkType) {
+    return new ModifyMultisigAccountTransaction(
+        networkType,
+        TransactionVersion.MODIFY_MULTISIG_ACCOUNT.getValue(),
+        deadline,
+        maxFee,
+        minApprovalDelta,
+        minRemovalDelta,
+        modifications);
+  }
 
 	/**
 	 * Return number of signatures needed to approve a transaction.
@@ -127,44 +135,56 @@ public class ModifyMultisigAccountTransaction extends Transaction {
 		final ByteBuffer signerBuffer = ByteBuffer.allocate(32);
 		final ByteBuffer signatureBuffer = ByteBuffer.allocate(64);
 
-		ModifyMultisigAccountTransactionBuilder txBuilder =
-				ModifyMultisigAccountTransactionBuilder.create(new SignatureDto(signatureBuffer),
-						new KeyDto(signerBuffer), getNetworkVersion(),
-						EntityTypeDto.MODIFY_MULTISIG_ACCOUNT_TRANSACTION,
-						new AmountDto(getFee().longValue()), new TimestampDto(getDeadline().getInstant()),
-						getMinRemovalDelta(), getMinApprovalDelta(), getModificationBuilder());
-		return txBuilder.serialize();
-	}
+    MultisigAccountModificationTransactionBuilder txBuilder =
+        MultisigAccountModificationTransactionBuilder.create(
+            new SignatureDto(signatureBuffer),
+            new KeyDto(signerBuffer),
+            getNetworkVersion(),
+            EntityTypeDto.MODIFY_MULTISIG_ACCOUNT_TRANSACTION,
+            new AmountDto(getFee().longValue()),
+            new TimestampDto(getDeadline().getInstant()),
+            getMinRemovalDelta(),
+            getMinApprovalDelta(),
+            getModificationBuilder());
+    return txBuilder.serialize();
+  }
 
-	/**
-	 * Gets the embedded tx bytes.
-	 *
-	 * @return Embedded tx bytes
-	 */
-	byte[] generateEmbeddedBytes() {
-		EmbeddedModifyMultisigAccountTransactionBuilder txBuilder =
-				EmbeddedModifyMultisigAccountTransactionBuilder.create(new KeyDto(getSignerBytes().get()), getNetworkVersion(),
-						EntityTypeDto.MODIFY_MULTISIG_ACCOUNT_TRANSACTION,
-						getMinRemovalDelta(), getMinApprovalDelta(), getModificationBuilder());
-		return txBuilder.serialize();
-	}
+  /**
+   * Gets the embedded tx bytes.
+   *
+   * @return Embedded tx bytes
+   */
+  byte[] generateEmbeddedBytes() {
+    EmbeddedMultisigAccountModificationTransactionBuilder txBuilder =
+        EmbeddedMultisigAccountModificationTransactionBuilder.create(
+            new KeyDto(getSignerBytes().get()),
+            getNetworkVersion(),
+            EntityTypeDto.MODIFY_MULTISIG_ACCOUNT_TRANSACTION,
+            getMinRemovalDelta(),
+            getMinApprovalDelta(),
+            getModificationBuilder());
+    return txBuilder.serialize();
+  }
 
-	/**
-	 * Gets cosignatory modification.
-	 * @return Cosignatory modification.
-	 */
-	private ArrayList<CosignatoryModificationBuilder> getModificationBuilder() {
-		final ArrayList<CosignatoryModificationBuilder> modificationBuilder = new ArrayList<>(modifications.size());
-		for (MultisigCosignatoryModification multisigCosignatoryModification : modifications) {
-			final byte[] byteCosignatoryPublicKey =
-					multisigCosignatoryModification.getCosignatoryPublicAccount().getPublicKey().getBytes();
-			final ByteBuffer keyBuffer = ByteBuffer.wrap(byteCosignatoryPublicKey);
-			final CosignatoryModificationBuilder cosignatoryModificationBuilder =
-					CosignatoryModificationBuilder.create(CosignatoryModificationTypeDto
-									.rawValueOf((byte) multisigCosignatoryModification.getType().getValue()),
-							new KeyDto(keyBuffer));
-			modificationBuilder.add(cosignatoryModificationBuilder);
-		}
-		return modificationBuilder;
-	}
+  /**
+   * Gets cosignatory modification.
+   *
+   * @return Cosignatory modification.
+   */
+  private ArrayList<CosignatoryModificationBuilder> getModificationBuilder() {
+    final ArrayList<CosignatoryModificationBuilder> modificationBuilder =
+        new ArrayList<>(modifications.size());
+    for (MultisigCosignatoryModification multisigCosignatoryModification : modifications) {
+      final byte[] byteCosignatoryPublicKey =
+          multisigCosignatoryModification.getCosignatoryPublicAccount().getPublicKey().getBytes();
+      final ByteBuffer keyBuffer = ByteBuffer.wrap(byteCosignatoryPublicKey);
+      final CosignatoryModificationBuilder cosignatoryModificationBuilder =
+          CosignatoryModificationBuilder.create(
+              CosignatoryModificationActionDto.rawValueOf(
+                  (byte) multisigCosignatoryModification.getType().getValue()),
+              new KeyDto(keyBuffer));
+      modificationBuilder.add(cosignatoryModificationBuilder);
+    }
+    return modificationBuilder;
+  }
 }

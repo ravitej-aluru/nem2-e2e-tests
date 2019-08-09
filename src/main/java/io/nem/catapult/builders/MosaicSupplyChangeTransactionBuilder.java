@@ -46,13 +46,13 @@ public final class MosaicSupplyChangeTransactionBuilder extends TransactionBuild
      * @param type Entity type.
      * @param fee Transaction fee.
      * @param deadline Transaction deadline.
-     * @param mosaicId Id of the affected mosaic.
-     * @param direction Supply change direction.
-     * @param delta Amount of the change.
+     * @param mosaicId Affected mosaic identifier.
+     * @param action Supply change action.
+     * @param delta Change amount.
      */
-    protected MosaicSupplyChangeTransactionBuilder(final SignatureDto signature, final KeyDto signer, final short version, final EntityTypeDto type, final AmountDto fee, final TimestampDto deadline, final UnresolvedMosaicIdDto mosaicId, final MosaicSupplyChangeDirectionDto direction, final AmountDto delta) {
+    protected MosaicSupplyChangeTransactionBuilder(final SignatureDto signature, final KeyDto signer, final short version, final EntityTypeDto type, final AmountDto fee, final TimestampDto deadline, final UnresolvedMosaicIdDto mosaicId, final MosaicSupplyChangeActionDto action, final AmountDto delta) {
         super(signature, signer, version, type, fee, deadline);
-        this.mosaicSupplyChangeTransactionBody = MosaicSupplyChangeTransactionBodyBuilder.create(mosaicId, direction, delta);
+        this.mosaicSupplyChangeTransactionBody = MosaicSupplyChangeTransactionBodyBuilder.create(mosaicId, action, delta);
     }
 
     /**
@@ -64,37 +64,37 @@ public final class MosaicSupplyChangeTransactionBuilder extends TransactionBuild
      * @param type Entity type.
      * @param fee Transaction fee.
      * @param deadline Transaction deadline.
-     * @param mosaicId Id of the affected mosaic.
-     * @param direction Supply change direction.
-     * @param delta Amount of the change.
+     * @param mosaicId Affected mosaic identifier.
+     * @param action Supply change action.
+     * @param delta Change amount.
      * @return Instance of MosaicSupplyChangeTransactionBuilder.
      */
-    public static MosaicSupplyChangeTransactionBuilder create(final SignatureDto signature, final KeyDto signer, final short version, final EntityTypeDto type, final AmountDto fee, final TimestampDto deadline, final UnresolvedMosaicIdDto mosaicId, final MosaicSupplyChangeDirectionDto direction, final AmountDto delta) {
-        return new MosaicSupplyChangeTransactionBuilder(signature, signer, version, type, fee, deadline, mosaicId, direction, delta);
+    public static MosaicSupplyChangeTransactionBuilder create(final SignatureDto signature, final KeyDto signer, final short version, final EntityTypeDto type, final AmountDto fee, final TimestampDto deadline, final UnresolvedMosaicIdDto mosaicId, final MosaicSupplyChangeActionDto action, final AmountDto delta) {
+        return new MosaicSupplyChangeTransactionBuilder(signature, signer, version, type, fee, deadline, mosaicId, action, delta);
     }
 
     /**
-     * Gets id of the affected mosaic.
+     * Gets affected mosaic identifier.
      *
-     * @return Id of the affected mosaic.
+     * @return Affected mosaic identifier.
      */
     public UnresolvedMosaicIdDto getMosaicId() {
         return this.mosaicSupplyChangeTransactionBody.getMosaicId();
     }
 
     /**
-     * Gets supply change direction.
+     * Gets supply change action.
      *
-     * @return Supply change direction.
+     * @return Supply change action.
      */
-    public MosaicSupplyChangeDirectionDto getDirection() {
-        return this.mosaicSupplyChangeTransactionBody.getDirection();
+    public MosaicSupplyChangeActionDto getAction() {
+        return this.mosaicSupplyChangeTransactionBody.getAction();
     }
 
     /**
-     * Gets amount of the change.
+     * Gets change amount.
      *
-     * @return Amount of the change.
+     * @return Change amount.
      */
     public AmountDto getDelta() {
         return this.mosaicSupplyChangeTransactionBody.getDelta();

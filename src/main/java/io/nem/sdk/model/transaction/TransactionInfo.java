@@ -33,61 +33,105 @@ public class TransactionInfo {
 	private final Optional<String> aggregateHash;
 	private final Optional<String> aggregateId;
 
-	private TransactionInfo(BigInteger height, Optional<Integer> index, Optional<String> id, Optional<String> hash,
-							Optional<String> merkleComponentHash, Optional<String> aggregateHash, Optional<String> aggregateId) {
-		Validate.notNull(height, "Height must not be null");
-		this.height = height;
+  private TransactionInfo(
+      BigInteger height,
+      Optional<Integer> index,
+      Optional<String> id,
+      Optional<String> hash,
+      Optional<String> merkleComponentHash,
+      Optional<String> aggregateHash,
+      Optional<String> aggregateId) {
+    Validate.notNull(height, "Height must not be null");
+    this.height = height;
 
-		this.index = index;
-		this.id = id;
-		this.hash = hash;
-		this.merkleComponentHash = merkleComponentHash;
-		this.aggregateHash = aggregateHash;
-		this.aggregateId = aggregateId;
-	}
+    this.index = index;
+    this.id = id;
+    this.hash = hash;
+    this.merkleComponentHash = merkleComponentHash;
+    this.aggregateHash = aggregateHash;
+    this.aggregateId = aggregateId;
+  }
 
-	/**
-	 * Create transaction info object for aggregate transaction inner transaction.
-	 *
-	 * @param height        Block height in which the transaction was included.
-	 * @param index         The transaction index.
-	 * @param id            transaction id.
-	 * @param aggregateHash The hash of the aggregate transaction.
-	 * @param aggregateId   The id of the aggregate transaction.
-	 * @return instance of TransactionInfo
-	 */
-	public static TransactionInfo createAggregate(BigInteger height, Integer index, String id, String aggregateHash, String aggregateId) {
-		return new TransactionInfo(height, Optional.of(index), Optional.of(id), Optional.empty(), Optional.empty(),
-				Optional.of(aggregateHash), Optional.of(aggregateId));
-	}
+  /**
+   * Create transaction info object for aggregate transaction inner transaction.
+   *
+   * @param height Block height in which the transaction was included.
+   * @param index The transaction index.
+   * @param id transaction id.
+   * @param aggregateHash The hash of the aggregate transaction.
+   * @param aggregateId The id of the aggregate transaction.
+   * @return instance of TransactionInfo
+   */
+  public static TransactionInfo createAggregate(
+      BigInteger height, Integer index, String id, String aggregateHash, String aggregateId) {
+    return new TransactionInfo(
+        height,
+        Optional.of(index),
+        Optional.of(id),
+        Optional.empty(),
+        Optional.empty(),
+        Optional.of(aggregateHash),
+        Optional.of(aggregateId));
+  }
 
-	/**
-	 * Create transaction info object for a transaction.
-	 *
-	 * @param height              Block height in which the transaction was included.
-	 * @param index               The transaction index.
-	 * @param id                  transaction id.
-	 * @param hash                The transaction hash.
-	 * @param merkleComponentHash The transaction merkle component hash.
-	 * @return instance of TransactionInfo
-	 */
-	public static TransactionInfo create(BigInteger height, Integer index, String id, String hash, String merkleComponentHash) {
-		return new TransactionInfo(height, Optional.of(index), Optional.of(id), Optional.of(hash), Optional.of(merkleComponentHash),
-				Optional.empty(), Optional.empty());
-	}
+  /**
+   * Create transaction info object for a transaction.
+   *
+   * @param height Block height in which the transaction was included.
+   * @param index The transaction index.
+   * @param id transaction id.
+   * @param hash The transaction hash.
+   * @param merkleComponentHash The transaction merkle component hash.
+   * @return instance of TransactionInfo
+   */
+  public static TransactionInfo create(
+      BigInteger height, Integer index, String id, String hash, String merkleComponentHash) {
+    return new TransactionInfo(
+        height,
+        Optional.of(index),
+        Optional.of(id),
+        Optional.of(hash),
+        Optional.of(merkleComponentHash),
+        Optional.empty(),
+        Optional.empty());
+  }
 
-	/**
-	 * Create transaction info retrieved by listener.
-	 *
-	 * @param height              Block height in which the transaction was included.
-	 * @param hash                The transaction hash
-	 * @param merkleComponentHash The transaction merkle component hash.
-	 * @return instance of TransactionInfo
-	 */
-	public static TransactionInfo create(BigInteger height, String hash, String merkleComponentHash) {
-		return new TransactionInfo(height, Optional.empty(), Optional.empty(), Optional.of(hash), Optional.of(merkleComponentHash),
-				Optional.empty(), Optional.empty());
-	}
+  /**
+   * Create transaction info retrieved by listener.
+   *
+   * @param height Block height in which the transaction was included.
+   * @param hash The transaction hash
+   * @param merkleComponentHash The transaction merkle component hash.
+   * @return instance of TransactionInfo
+   */
+  public static TransactionInfo create(BigInteger height, String hash, String merkleComponentHash) {
+    return new TransactionInfo(
+        height,
+        Optional.empty(),
+        Optional.empty(),
+        Optional.of(hash),
+        Optional.of(merkleComponentHash),
+        Optional.empty(),
+        Optional.empty());
+  }
+
+  /**
+   * Create transaction info retrieved by listener.
+   *
+   * @param height Block height in which the transaction was included.
+   * @param hash The transaction hash
+   * @return instance of TransactionInfo
+   */
+  public static TransactionInfo create(BigInteger height, String hash) {
+    return new TransactionInfo(
+            height,
+            Optional.empty(),
+            Optional.empty(),
+            Optional.of(hash),
+            Optional.empty(),
+            Optional.empty(),
+            Optional.empty());
+  }
 
 	/**
 	 * Returns block height in which the transaction was included.

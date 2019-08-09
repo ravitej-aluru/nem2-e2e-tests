@@ -22,17 +22,17 @@ package io.nem.catapult.builders;
 
 import java.io.DataInput;
 
-/** Account restriction types. */
+/** Enumeration of account restriction types. */
 public enum AccountRestrictionTypeDto {
-    /** Account restriction type is an address. */
+    /** Restriction type is an address. */
     ADDRESS((byte) 1),
-    /** Account restriction type is a mosaic id. */
+    /** Restriction type is a mosaic identifier. */
     MOSAIC_ID((byte) 2),
-    /** Account restriction type is a transaction type. */
+    /** Restriction type is a transaction type. */
     TRANSACTION_TYPE((byte) 4),
-    /** Account restriction type sentinel. */
-    SENTINEL((byte) 5),
-    /** Account restriction is interpreted as blocking operation. */
+    /** Restriction is interpreted as outgoing. */
+    OUTGOING((byte) 64),
+    /** Restriction is interpreted as blocking operation. */
     BLOCK((byte) 128);
 
     /** Enum value. */

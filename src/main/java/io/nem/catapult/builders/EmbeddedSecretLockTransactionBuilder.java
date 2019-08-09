@@ -43,11 +43,11 @@ public final class EmbeddedSecretLockTransactionBuilder extends EmbeddedTransact
      * @param signer Entity signer's public key.
      * @param version Entity version.
      * @param type Entity type.
-     * @param mosaic Lock mosaic.
+     * @param mosaic Locked mosaic.
      * @param duration Number of blocks for which a lock should be valid.
-     * @param hashAlgorithm Hash alghoritm.
+     * @param hashAlgorithm Hash algorithm.
      * @param secret Secret.
-     * @param recipient Recipient of the locked mosaic.
+     * @param recipient Locked mosaic recipient.
      */
     protected EmbeddedSecretLockTransactionBuilder(final KeyDto signer, final short version, final EntityTypeDto type, final UnresolvedMosaicBuilder mosaic, final BlockDurationDto duration, final LockHashAlgorithmDto hashAlgorithm, final Hash256Dto secret, final UnresolvedAddressDto recipient) {
         super(signer, version, type);
@@ -60,11 +60,11 @@ public final class EmbeddedSecretLockTransactionBuilder extends EmbeddedTransact
      * @param signer Entity signer's public key.
      * @param version Entity version.
      * @param type Entity type.
-     * @param mosaic Lock mosaic.
+     * @param mosaic Locked mosaic.
      * @param duration Number of blocks for which a lock should be valid.
-     * @param hashAlgorithm Hash alghoritm.
+     * @param hashAlgorithm Hash algorithm.
      * @param secret Secret.
-     * @param recipient Recipient of the locked mosaic.
+     * @param recipient Locked mosaic recipient.
      * @return Instance of EmbeddedSecretLockTransactionBuilder.
      */
     public static EmbeddedSecretLockTransactionBuilder create(final KeyDto signer, final short version, final EntityTypeDto type, final UnresolvedMosaicBuilder mosaic, final BlockDurationDto duration, final LockHashAlgorithmDto hashAlgorithm, final Hash256Dto secret, final UnresolvedAddressDto recipient) {
@@ -72,9 +72,9 @@ public final class EmbeddedSecretLockTransactionBuilder extends EmbeddedTransact
     }
 
     /**
-     * Gets lock mosaic.
+     * Gets locked mosaic.
      *
-     * @return Lock mosaic.
+     * @return Locked mosaic.
      */
     public UnresolvedMosaicBuilder getMosaic() {
         return this.secretLockTransactionBody.getMosaic();
@@ -90,9 +90,9 @@ public final class EmbeddedSecretLockTransactionBuilder extends EmbeddedTransact
     }
 
     /**
-     * Gets hash alghoritm.
+     * Gets hash algorithm.
      *
-     * @return Hash alghoritm.
+     * @return Hash algorithm.
      */
     public LockHashAlgorithmDto getHashAlgorithm() {
         return this.secretLockTransactionBody.getHashAlgorithm();
@@ -108,9 +108,9 @@ public final class EmbeddedSecretLockTransactionBuilder extends EmbeddedTransact
     }
 
     /**
-     * Gets recipient of the locked mosaic.
+     * Gets locked mosaic recipient.
      *
-     * @return Recipient of the locked mosaic.
+     * @return Locked mosaic recipient.
      */
     public UnresolvedAddressDto getRecipient() {
         return this.secretLockTransactionBody.getRecipient();

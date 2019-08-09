@@ -26,12 +26,22 @@ import io.nem.sdk.infrastructure.common.CatapultContext;
  * Unconfirmed transactions collection.
  */
 public class UnconfirmedTransactionsCollection extends TransactionCollectionBase {
-	/**
-	 * Constructor.
-	 *
-	 * @param context Catapult context.
-	 */
-	public UnconfirmedTransactionsCollection(final CatapultContext context) {
-		super(context, "unconfirmedTransactions");
-	}
+  /**
+   * Constructor.
+   *
+   * @param context Catapult context.
+   */
+  public UnconfirmedTransactionsCollection(final CatapultContext context) {
+    super(context, "unconfirmedTransactions");
+  }
+
+  /**
+   * Gets transaction status group.
+   *
+   * @return transaction group name of "unconfirmed".
+   */
+  @Override
+  protected String getGroupStatus() {
+    return "unconfirmed";
+  }
 }

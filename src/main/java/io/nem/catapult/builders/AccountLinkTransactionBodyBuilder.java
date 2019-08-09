@@ -24,8 +24,8 @@ import java.io.DataInput;
 
 /** Binary layout for an account link transaction. */
 final class AccountLinkTransactionBodyBuilder {
-    /** Remote account key. */
-    private final KeyDto remoteAccountKey;
+    /** Remote account public key. */
+    private final KeyDto remoteAccountPublicKey;
     /** Account link action. */
     private final AccountLinkActionDto linkAction;
 
@@ -35,41 +35,41 @@ final class AccountLinkTransactionBodyBuilder {
      * @param stream Byte stream to use to serialize the object.
      */
     protected AccountLinkTransactionBodyBuilder(final DataInput stream) {
-        this.remoteAccountKey = KeyDto.loadFromBinary(stream);
+        this.remoteAccountPublicKey = KeyDto.loadFromBinary(stream);
         this.linkAction = AccountLinkActionDto.loadFromBinary(stream);
     }
 
     /**
      * Constructor.
      *
-     * @param remoteAccountKey Remote account key.
+     * @param remoteAccountPublicKey Remote account public key.
      * @param linkAction Account link action.
      */
-    protected AccountLinkTransactionBodyBuilder(final KeyDto remoteAccountKey, final AccountLinkActionDto linkAction) {
-        GeneratorUtils.notNull(remoteAccountKey, "remoteAccountKey is null");
+    protected AccountLinkTransactionBodyBuilder(final KeyDto remoteAccountPublicKey, final AccountLinkActionDto linkAction) {
+        GeneratorUtils.notNull(remoteAccountPublicKey, "remoteAccountPublicKey is null");
         GeneratorUtils.notNull(linkAction, "linkAction is null");
-        this.remoteAccountKey = remoteAccountKey;
+        this.remoteAccountPublicKey = remoteAccountPublicKey;
         this.linkAction = linkAction;
     }
 
     /**
      * Creates an instance of AccountLinkTransactionBodyBuilder.
      *
-     * @param remoteAccountKey Remote account key.
+     * @param remoteAccountPublicKey Remote account public key.
      * @param linkAction Account link action.
      * @return Instance of AccountLinkTransactionBodyBuilder.
      */
-    public static AccountLinkTransactionBodyBuilder create(final KeyDto remoteAccountKey, final AccountLinkActionDto linkAction) {
-        return new AccountLinkTransactionBodyBuilder(remoteAccountKey, linkAction);
+    public static AccountLinkTransactionBodyBuilder create(final KeyDto remoteAccountPublicKey, final AccountLinkActionDto linkAction) {
+        return new AccountLinkTransactionBodyBuilder(remoteAccountPublicKey, linkAction);
     }
 
     /**
-     * Gets remote account key.
+     * Gets remote account public key.
      *
-     * @return Remote account key.
+     * @return Remote account public key.
      */
-    public KeyDto getRemoteAccountKey() {
-        return this.remoteAccountKey;
+    public KeyDto getRemoteAccountPublicKey() {
+        return this.remoteAccountPublicKey;
     }
 
     /**
@@ -88,7 +88,7 @@ final class AccountLinkTransactionBodyBuilder {
      */
     public int getSize() {
         int size = 0;
-        size += this.remoteAccountKey.getSize();
+        size += this.remoteAccountPublicKey.getSize();
         size += this.linkAction.getSize();
         return size;
     }
@@ -110,8 +110,8 @@ final class AccountLinkTransactionBodyBuilder {
      */
     public byte[] serialize() {
         return GeneratorUtils.serialize(dataOutputStream -> {
-            final byte[] remoteAccountKeyBytes = this.remoteAccountKey.serialize();
-            dataOutputStream.write(remoteAccountKeyBytes, 0, remoteAccountKeyBytes.length);
+            final byte[] remoteAccountPublicKeyBytes = this.remoteAccountPublicKey.serialize();
+            dataOutputStream.write(remoteAccountPublicKeyBytes, 0, remoteAccountPublicKeyBytes.length);
             final byte[] linkActionBytes = this.linkAction.serialize();
             dataOutputStream.write(linkActionBytes, 0, linkActionBytes.length);
         });

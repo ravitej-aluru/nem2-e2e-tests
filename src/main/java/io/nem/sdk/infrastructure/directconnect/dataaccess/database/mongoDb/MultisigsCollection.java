@@ -43,7 +43,7 @@ public class MultisigsCollection {
 	 * @param context Catapult context.
 	 */
 	public MultisigsCollection(final CatapultContext context) {
-		catapultCollection = new CatapultCollection<>(context.getCatapultMongoDbClient(), "Multisigs", MultisigAccountInfoMapper::new);
+		catapultCollection = new CatapultCollection<>(context.getCatapultMongoDbClient(), "multisigs", MultisigAccountInfoMapper::new);
 		this.context = context;
 	}
 

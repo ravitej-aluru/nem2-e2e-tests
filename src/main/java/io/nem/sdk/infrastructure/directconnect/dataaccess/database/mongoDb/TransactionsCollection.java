@@ -38,14 +38,24 @@ public class TransactionsCollection extends TransactionCollectionBase {
 		super(context, "transactions");
 	}
 
-	/**
-	 * Find transactions for a block.
-	 *
-	 * @param blockHeight Block height.
-	 * @return List of transactions.
-	 */
-	public List<Transaction> findByBlockHeight(final long blockHeight) {
-		final String keyName = "meta.height";
-		return catapultCollection.find(keyName, blockHeight, context.getDatabaseTimeoutInSeconds());
-	}
+  /**
+   * Find transactions for a block.
+   *
+   * @param blockHeight Block height.
+   * @return List of transactions.
+   */
+  public List<Transaction> findByBlockHeight(final long blockHeight) {
+    final String keyName = "meta.height";
+    return catapultCollection.find(keyName, blockHeight, context.getDatabaseTimeoutInSeconds());
+  }
+
+  /**
+   * Gets transaction status group.
+   *
+   * @return transaction group name of "confirmed".
+   */
+  @Override
+  protected String getGroupStatus() {
+    return "confirmed";
+  }
 }

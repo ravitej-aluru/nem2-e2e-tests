@@ -24,15 +24,15 @@ import java.io.DataInput;
 
 /** Binary layout for a secret lock transaction. */
 final class SecretLockTransactionBodyBuilder {
-    /** Lock mosaic. */
+    /** Locked mosaic. */
     private final UnresolvedMosaicBuilder mosaic;
     /** Number of blocks for which a lock should be valid. */
     private final BlockDurationDto duration;
-    /** Hash alghoritm. */
+    /** Hash algorithm. */
     private final LockHashAlgorithmDto hashAlgorithm;
     /** Secret. */
     private final Hash256Dto secret;
-    /** Recipient of the locked mosaic. */
+    /** Locked mosaic recipient. */
     private final UnresolvedAddressDto recipient;
 
     /**
@@ -51,11 +51,11 @@ final class SecretLockTransactionBodyBuilder {
     /**
      * Constructor.
      *
-     * @param mosaic Lock mosaic.
+     * @param mosaic Locked mosaic.
      * @param duration Number of blocks for which a lock should be valid.
-     * @param hashAlgorithm Hash alghoritm.
+     * @param hashAlgorithm Hash algorithm.
      * @param secret Secret.
-     * @param recipient Recipient of the locked mosaic.
+     * @param recipient Locked mosaic recipient.
      */
     protected SecretLockTransactionBodyBuilder(final UnresolvedMosaicBuilder mosaic, final BlockDurationDto duration, final LockHashAlgorithmDto hashAlgorithm, final Hash256Dto secret, final UnresolvedAddressDto recipient) {
         GeneratorUtils.notNull(mosaic, "mosaic is null");
@@ -73,11 +73,11 @@ final class SecretLockTransactionBodyBuilder {
     /**
      * Creates an instance of SecretLockTransactionBodyBuilder.
      *
-     * @param mosaic Lock mosaic.
+     * @param mosaic Locked mosaic.
      * @param duration Number of blocks for which a lock should be valid.
-     * @param hashAlgorithm Hash alghoritm.
+     * @param hashAlgorithm Hash algorithm.
      * @param secret Secret.
-     * @param recipient Recipient of the locked mosaic.
+     * @param recipient Locked mosaic recipient.
      * @return Instance of SecretLockTransactionBodyBuilder.
      */
     public static SecretLockTransactionBodyBuilder create(final UnresolvedMosaicBuilder mosaic, final BlockDurationDto duration, final LockHashAlgorithmDto hashAlgorithm, final Hash256Dto secret, final UnresolvedAddressDto recipient) {
@@ -85,9 +85,9 @@ final class SecretLockTransactionBodyBuilder {
     }
 
     /**
-     * Gets lock mosaic.
+     * Gets locked mosaic.
      *
-     * @return Lock mosaic.
+     * @return Locked mosaic.
      */
     public UnresolvedMosaicBuilder getMosaic() {
         return this.mosaic;
@@ -103,9 +103,9 @@ final class SecretLockTransactionBodyBuilder {
     }
 
     /**
-     * Gets hash alghoritm.
+     * Gets hash algorithm.
      *
-     * @return Hash alghoritm.
+     * @return Hash algorithm.
      */
     public LockHashAlgorithmDto getHashAlgorithm() {
         return this.hashAlgorithm;
@@ -121,9 +121,9 @@ final class SecretLockTransactionBodyBuilder {
     }
 
     /**
-     * Gets recipient of the locked mosaic.
+     * Gets locked mosaic recipient.
      *
-     * @return Recipient of the locked mosaic.
+     * @return Locked mosaic recipient.
      */
     public UnresolvedAddressDto getRecipient() {
         return this.recipient;

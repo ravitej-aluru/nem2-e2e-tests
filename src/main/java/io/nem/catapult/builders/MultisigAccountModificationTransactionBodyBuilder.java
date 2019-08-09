@@ -23,8 +23,8 @@ package io.nem.catapult.builders;
 import java.io.DataInput;
 import java.util.ArrayList;
 
-/** Binary layout for a modify multisig account transaction. */
-final class ModifyMultisigAccountTransactionBodyBuilder {
+/** Binary layout for a multisig account modification transaction. */
+final class MultisigAccountModificationTransactionBodyBuilder {
     /** Relative change of the minimal number of cosignatories required when removing an account. */
     private final byte minRemovalDelta;
     /** Relative change of the minimal number of cosignatories required when approving a transaction. */
@@ -37,7 +37,7 @@ final class ModifyMultisigAccountTransactionBodyBuilder {
      *
      * @param stream Byte stream to use to serialize the object.
      */
-    protected ModifyMultisigAccountTransactionBodyBuilder(final DataInput stream) {
+    protected MultisigAccountModificationTransactionBodyBuilder(final DataInput stream) {
         try {
             this.minRemovalDelta = stream.readByte();
             this.minApprovalDelta = stream.readByte();
@@ -58,7 +58,7 @@ final class ModifyMultisigAccountTransactionBodyBuilder {
      * @param minApprovalDelta Relative change of the minimal number of cosignatories required when approving a transaction.
      * @param modifications Attached cosignatory modifications.
      */
-    protected ModifyMultisigAccountTransactionBodyBuilder(final byte minRemovalDelta, final byte minApprovalDelta, final ArrayList<CosignatoryModificationBuilder> modifications) {
+    protected MultisigAccountModificationTransactionBodyBuilder(final byte minRemovalDelta, final byte minApprovalDelta, final ArrayList<CosignatoryModificationBuilder> modifications) {
         GeneratorUtils.notNull(modifications, "modifications is null");
         this.minRemovalDelta = minRemovalDelta;
         this.minApprovalDelta = minApprovalDelta;
@@ -66,15 +66,15 @@ final class ModifyMultisigAccountTransactionBodyBuilder {
     }
 
     /**
-     * Creates an instance of ModifyMultisigAccountTransactionBodyBuilder.
+     * Creates an instance of MultisigAccountModificationTransactionBodyBuilder.
      *
      * @param minRemovalDelta Relative change of the minimal number of cosignatories required when removing an account.
      * @param minApprovalDelta Relative change of the minimal number of cosignatories required when approving a transaction.
      * @param modifications Attached cosignatory modifications.
-     * @return Instance of ModifyMultisigAccountTransactionBodyBuilder.
+     * @return Instance of MultisigAccountModificationTransactionBodyBuilder.
      */
-    public static ModifyMultisigAccountTransactionBodyBuilder create(final byte minRemovalDelta, final byte minApprovalDelta, final ArrayList<CosignatoryModificationBuilder> modifications) {
-        return new ModifyMultisigAccountTransactionBodyBuilder(minRemovalDelta, minApprovalDelta, modifications);
+    public static MultisigAccountModificationTransactionBodyBuilder create(final byte minRemovalDelta, final byte minApprovalDelta, final ArrayList<CosignatoryModificationBuilder> modifications) {
+        return new MultisigAccountModificationTransactionBodyBuilder(minRemovalDelta, minApprovalDelta, modifications);
     }
 
     /**
@@ -119,13 +119,13 @@ final class ModifyMultisigAccountTransactionBodyBuilder {
     }
 
     /**
-     * Creates an instance of ModifyMultisigAccountTransactionBodyBuilder from a stream.
+     * Creates an instance of MultisigAccountModificationTransactionBodyBuilder from a stream.
      *
      * @param stream Byte stream to use to serialize the object.
-     * @return Instance of ModifyMultisigAccountTransactionBodyBuilder.
+     * @return Instance of MultisigAccountModificationTransactionBodyBuilder.
      */
-    public static ModifyMultisigAccountTransactionBodyBuilder loadFromBinary(final DataInput stream) {
-        return new ModifyMultisigAccountTransactionBodyBuilder(stream);
+    public static MultisigAccountModificationTransactionBodyBuilder loadFromBinary(final DataInput stream) {
+        return new MultisigAccountModificationTransactionBodyBuilder(stream);
     }
 
     /**

@@ -22,7 +22,7 @@ package io.nem.catapult.builders;
 
 import java.io.DataInput;
 
-/** Lock secret hash algorithm. */
+/** Enumeration of lock hash algorithms. */
 public enum LockHashAlgorithmDto {
     /** Input is hashed using sha-3 256. */
     SHA3_256((byte) 0),

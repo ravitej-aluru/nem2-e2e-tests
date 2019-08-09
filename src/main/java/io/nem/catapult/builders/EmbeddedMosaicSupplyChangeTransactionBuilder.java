@@ -43,13 +43,13 @@ public final class EmbeddedMosaicSupplyChangeTransactionBuilder extends Embedded
      * @param signer Entity signer's public key.
      * @param version Entity version.
      * @param type Entity type.
-     * @param mosaicId Id of the affected mosaic.
-     * @param direction Supply change direction.
-     * @param delta Amount of the change.
+     * @param mosaicId Affected mosaic identifier.
+     * @param action Supply change action.
+     * @param delta Change amount.
      */
-    protected EmbeddedMosaicSupplyChangeTransactionBuilder(final KeyDto signer, final short version, final EntityTypeDto type, final UnresolvedMosaicIdDto mosaicId, final MosaicSupplyChangeDirectionDto direction, final AmountDto delta) {
+    protected EmbeddedMosaicSupplyChangeTransactionBuilder(final KeyDto signer, final short version, final EntityTypeDto type, final UnresolvedMosaicIdDto mosaicId, final MosaicSupplyChangeActionDto action, final AmountDto delta) {
         super(signer, version, type);
-        this.mosaicSupplyChangeTransactionBody = MosaicSupplyChangeTransactionBodyBuilder.create(mosaicId, direction, delta);
+        this.mosaicSupplyChangeTransactionBody = MosaicSupplyChangeTransactionBodyBuilder.create(mosaicId, action, delta);
     }
 
     /**
@@ -58,37 +58,37 @@ public final class EmbeddedMosaicSupplyChangeTransactionBuilder extends Embedded
      * @param signer Entity signer's public key.
      * @param version Entity version.
      * @param type Entity type.
-     * @param mosaicId Id of the affected mosaic.
-     * @param direction Supply change direction.
-     * @param delta Amount of the change.
+     * @param mosaicId Affected mosaic identifier.
+     * @param action Supply change action.
+     * @param delta Change amount.
      * @return Instance of EmbeddedMosaicSupplyChangeTransactionBuilder.
      */
-    public static EmbeddedMosaicSupplyChangeTransactionBuilder create(final KeyDto signer, final short version, final EntityTypeDto type, final UnresolvedMosaicIdDto mosaicId, final MosaicSupplyChangeDirectionDto direction, final AmountDto delta) {
-        return new EmbeddedMosaicSupplyChangeTransactionBuilder(signer, version, type, mosaicId, direction, delta);
+    public static EmbeddedMosaicSupplyChangeTransactionBuilder create(final KeyDto signer, final short version, final EntityTypeDto type, final UnresolvedMosaicIdDto mosaicId, final MosaicSupplyChangeActionDto action, final AmountDto delta) {
+        return new EmbeddedMosaicSupplyChangeTransactionBuilder(signer, version, type, mosaicId, action, delta);
     }
 
     /**
-     * Gets id of the affected mosaic.
+     * Gets affected mosaic identifier.
      *
-     * @return Id of the affected mosaic.
+     * @return Affected mosaic identifier.
      */
     public UnresolvedMosaicIdDto getMosaicId() {
         return this.mosaicSupplyChangeTransactionBody.getMosaicId();
     }
 
     /**
-     * Gets supply change direction.
+     * Gets supply change action.
      *
-     * @return Supply change direction.
+     * @return Supply change action.
      */
-    public MosaicSupplyChangeDirectionDto getDirection() {
-        return this.mosaicSupplyChangeTransactionBody.getDirection();
+    public MosaicSupplyChangeActionDto getAction() {
+        return this.mosaicSupplyChangeTransactionBody.getAction();
     }
 
     /**
-     * Gets amount of the change.
+     * Gets change amount.
      *
-     * @return Amount of the change.
+     * @return Change amount.
      */
     public AmountDto getDelta() {
         return this.mosaicSupplyChangeTransactionBody.getDelta();

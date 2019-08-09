@@ -22,12 +22,12 @@ package io.nem.catapult.builders;
 
 import java.io.DataInput;
 
-/** Account link transaction action. */
+/** Enumeration of account link actions. */
 public enum AccountLinkActionDto {
-    /** Link account. */
-    LINK((byte) 0),
     /** Unlink account. */
-    UNLINK((byte) 1);
+    UNLINK((byte) 0),
+    /** Link account. */
+    LINK((byte) 1);
 
     /** Enum value. */
     private final byte value;

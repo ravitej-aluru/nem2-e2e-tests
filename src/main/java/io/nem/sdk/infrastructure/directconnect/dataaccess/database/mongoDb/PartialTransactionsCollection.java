@@ -26,12 +26,22 @@ import io.nem.sdk.infrastructure.common.CatapultContext;
  * Partial transactions collection.
  */
 public class PartialTransactionsCollection extends TransactionCollectionBase {
-	/**
-	 * Constructor.
-	 *
-	 * @param context Catapult context.
-	 */
-	public PartialTransactionsCollection(final CatapultContext context) {
-		super(context, "partialTransactions");
-	}
+  /**
+   * Constructor.
+   *
+   * @param context Catapult context.
+   */
+  public PartialTransactionsCollection(final CatapultContext context) {
+    super(context, "partialTransactions");
+  }
+
+  /**
+   * Gets transaction status group.
+   *
+   * @return transaction group name of "partial".
+   */
+  @Override
+  protected String getGroupStatus() {
+    return "partial";
+  }
 }

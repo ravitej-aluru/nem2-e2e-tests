@@ -26,9 +26,9 @@ import java.io.DataInput;
 final class MosaicAliasTransactionBodyBuilder {
     /** Alias action. */
     private final AliasActionDto aliasAction;
-    /** Id of a namespace that will become an alias. */
+    /** Identifier of the namespace that will become an alias. */
     private final NamespaceIdDto namespaceId;
-    /** Aliased mosaic id. */
+    /** Aliased mosaic identifier. */
     private final MosaicIdDto mosaicId;
 
     /**
@@ -46,8 +46,8 @@ final class MosaicAliasTransactionBodyBuilder {
      * Constructor.
      *
      * @param aliasAction Alias action.
-     * @param namespaceId Id of a namespace that will become an alias.
-     * @param mosaicId Aliased mosaic id.
+     * @param namespaceId Identifier of the namespace that will become an alias.
+     * @param mosaicId Aliased mosaic identifier.
      */
     protected MosaicAliasTransactionBodyBuilder(final AliasActionDto aliasAction, final NamespaceIdDto namespaceId, final MosaicIdDto mosaicId) {
         GeneratorUtils.notNull(aliasAction, "aliasAction is null");
@@ -62,8 +62,8 @@ final class MosaicAliasTransactionBodyBuilder {
      * Creates an instance of MosaicAliasTransactionBodyBuilder.
      *
      * @param aliasAction Alias action.
-     * @param namespaceId Id of a namespace that will become an alias.
-     * @param mosaicId Aliased mosaic id.
+     * @param namespaceId Identifier of the namespace that will become an alias.
+     * @param mosaicId Aliased mosaic identifier.
      * @return Instance of MosaicAliasTransactionBodyBuilder.
      */
     public static MosaicAliasTransactionBodyBuilder create(final AliasActionDto aliasAction, final NamespaceIdDto namespaceId, final MosaicIdDto mosaicId) {
@@ -80,18 +80,18 @@ final class MosaicAliasTransactionBodyBuilder {
     }
 
     /**
-     * Gets id of a namespace that will become an alias.
+     * Gets identifier of the namespace that will become an alias.
      *
-     * @return Id of a namespace that will become an alias.
+     * @return Identifier of the namespace that will become an alias.
      */
     public NamespaceIdDto getNamespaceId() {
         return this.namespaceId;
     }
 
     /**
-     * Gets aliased mosaic id.
+     * Gets aliased mosaic identifier.
      *
-     * @return Aliased mosaic id.
+     * @return Aliased mosaic identifier.
      */
     public MosaicIdDto getMosaicId() {
         return this.mosaicId;

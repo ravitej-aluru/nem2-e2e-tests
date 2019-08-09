@@ -69,7 +69,7 @@ public class TransactionMapper implements Function<JsonObject, Transaction> {
 		if (type == TransactionType.RESERVED) {
 			transactionInfo = this.createTransactionInfo(jsonObject.getJsonObject("meta"));
 			transaction = jsonObject.getJsonObject("transaction");
-			type = TransactionType.rawValueOf(transaction.getInteger("type"));
+      type = TransactionType.rawValueOf(transaction.getInteger("type").shortValue());
 			deadline = new Deadline(extractBigInteger(transaction, "deadline"));
 			networkType = extractNetworkType(transaction.getInteger("version"));
 			version = extractTransactionVersion(transaction.getInteger("version"));
@@ -145,31 +145,33 @@ public class TransactionMapper implements Function<JsonObject, Transaction> {
 		return NetworkType.rawValueOf(networkType);
 	}
 
-	/**
-	 * Creates the transaction info.
-	 *
-	 * @param jsonObject Json object.
-	 * @return Transaction info.
-	 */
-	private TransactionInfo createTransactionInfo(final JsonObject jsonObject) {
-		if (jsonObject.containsKey("hash") && jsonObject.containsKey("id")) {
-			return TransactionInfo.create(extractBigInteger(jsonObject, "height"),
-					jsonObject.getInteger("index"),
-					jsonObject.getString("id"),
-					jsonObject.getString("hash"),
-					jsonObject.getString("merkleComponentHash"));
-		} else if (jsonObject.containsKey("aggregateHash") && jsonObject.containsKey("id")) {
-			return TransactionInfo.createAggregate(extractBigInteger(jsonObject, "height"),
-					jsonObject.getInteger("index"),
-					jsonObject.getString("id"),
-					jsonObject.getString("aggregateHash"),
-					jsonObject.getString("aggregateId"));
-		} else {
-			return TransactionInfo.create(extractBigInteger(jsonObject, "height"),
-					jsonObject.getString("hash"),
-					jsonObject.getString("merkleComponentHash"));
-		}
-	}
+  /**
+   * Creates the transaction info.
+   *
+   * @param jsonObject Json object.
+   * @return Transaction info.
+   */
+  private TransactionInfo createTransactionInfo(final JsonObject jsonObject) {
+    if (jsonObject.containsKey("hash")) {
+      return TransactionInfo.create(
+          extractBigInteger(jsonObject, "height"),
+          jsonObject.getInteger("index"),
+          "",
+          jsonObject.getString("hash"),
+          jsonObject.getString("merkleComponentHash"));
+    } else if (jsonObject.containsKey("aggregateHash")) {
+      return TransactionInfo.createAggregate(
+          extractBigInteger(jsonObject, "height"),
+          jsonObject.getInteger("index"),
+          "",
+          jsonObject.getString("aggregateHash"),
+          jsonObject.getJsonObject("aggregateId").getString("$oid"));
+    }  else {
+      return TransactionInfo.create(
+              extractBigInteger(jsonObject, "height"),
+              jsonObject.getString("hash"));
+    }
+  }
 }
 
 /**
@@ -261,70 +263,74 @@ class MosaicDefinitionTransactionMapper extends TransactionMapper {
 		extractCommonProperties(jsonObject);
 		final MosaicProperties properties = new MosaicPropertiesMapper().apply(transaction);
 
-		return new MosaicDefinitionTransaction(
-				networkType,
-				version,
-				deadline,
-				maxFee,
-				MosaicNonce.createFromBigInteger(extractBigInteger(transaction, "mosaicNonce")),
-				new MosaicId(extractBigInteger(transaction, "mosaicId")),
-				properties,
-				transaction.getString("signature"),
-				new PublicAccount(transaction.getString("signer"), networkType),
-				transactionInfo
-		);
-	}
+    return new MosaicDefinitionTransaction(
+        networkType,
+        version,
+        deadline,
+        maxFee,
+        MosaicNonce.createFromBigInteger(extractBigInteger(transaction, "nonce")),
+        new MosaicId(extractBigInteger(transaction, "id")),
+        properties,
+        transaction.getString("signature"),
+        new PublicAccount(transaction.getString("signer"), networkType),
+        transactionInfo);
+  }
 }
 
 /**
  * Mosaic supply change transaction mapper.
  */
 class MosaicSupplyChangeTransactionMapper extends TransactionMapper {
-	/**
-	 * Converts from json to mosaic supply change transaction.
-	 *
-	 * @param jsonObject Json object.
-	 * @return Mosaic supply change transaction.
-	 */
-	@Override
-	public MosaicSupplyChangeTransaction apply(final JsonObject jsonObject) {
-		extractCommonProperties(jsonObject);
-		return new MosaicSupplyChangeTransaction(
-				networkType,
-				version,
-				deadline,
-				maxFee,
-				new MosaicId(extractBigInteger(transaction, "mosaicId")),
-				MosaicSupplyType.rawValueOf(transaction.getInteger("direction")),
-				extractBigInteger(transaction, "delta"),
-				transaction.getString("signature"),
-				new PublicAccount(transaction.getString("signer"), networkType),
-				transactionInfo
-		);
-	}
+  /**
+   * Converts from json to mosaic supply change transaction.
+   *
+   * @param jsonObject Json object.
+   * @return Mosaic supply change transaction.
+   */
+  @Override
+  public MosaicSupplyChangeTransaction apply(final JsonObject jsonObject) {
+    extractCommonProperties(jsonObject);
+    return new MosaicSupplyChangeTransaction(
+        networkType,
+        version,
+        deadline,
+        maxFee,
+        new MosaicId(extractBigInteger(transaction, "mosaicId")),
+        MosaicSupplyType.rawValueOf(transaction.getInteger("action")),
+        extractBigInteger(transaction, "delta"),
+        transaction.getString("signature"),
+        new PublicAccount(transaction.getString("signer"), networkType),
+        transactionInfo);
+  }
 }
 
 /**
  * Multisig modification transaction mapper.
  */
 class MultisigModificationTransactionMapper extends TransactionMapper {
-	/**
-	 * Converts from json to multisig modification transaction.
-	 *
-	 * @param jsonObject Json object.
-	 * @return Multisig modification transaction.
-	 */
-	@Override
-	public ModifyMultisigAccountTransaction apply(final JsonObject jsonObject) {
-		extractCommonProperties(jsonObject);
-		final List<MultisigCosignatoryModification> modifications = transaction.containsKey("modifications") ? transaction
-				.getJsonArray("modifications")
-				.stream()
-				.map(item -> (JsonObject) item)
-				.map(multisigModification -> new MultisigCosignatoryModification(
-						MultisigCosignatoryModificationType.rawValueOf(multisigModification.getInteger("type")),
-						PublicAccount.createFromPublicKey(multisigModification.getString("cosignatoryPublicKey"), networkType)))
-				.collect(Collectors.toList()) : Collections.emptyList();
+  /**
+   * Converts from json to multisig modification transaction.
+   *
+   * @param jsonObject Json object.
+   * @return Multisig modification transaction.
+   */
+  @Override
+  public ModifyMultisigAccountTransaction apply(final JsonObject jsonObject) {
+    extractCommonProperties(jsonObject);
+    final List<MultisigCosignatoryModification> modifications =
+        transaction.containsKey("modifications")
+            ? transaction.getJsonArray("modifications").stream()
+                .map(item -> (JsonObject) item)
+                .map(
+                    multisigModification ->
+                        new MultisigCosignatoryModification(
+                            MultisigCosignatoryModificationType.rawValueOf(
+                                multisigModification.getInteger("type")),
+                            PublicAccount.createFromPublicKey(
+                                multisigModification.getString("cosignatoryPublicKey"),
+                                networkType)))
+                .collect(Collectors.toList())
+            : Collections.emptyList();
 
 		return new ModifyMultisigAccountTransaction(
 				networkType,
@@ -369,7 +375,7 @@ class AggregateTransactionMapper extends TransactionMapper {
 
 		return new AggregateTransaction(
 				networkType,
-				TransactionType.rawValueOf(transaction.getInteger("type")),
+        TransactionType.rawValueOf(transaction.getInteger("type").shortValue()),
 				version,
 				deadline,
 				maxFee,
@@ -395,12 +401,14 @@ class LockFundsTransactionMapper extends TransactionMapper {
 	@Override
 	public LockFundsTransaction apply(final JsonObject jsonObject) {
 		extractCommonProperties(jsonObject);
+    final MosaicId mosaicId = new MosaicId(extractBigInteger(transaction, "mosaicId"));
+    final BigInteger amount = BigInteger.valueOf(transaction.getInteger("amount"));
 		return new LockFundsTransaction(
 				networkType,
 				version,
 				deadline,
 				maxFee,
-				new MosaicMapper().apply(transaction),
+        new Mosaic(mosaicId, amount),
 				extractBigInteger(transaction, "duration"),
 				new SignedTransaction("", transaction.getString("hash"), TransactionType.AGGREGATE_BONDED),
 				transaction.getString("signature"),
@@ -484,7 +492,7 @@ class MosaicAliasTransactionMapper extends TransactionMapper {
         version,
         deadline,
         maxFee,
-        AliasAction.rawValueOf(transaction.getInteger("action").byteValue()),
+        AliasAction.rawValueOf(transaction.getInteger("aliasAction").byteValue()),
         new NamespaceId(extractBigInteger(transaction, "namespaceId")),
         new MosaicId(extractBigInteger(transaction, "mosaicId")),
         transaction.getString("signature"),
@@ -509,7 +517,7 @@ class AddressAliasTransactionMapper extends TransactionMapper {
         version,
         deadline,
         maxFee,
-        AliasAction.rawValueOf(transaction.getInteger("action").byteValue()),
+        AliasAction.rawValueOf(transaction.getInteger("aliasAction").byteValue()),
         new NamespaceId(extractBigInteger(transaction, "namespaceId")),
         Address.createFromEncoded(transaction.getString("address")),
         transaction.getString("signature"),
