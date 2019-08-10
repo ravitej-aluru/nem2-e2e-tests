@@ -62,25 +62,26 @@ public class NamespacesMapper implements Function<JsonObject, NamespaceInfo> {
 		return new NamespaceInfo(active, index, metaId, type, depth, levels, parentId, owner, startHeight, endHeight, alias);
 	}
 
-	/**
-	 * Gets the alias if present
-	 *
-	 * @param jsonObject Json object.
-	 * @return Alias.
-	 */
-	public Alias getAlias(final JsonObject jsonObject) {
-		JsonObject aliasObject = jsonObject.getJsonObject("alias");
-		AliasType aliasType = AliasType.rawValueOf(aliasObject.getInteger("type"));
-		switch (aliasType) {
-			case None:
-				return new EmptyAlias();
-			case Address:
-				final Address address = Address.createFromRawAddress(aliasObject.getString("address"));
-				return new AddressAlias(address);
-			case Mosaic:
-				final MosaicId mosaicId = new MosaicId(MapperUtils.extractBigInteger(aliasObject, "mosaicId"));
-				return new MosaicAlias(mosaicId);
-		}
-		throw new IllegalStateException("Alias factory was not found.");
-	}
+  /**
+   * Gets the alias if present
+   *
+   * @param jsonObject Json object.
+   * @return Alias.
+   */
+  public Alias getAlias(final JsonObject jsonObject) {
+    final JsonObject aliasObject = jsonObject.getJsonObject("alias");
+    final AliasType aliasType = AliasType.rawValueOf(aliasObject.getInteger("type"));
+    switch (aliasType) {
+      case None:
+        return new EmptyAlias();
+      case Address:
+        final Address address = Address.createFromEncoded(aliasObject.getString("address"));
+        return new AddressAlias(address);
+      case Mosaic:
+        final MosaicId mosaicId =
+            new MosaicId(MapperUtils.extractBigInteger(aliasObject, "mosaicId"));
+        return new MosaicAlias(mosaicId);
+    }
+    throw new IllegalStateException("Alias factory was not found.");
+  }
 }

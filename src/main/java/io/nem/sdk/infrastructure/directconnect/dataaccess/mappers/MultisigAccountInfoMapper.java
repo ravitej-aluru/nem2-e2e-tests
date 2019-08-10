@@ -34,18 +34,20 @@ import java.util.stream.Collectors;
  * Multisigs account mapper.
  */
 public class MultisigAccountInfoMapper implements Function<JsonObject, MultisigAccountInfo> {
-	/**
-	 * Gets public accounts from json.
-	 *
-	 * @param jsonObject  Json object.
-	 * @param keyName     Key name.
-	 * @param networkType Network type.
-	 * @return Public account.
-	 */
-	private List<PublicAccount> getPublicAccounts(final JsonObject jsonObject, final String keyName, final NetworkType networkType) {
-		return jsonObject.getJsonArray(keyName).stream().map(s -> new PublicAccount(jsonObject.getString("account"), networkType)).collect(
-				Collectors.toList());
-	}
+  /**
+   * Gets public accounts from json.
+   *
+   * @param jsonObject Json object.
+   * @param keyName Key name.
+   * @param networkType Network type.
+   * @return Public account.
+   */
+  private List<PublicAccount> getPublicAccounts(
+      final JsonObject jsonObject, final String keyName, final NetworkType networkType) {
+    return jsonObject.getJsonArray(keyName).stream()
+        .map(s -> new PublicAccount(s.toString(), networkType))
+        .collect(Collectors.toList());
+  }
 
   /**
    * Create a multisig account info object from json.
