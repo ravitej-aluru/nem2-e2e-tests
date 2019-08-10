@@ -219,33 +219,36 @@ class TransferTransactionMapper extends TransactionMapper {
  * Register namespace transaction mapper.
  */
 class RegisterNamespaceTransactionMapper extends TransactionMapper {
-	/**
-	 * Converts from json to register namespace transaction.
-	 *
-	 * @param jsonObject Json object.
-	 * @return Register namespace transaction.
-	 */
-	@Override
-	public RegisterNamespaceTransaction apply(final JsonObject jsonObject) {
-		extractCommonProperties(jsonObject);
-		final NamespaceType namespaceType = NamespaceType.rawValueOf(transaction.getInteger("namespaceType"));
+  /**
+   * Converts from json to register namespace transaction.
+   *
+   * @param jsonObject Json object.
+   * @return Register namespace transaction.
+   */
+  @Override
+  public RegisterNamespaceTransaction apply(final JsonObject jsonObject) {
+    extractCommonProperties(jsonObject);
+    final NamespaceType namespaceType =
+        NamespaceType.rawValueOf(transaction.getInteger("registrationType"));
 
-		return new RegisterNamespaceTransaction(
-				networkType,
-				version,
-				deadline,
-				maxFee,
-				transaction.getString("name"),
-				new NamespaceId(extractBigInteger(transaction, "namespaceId")),
-				namespaceType,
-				namespaceType == NamespaceType.RootNamespace ? Optional.of(extractBigInteger(transaction, "duration")) : Optional.empty(),
-				namespaceType == NamespaceType.SubNamespace ? Optional.of(new NamespaceId(extractBigInteger(transaction, "parentId"))) :
-						Optional.empty(),
-				transaction.getString("signature"),
-				new PublicAccount(transaction.getString("signer"), networkType),
-				transactionInfo
-		);
-	}
+    return new RegisterNamespaceTransaction(
+        networkType,
+        version,
+        deadline,
+        maxFee,
+        transaction.getString("name"),
+        new NamespaceId(extractBigInteger(transaction, "id")),
+        namespaceType,
+        namespaceType == NamespaceType.RootNamespace
+            ? Optional.of(extractBigInteger(transaction, "duration"))
+            : Optional.empty(),
+        namespaceType == NamespaceType.SubNamespace
+            ? Optional.of(new NamespaceId(extractBigInteger(transaction, "parentId")))
+            : Optional.empty(),
+        transaction.getString("signature"),
+        new PublicAccount(transaction.getString("signer"), networkType),
+        transactionInfo);
+  }
 }
 
 /**
