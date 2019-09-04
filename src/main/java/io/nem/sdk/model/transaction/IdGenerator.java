@@ -29,96 +29,98 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
-/**
- * Id generator
- */
-final public class IdGenerator {
-	private static final long ID_GENERATOR_FLAG = 0x8000000000000000L;
+/** Id generator */
+public final class IdGenerator {
+  private static final long ID_GENERATOR_FLAG = 0x8000000000000000L;
 
-	/**
-	 * Generate mosaic id.
-	 *
-	 * @param nonce     Nonce bytes.
-	 * @param publicKey Public key.
-	 * @return Mosaic id.
-	 */
-	public static BigInteger generateMosaicId(final byte[] nonce, final byte[] publicKey) {
-		final byte[] reverseNonce = ByteUtils.reverseCopy(nonce);
-		final byte[] hash = IdGenerator.getHashInLittleEndian(reverseNonce, publicKey);
-		// Unset the high bit for mosaic id
-		return BigInteger.valueOf(ByteBuffer.wrap(hash).getLong() & ~ID_GENERATOR_FLAG);
-	}
+  /**
+   * Generate mosaic id.
+   *
+   * @param nonce Nonce bytes.
+   * @param publicKey Public key.
+   * @return Mosaic id.
+   */
+  public static BigInteger generateMosaicId(final byte[] nonce, final byte[] publicKey) {
+    final byte[] reverseNonce = ByteUtils.reverseCopy(nonce);
+    final byte[] hash = IdGenerator.getHashInLittleEndian(reverseNonce, publicKey);
+    // Unset the high bit for mosaic id
+    return BigInteger.valueOf(ByteBuffer.wrap(hash).getLong() & ~ID_GENERATOR_FLAG);
+  }
 
-	/**
-	 * Generate namespace id.
-	 *
-	 * @param namespaceName Namespace name.
-	 * @param parentId      Parent id.
-	 * @return Namespace id.
-	 */
-	public static BigInteger generateNamespaceId(final String namespaceName, final BigInteger parentId) {
-		final ByteBuffer parentIdBuffer = ByteBuffer.allocate(8).order(ByteOrder.LITTLE_ENDIAN).putLong(parentId.longValue());
-		final byte[] hash = IdGenerator.getHashInLittleEndian(parentIdBuffer.array(), namespaceName.getBytes());
-		// Set the high bit for namespace id
-		return BigInteger.valueOf(ByteBuffer.wrap(hash).getLong() | ID_GENERATOR_FLAG);
-	}
+  /**
+   * Generate namespace id.
+   *
+   * @param namespaceName Namespace name.
+   * @param parentId Parent id.
+   * @return Namespace id.
+   */
+  public static BigInteger generateNamespaceId(
+      final String namespaceName, final BigInteger parentId) {
+    final ByteBuffer parentIdBuffer =
+        ByteBuffer.allocate(8).order(ByteOrder.LITTLE_ENDIAN).putLong(parentId.longValue());
+    final byte[] hash =
+        IdGenerator.getHashInLittleEndian(parentIdBuffer.array(), namespaceName.getBytes());
+    // Set the high bit for namespace id
+    return BigInteger.valueOf(ByteBuffer.wrap(hash).getLong() | ID_GENERATOR_FLAG);
+  }
 
-	/**
-	 * Generate namespace id.
-	 *
-	 * @param namespaceName       Namespace name.
-	 * @param parentNamespaceName Parent name.
-	 * @return Namespace id.
-	 */
-	public static BigInteger generateNamespaceId(final String namespaceName, final String parentNamespaceName) {
-		return IdGenerator.generateNamespaceId(parentNamespaceName + "." + namespaceName);
-	}
+  /**
+   * Generate namespace id.
+   *
+   * @param namespaceName Namespace name.
+   * @param parentNamespaceName Parent name.
+   * @return Namespace id.
+   */
+  public static BigInteger generateNamespaceId(
+      final String namespaceName, final String parentNamespaceName) {
+    return IdGenerator.generateNamespaceId(parentNamespaceName + "." + namespaceName);
+  }
 
-	/**
-	 * Generate namespace id.
-	 *
-	 * @param namespacePath Namespace path.
-	 * @return Namespace id.
-	 */
-	public static BigInteger generateNamespaceId(final String namespacePath) {
-		List<BigInteger> namespaceList = generateNamespacePath(namespacePath);
-		return namespaceList.get(namespaceList.size() - 1);
-	}
+  /**
+   * Generate namespace id.
+   *
+   * @param namespacePath Namespace path.
+   * @return Namespace id.
+   */
+  public static BigInteger generateNamespaceId(final String namespacePath) {
+    List<BigInteger> namespaceList = generateNamespacePath(namespacePath);
+    return namespaceList.get(namespaceList.size() - 1);
+  }
 
-	/**
-	 * Generate namespace id.
-	 *
-	 * @param namespacePath Namespace path.
-	 * @return List of namespace id.
-	 */
-	public static List<BigInteger> generateNamespacePath(final String namespacePath) {
-		String[] parts = namespacePath.split(Pattern.quote("."));
-		List<BigInteger> path = new ArrayList<>();
+  /**
+   * Generate namespace id.
+   *
+   * @param namespacePath Namespace path.
+   * @return List of namespace id.
+   */
+  public static List<BigInteger> generateNamespacePath(final String namespacePath) {
+    String[] parts = namespacePath.split(Pattern.quote("."));
+    List<BigInteger> path = new ArrayList<>();
 
-		if (parts.length == 0) {
-			throw new IllegalIdentifierException("invalid namespace path");
-		} else if (parts.length > 3) {
-			throw new IllegalIdentifierException("too many parts");
-		}
+    if (parts.length == 0) {
+      throw new IllegalIdentifierException("invalid namespace path");
+    } else if (parts.length > 3) {
+      throw new IllegalIdentifierException("too many parts");
+    }
 
-		BigInteger namespaceId = BigInteger.valueOf(0);
-		for (int i = 0; i < parts.length; i++) {
-			namespaceId = generateNamespaceId(parts[i], namespaceId);
-			path.add(namespaceId);
-		}
-		return path;
-	}
+    BigInteger namespaceId = BigInteger.valueOf(0);
+    for (int i = 0; i < parts.length; i++) {
+      namespaceId = generateNamespaceId(parts[i], namespaceId);
+      path.add(namespaceId);
+    }
+    return path;
+  }
 
-	/**
-	 * Gets hash in little endian.
-	 *
-	 * @param inputs Inputs to hash.
-	 * @return Hash value.
-	 */
-	private static byte[] getHashInLittleEndian(final byte[]... inputs) {
-		byte[] result = Hashes.sha3_256(inputs);
-		result = Arrays.copyOfRange(result, 0, 8);
-		ArrayUtils.reverse(result);
-		return result;
-	}
+  /**
+   * Gets hash in little endian.
+   *
+   * @param inputs Inputs to hash.
+   * @return Hash value.
+   */
+  private static byte[] getHashInLittleEndian(final byte[]... inputs) {
+    byte[] result = Hashes.sha3_256(inputs);
+    result = Arrays.copyOfRange(result, 0, 8);
+    ArrayUtils.reverse(result);
+    return result;
+  }
 }

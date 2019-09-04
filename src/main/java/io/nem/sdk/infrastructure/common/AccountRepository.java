@@ -32,13 +32,13 @@ import java.util.List;
 
 /** Account interface repository. */
 public interface AccountRepository {
-	/**
-	 * Gets an AccountInfo for an account.
-	 *
-	 * @param address Address
-	 * @return Observable of {@link AccountInfo}
-	 */
-	Observable<AccountInfo> getAccountInfo(Address address);
+  /**
+   * Gets an AccountInfo for an account.
+   *
+   * @param address Address
+   * @return Observable of {@link AccountInfo}
+   */
+  Observable<AccountInfo> getAccountInfo(Address address);
 
   /**
    * Gets a MultisigAccountInfo for an account.
@@ -49,8 +49,8 @@ public interface AccountRepository {
   Observable<MultisigAccountInfo> getMultisigAccountInfo(Address address);
 
   /**
-   * Gets an list of transactions for which an account is the sender or has sign the transaction.
-   * A transaction is said to be aggregate bonded with respect to an account if there are missing
+   * Gets an list of transactions for which an account is the sender or has sign the transaction. A
+   * transaction is said to be aggregate bonded with respect to an account if there are missing
    * signatures.
    *
    * @param publicAccount PublicAccount
@@ -58,16 +58,14 @@ public interface AccountRepository {
    */
   Observable<List<AggregateTransaction>> aggregateBondedTransactions(PublicAccount publicAccount);
 
-
   /**
-   * Gets the list of transactions for which an account is the sender or receiver and which have
-   * not yet been included in a block. Unconfirmed transactions are those transactions that have
-   * not yet been included in a block. Unconfirmed transactions are not guaranteed to be included
-   * in any block.
+   * Gets the list of transactions for which an account is the sender or receiver and which have not
+   * yet been included in a block. Unconfirmed transactions are those transactions that have not yet
+   * been included in a block. Unconfirmed transactions are not guaranteed to be included in any
+   * block.
    *
    * @param publicAccount PublicAccount
    * @return Observable of List<{@link Transaction}>
    */
   Observable<List<Transaction>> unconfirmedTransactions(PublicAccount publicAccount);
-
 }

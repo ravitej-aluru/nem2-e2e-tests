@@ -32,76 +32,78 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.security.SecureRandom;
 
-/**
- * Challenge helper.
- */
+/** Challenge helper. */
 public class ChallengeHelper {
-	/* Header size. */
-	final static byte HEADER_SIZE = PacketHeader.SIZE;
-	/* Challenge packet size. */
-	final static byte CHALLENGE_SIZE = 64;
-	/* Security mode size. */
-	final static byte SECURITY_MODE_SIZE = 1;
+  /* Header size. */
+  static final byte HEADER_SIZE = PacketHeader.SIZE;
+  /* Challenge packet size. */
+  static final byte CHALLENGE_SIZE = 64;
+  /* Security mode size. */
+  static final byte SECURITY_MODE_SIZE = 1;
 
-	/**
-	 * Gets a random bytes.
-	 *
-	 * @param size Size of the bytes.
-	 * @return Random bytes.
-	 */
-	private static byte[] GetRandomBytes(final int size) {
-		final byte[] bytes = new byte[size];
-		ExceptionUtils.propagateVoid(() -> SecureRandom.getInstanceStrong().nextBytes(bytes));
-		return bytes;
-	}
+  /**
+   * Gets a random bytes.
+   *
+   * @param size Size of the bytes.
+   * @return Random bytes.
+   */
+  private static byte[] GetRandomBytes(final int size) {
+    final byte[] bytes = new byte[size];
+    ExceptionUtils.propagateVoid(() -> SecureRandom.getInstanceStrong().nextBytes(bytes));
+    return bytes;
+  }
 
-	/**
-	 * Generates a client response to a server challenge.
-	 *
-	 * @param request      The parsed server challenge request.
-	 * @param keyPair      The client key pair.
-	 * @param securityMode Connection security mode.
-	 * @returns Buffer composed of the binary response packet.
-	 */
-	static ByteBuffer generateServerChallengeResponse(final ByteBuffer request, final KeyPair keyPair,
-													  final ConnectionSecurityMode securityMode) {
-		// create a new challenge
-		final byte[] challenge = GetRandomBytes(CHALLENGE_SIZE);
-		// sign the request challenge
-		final ByteBuffer signedBuffers = ByteBuffer.allocate(CHALLENGE_SIZE + SECURITY_MODE_SIZE);
-		signedBuffers.rewind();
-		signedBuffers.put(request);
-		signedBuffers.put(securityMode.getValue());
-		final Signature signature = new Signer(keyPair).sign(signedBuffers.array());
+  /**
+   * Generates a client response to a server challenge.
+   *
+   * @param request The parsed server challenge request.
+   * @param keyPair The client key pair.
+   * @param securityMode Connection security mode.
+   * @returns Buffer composed of the binary response packet.
+   */
+  static ByteBuffer generateServerChallengeResponse(
+      final ByteBuffer request, final KeyPair keyPair, final ConnectionSecurityMode securityMode) {
+    // create a new challenge
+    final byte[] challenge = GetRandomBytes(CHALLENGE_SIZE);
+    // sign the request challenge
+    final ByteBuffer signedBuffers = ByteBuffer.allocate(CHALLENGE_SIZE + SECURITY_MODE_SIZE);
+    signedBuffers.rewind();
+    signedBuffers.put(request);
+    signedBuffers.put(securityMode.getValue());
+    final Signature signature = new Signer(keyPair).sign(signedBuffers.array());
 
-		// create the response header
-		final int length =
-				HEADER_SIZE + challenge.length + signature.getBytes().length + keyPair.getPublicKey().getBytes().length +
-						SECURITY_MODE_SIZE;
-		final ByteBuffer header = PacketHeader.createPacketHeader(PacketType.SERVER_CHALLENGE, length);
+    // create the response header
+    final int length =
+        HEADER_SIZE
+            + challenge.length
+            + signature.getBytes().length
+            + keyPair.getPublicKey().getBytes().length
+            + SECURITY_MODE_SIZE;
+    final ByteBuffer header = PacketHeader.createPacketHeader(PacketType.SERVER_CHALLENGE, length);
 
-		// merge all buffers
-		final ByteBuffer response = ByteBuffer.allocate(length);
-		response.order(ByteOrder.LITTLE_ENDIAN);
-		response.put(header);
-		response.put(challenge);
-		response.put(signature.getBytes());
-		response.put(keyPair.getPublicKey().getBytes());
-		response.put(securityMode.getValue());
-		response.rewind();
-		return response;
-	}
+    // merge all buffers
+    final ByteBuffer response = ByteBuffer.allocate(length);
+    response.order(ByteOrder.LITTLE_ENDIAN);
+    response.put(header);
+    response.put(challenge);
+    response.put(signature.getBytes());
+    response.put(keyPair.getPublicKey().getBytes());
+    response.put(securityMode.getValue());
+    response.rewind();
+    return response;
+  }
 
-	/**
-	 * Verifies a server's response to a challenge.
-	 *
-	 * @param response  Parsed client challenge response.
-	 * @param publicKey Server public key.
-	 * @param challenge Challenge presented to the server.
-	 * @returns True if the response can be verified, false otherwise.
-	 */
-	static boolean verifyClientChallengeResponse(final ByteBuffer response, final PublicKey publicKey, final ByteBuffer challenge) {
-		final KeyPair serverKeyPair = new KeyPair(publicKey);
-		return new Signer(serverKeyPair).verify(challenge.array(), new Signature(response.array()));
-	}
+  /**
+   * Verifies a server's response to a challenge.
+   *
+   * @param response Parsed client challenge response.
+   * @param publicKey Server public key.
+   * @param challenge Challenge presented to the server.
+   * @returns True if the response can be verified, false otherwise.
+   */
+  static boolean verifyClientChallengeResponse(
+      final ByteBuffer response, final PublicKey publicKey, final ByteBuffer challenge) {
+    final KeyPair serverKeyPair = new KeyPair(publicKey);
+    return new Signer(serverKeyPair).verify(challenge.array(), new Signature(response.array()));
+  }
 }

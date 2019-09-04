@@ -39,17 +39,17 @@ import java.util.stream.Collectors;
 
 /** Account dao repository. */
 public class AccountsDao implements AccountRepository {
-	/* Catapult context. */
-	final private CatapultContext catapultContext;
+  /* Catapult context. */
+  private final CatapultContext catapultContext;
 
-	/**
-	 * Constructor.
-	 *
-	 * @param context Catapult context.
-	 */
-	public AccountsDao(final CatapultContext context) {
-		this.catapultContext = context;
-	}
+  /**
+   * Constructor.
+   *
+   * @param context Catapult context.
+   */
+  public AccountsDao(final CatapultContext context) {
+    this.catapultContext = context;
+  }
 
   /**
    * Gets account info form address
@@ -112,8 +112,8 @@ public class AccountsDao implements AccountRepository {
   @Override
   public Observable<List<Transaction>> unconfirmedTransactions(PublicAccount publicAccount) {
     return Observable.fromCallable(
-            () ->
-                    new UnconfirmedTransactionsCollection(catapultContext)
-                            .findBySigner(publicAccount.getPublicKey().getBytes()));
+        () ->
+            new UnconfirmedTransactionsCollection(catapultContext)
+                .findBySigner(publicAccount.getPublicKey().getBytes()));
   }
 }

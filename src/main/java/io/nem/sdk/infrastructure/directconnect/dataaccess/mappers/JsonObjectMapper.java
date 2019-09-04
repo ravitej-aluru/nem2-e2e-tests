@@ -28,20 +28,23 @@ import org.bson.json.JsonWriterSettings;
 
 import java.util.function.Function;
 
-/**
- * Document to JsonObject mapper
- */
+/** Document to JsonObject mapper */
 public class JsonObjectMapper implements Function<Document, JsonObject> {
-	/**
-	 * Converts a document to a json object.
-	 *
-	 * @param document document to convert.
-	 * @return Json Object.
-	 */
-	@Override
-	public JsonObject apply(final Document document) {
-		final String json = document.toJson(JsonWriterSettings.builder().binaryConverter(
-				(value, writer) -> writer.writeString(HexEncoder.getString(value.getData()))).outputMode(JsonMode.RELAXED).build());
-		return new JsonObject(json);
-	}
+  /**
+   * Converts a document to a json object.
+   *
+   * @param document document to convert.
+   * @return Json Object.
+   */
+  @Override
+  public JsonObject apply(final Document document) {
+    final String json =
+        document.toJson(
+            JsonWriterSettings.builder()
+                .binaryConverter(
+                    (value, writer) -> writer.writeString(HexEncoder.getString(value.getData())))
+                .outputMode(JsonMode.RELAXED)
+                .build());
+    return new JsonObject(json);
+  }
 }

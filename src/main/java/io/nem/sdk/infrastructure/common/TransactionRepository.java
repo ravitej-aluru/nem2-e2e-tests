@@ -23,48 +23,48 @@ package io.nem.sdk.infrastructure.common;
 import io.nem.sdk.model.transaction.*;
 import io.reactivex.Observable;
 
-/**
- * Transaction interface repository.
- */
+/** Transaction interface repository. */
 public interface TransactionRepository {
 
-	/**
-	 * Gets a transaction for a given hash.
-	 *
-	 * @param transactionHash String
-	 * @return Observable of {@link Transaction}
-	 */
-	Observable<Transaction> getTransaction(String transactionHash);
+  /**
+   * Gets a transaction for a given hash.
+   *
+   * @param transactionHash String
+   * @return Observable of {@link Transaction}
+   */
+  Observable<Transaction> getTransaction(String transactionHash);
 
-	/**
-	 * Gets a transaction status for a transaction hash.
-	 *
-	 * @param transactionHash String
-	 * @return Observable of {@link TransactionStatus}
-	 */
-	Observable<TransactionStatus> getTransactionStatus(String transactionHash);
+  /**
+   * Gets a transaction status for a transaction hash.
+   *
+   * @param transactionHash String
+   * @return Observable of {@link TransactionStatus}
+   */
+  Observable<TransactionStatus> getTransactionStatus(String transactionHash);
 
-	/**
-	 * Send a signed transaction.
-	 *
-	 * @param signedTransaction SignedTransaction
-	 * @return Observable of TransactionAnnounceResponse
-	 */
-	Observable<TransactionAnnounceResponse> announce(SignedTransaction signedTransaction);
+  /**
+   * Send a signed transaction.
+   *
+   * @param signedTransaction SignedTransaction
+   * @return Observable of TransactionAnnounceResponse
+   */
+  Observable<TransactionAnnounceResponse> announce(SignedTransaction signedTransaction);
 
-	/**
-	 * Send a signed transaction with missing signatures.
-	 *
-	 * @param signedTransaction SignedTransaction
-	 * @return Observable of TransactionAnnounceResponse
-	 */
-	Observable<TransactionAnnounceResponse> announceAggregateBonded(SignedTransaction signedTransaction);
+  /**
+   * Send a signed transaction with missing signatures.
+   *
+   * @param signedTransaction SignedTransaction
+   * @return Observable of TransactionAnnounceResponse
+   */
+  Observable<TransactionAnnounceResponse> announceAggregateBonded(
+      SignedTransaction signedTransaction);
 
-	/**
-	 * Send a cosignature signed transaction of an already announced transaction.
-	 *
-	 * @param cosignatureSignedTransaction CosignatureSignedTransaction
-	 * @return Observable of TransactionAnnounceResponse
-	 */
-	Observable<TransactionAnnounceResponse> announceAggregateBondedCosignature(CosignatureSignedTransaction cosignatureSignedTransaction);
+  /**
+   * Send a cosignature signed transaction of an already announced transaction.
+   *
+   * @param cosignatureSignedTransaction CosignatureSignedTransaction
+   * @return Observable of TransactionAnnounceResponse
+   */
+  Observable<TransactionAnnounceResponse> announceAggregateBondedCosignature(
+      CosignatureSignedTransaction cosignatureSignedTransaction);
 }

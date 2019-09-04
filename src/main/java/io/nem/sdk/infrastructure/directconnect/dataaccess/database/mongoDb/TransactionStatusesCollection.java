@@ -30,14 +30,13 @@ import io.nem.sdk.model.transaction.TransactionStatusError;
 import java.math.BigInteger;
 import java.util.Optional;
 
-/**
- * Transaction statuses collection.
- */
+/** Transaction statuses collection. */
 public class TransactionStatusesCollection implements TransactionState {
-	/* Catapult context. */
-	final CatapultContext context;
-	/* Catapult collection */
-	final private CatapultCollection<TransactionStatusError, TransactionStatusErrorMapper> catapultCollection;
+  /* Catapult context. */
+  final CatapultContext context;
+  /* Catapult collection */
+  private final CatapultCollection<TransactionStatusError, TransactionStatusErrorMapper>
+      catapultCollection;
 
   /**
    * Constructor.
@@ -62,7 +61,7 @@ public class TransactionStatusesCollection implements TransactionState {
    */
   public Optional<TransactionStatusError> findOne(
       final String transactionHash, final int timeoutInSeconds) {
-    final String keyName = "hash";
+    final String keyName = "status.hash";
     final byte[] keyValuebytes = HexEncoder.getBytes(transactionHash);
     return catapultCollection.findOne(keyName, keyValuebytes, timeoutInSeconds);
   }

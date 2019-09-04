@@ -32,61 +32,74 @@ import io.reactivex.Observable;
 
 import java.util.List;
 
-/**
- * Namespace dao repository.
- */
+/** Namespace dao repository. */
 public class NamespaceDao implements NamespaceRepository {
-	/* Catapult context. */
-	final private CatapultContext catapultContext;
+  /* Catapult context. */
+  private final CatapultContext catapultContext;
 
-	/**
-	 * Constructor.
-	 *
-	 * @param context Catapult context.
-	 */
-	public NamespaceDao(final CatapultContext context) {
-		this.catapultContext = context;
-	}
+  /**
+   * Constructor.
+   *
+   * @param context Catapult context.
+   */
+  public NamespaceDao(final CatapultContext context) {
+    this.catapultContext = context;
+  }
 
-	@Override
-	public Observable<NamespaceInfo> getNamespace(NamespaceId namespaceId) {
-		return Observable.fromCallable(() -> new NamespacesCollection(catapultContext).findById(namespaceId.getId().longValue()).get());
-	}
+  @Override
+  public Observable<NamespaceInfo> getNamespace(NamespaceId namespaceId) {
+    return Observable.fromCallable(
+        () ->
+            new NamespacesCollection(catapultContext)
+                .findById(namespaceId.getId().longValue())
+                .get());
+  }
 
-	@Override
-	public Observable<List<NamespaceInfo>> getNamespacesFromAccount(Address address) {
-		return Observable.fromCallable(() -> new NamespacesCollection(catapultContext).findByAddress(address.getByteBuffer().array()));
-	}
+  @Override
+  public Observable<List<NamespaceInfo>> getNamespacesFromAccount(Address address) {
+    return Observable.fromCallable(
+        () ->
+            new NamespacesCollection(catapultContext)
+                .findByAddress(address.getByteBuffer().array()));
+  }
 
-	/**
-	 * Gets the MosaicId from a MosaicAlias
-	 *
-	 * @param namespaceId - the namespaceId of the namespace
-	 * @return Observable of <{@link MosaicId}>
-	 */
-	@Override
-	public Observable<MosaicId> getLinkedMosaicId(NamespaceId namespaceId) {
-		return getNamespace(namespaceId).map(namespaceInfo -> namespaceInfo.getAlias()).map(alias -> {
-			if (AliasType.Mosaic == alias.getType()) {
-				return (MosaicId) alias.getAliasValue();
-			}
-			throw new IllegalArgumentException("Namespace id " + namespaceId.getIdAsHex() + "  does not have a MosaicId alias.");
-		});
-	}
+  /**
+   * Gets the MosaicId from a MosaicAlias
+   *
+   * @param namespaceId - the namespaceId of the namespace
+   * @return Observable of <{@link MosaicId}>
+   */
+  @Override
+  public Observable<MosaicId> getLinkedMosaicId(NamespaceId namespaceId) {
+    return getNamespace(namespaceId)
+        .map(namespaceInfo -> namespaceInfo.getAlias())
+        .map(
+            alias -> {
+              if (AliasType.Mosaic == alias.getType()) {
+                return (MosaicId) alias.getAliasValue();
+              }
+              throw new IllegalArgumentException(
+                  "Namespace id " + namespaceId.getIdAsHex() + "  does not have a MosaicId alias.");
+            });
+  }
 
-	/**
-	 * Gets the Address from a AddressAlias
-	 *
-	 * @param namespaceId - the namespaceId of the namespace
-	 * @return Observable of <{@link MosaicId}>
-	 */
-	@Override
-	public Observable<Address> getLinkedAddress(NamespaceId namespaceId) {
-		return getNamespace(namespaceId).map(namespaceInfo -> namespaceInfo.getAlias()).map(alias -> {
-			if (AliasType.Address == alias.getType()) {
-				return (Address) alias.getAliasValue();
-			}
-			throw new IllegalArgumentException("Namespace id " + namespaceId.getIdAsHex() + "  does not have an Address alias.");
-		});
-	}
+  /**
+   * Gets the Address from a AddressAlias
+   *
+   * @param namespaceId - the namespaceId of the namespace
+   * @return Observable of <{@link MosaicId}>
+   */
+  @Override
+  public Observable<Address> getLinkedAddress(NamespaceId namespaceId) {
+    return getNamespace(namespaceId)
+        .map(namespaceInfo -> namespaceInfo.getAlias())
+        .map(
+            alias -> {
+              if (AliasType.Address == alias.getType()) {
+                return (Address) alias.getAliasValue();
+              }
+              throw new IllegalArgumentException(
+                  "Namespace id " + namespaceId.getIdAsHex() + "  does not have an Address alias.");
+            });
+  }
 }

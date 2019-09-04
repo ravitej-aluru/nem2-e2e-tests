@@ -29,38 +29,41 @@ import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Network Dao repository.
- */
+/** Network Dao repository. */
 public class NetworkDao implements NetworkRepository {
-	/* Hash map of network type. */
-	final private static Map<String, NetworkType> clientNetworkTypeMap = new HashMap<>();
-	/* Catapult context. */
-	final private CatapultContext catapultContext;
+  /* Hash map of network type. */
+  private static final Map<String, NetworkType> clientNetworkTypeMap = new HashMap<>();
+  /* Catapult context. */
+  private final CatapultContext catapultContext;
 
-	/**
-	 * Constructor.
-	 *
-	 * @param context Catapult context.
-	 */
-	public NetworkDao(final CatapultContext context) {
-		this.catapultContext = context;
-	}
+  /**
+   * Constructor.
+   *
+   * @param context Catapult context.
+   */
+  public NetworkDao(final CatapultContext context) {
+    this.catapultContext = context;
+  }
 
-	/**
-	 * Gets the network type from the server.
-	 *
-	 * @return Network type.
-	 */
-	public Observable<NetworkType> getNetworkType() {
-		return Observable.fromCallable(() -> {
-			if (!clientNetworkTypeMap.containsKey(catapultContext.getHostName())) {
-				/* Get the network information from the first block */
-				clientNetworkTypeMap.put(catapultContext.getHostName(),
-						new BlockchainDao(catapultContext).getBlockByHeight(BigInteger.valueOf(1)).toFuture()
-								.get().getNetworkType());
-			}
-			return clientNetworkTypeMap.get(catapultContext.getHostName());
-		});
-	}
+  /**
+   * Gets the network type from the server.
+   *
+   * @return Network type.
+   */
+  public Observable<NetworkType> getNetworkType() {
+    return Observable.fromCallable(
+        () -> {
+          if (!clientNetworkTypeMap.containsKey(catapultContext.getHostName())) {
+            /* Get the network information from the first block */
+            clientNetworkTypeMap.put(
+                catapultContext.getHostName(),
+                new BlockchainDao(catapultContext)
+                    .getBlockByHeight(BigInteger.valueOf(1))
+                    .toFuture()
+                    .get()
+                    .getNetworkType());
+          }
+          return clientNetworkTypeMap.get(catapultContext.getHostName());
+        });
+  }
 }

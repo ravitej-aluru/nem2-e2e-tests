@@ -35,35 +35,35 @@ import java.util.List;
  */
 public interface NamespaceRepository {
 
-	/**
-	 * Gets the NamespaceInfo for a given namespaceId.
-	 *
-	 * @param namespaceId NamespaceId
-	 * @return Observable of {@link NamespaceInfo}
-	 */
-	Observable<NamespaceInfo> getNamespace(NamespaceId namespaceId);
+  /**
+   * Gets the NamespaceInfo for a given namespaceId.
+   *
+   * @param namespaceId NamespaceId
+   * @return Observable of {@link NamespaceInfo}
+   */
+  Observable<NamespaceInfo> getNamespace(NamespaceId namespaceId);
 
-	/**
-	 * Gets list of NamespaceInfo for an account.
-	 *
-	 * @param address Address
-	 * @return Observable of List<{@link NamespaceInfo}>
-	 */
-	Observable<List<NamespaceInfo>> getNamespacesFromAccount(Address address);
+  /**
+   * Gets list of NamespaceInfo for an account.
+   *
+   * @param address Address
+   * @return Observable of List<{@link NamespaceInfo}>
+   */
+  Observable<List<NamespaceInfo>> getNamespacesFromAccount(Address address);
 
-	/**
-	 * Gets the MosaicId from a MosaicAlias
-	 *
-	 * @param namespaceId - the namespaceId of the namespace
-	 * @return Observable of <{@link MosaicId}>
-	 */
-	Observable<MosaicId> getLinkedMosaicId(NamespaceId namespaceId);
+  /**
+   * Gets the MosaicId from a MosaicAlias
+   *
+   * @param namespaceId - the namespaceId of the namespace
+   * @return Observable of <{@link MosaicId}>
+   */
+  Observable<MosaicId> getLinkedMosaicId(NamespaceId namespaceId);
 
-	/**
-	 * Gets the Address from a AddressAlias
-	 *
-	 * @param namespaceId - the namespaceId of the namespace
-	 * @return Observable of <{@link Address}>
-	 */
-	Observable<Address> getLinkedAddress(NamespaceId namespaceId);
+  /**
+   * Gets the Address from a AddressAlias
+   *
+   * @param namespaceId - the namespaceId of the namespace
+   * @return Observable of <{@link Address}>
+   */
+  Observable<Address> getLinkedAddress(NamespaceId namespaceId);
 }

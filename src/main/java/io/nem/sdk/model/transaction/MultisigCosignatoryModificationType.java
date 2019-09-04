@@ -29,12 +29,11 @@ public enum MultisigCosignatoryModificationType {
   /** Add cosignatory. */
   ADD(1);
 
+  private int value;
 
-	private int value;
-
-	MultisigCosignatoryModificationType(int value) {
-		this.value = value;
-	}
+  MultisigCosignatoryModificationType(int value) {
+    this.value = value;
+  }
 
   /**
    * Static constructor converting multsig cosignatory modification raw value to enum instance.
@@ -46,21 +45,19 @@ public enum MultisigCosignatoryModificationType {
     switch (value) {
       case 0:
         return MultisigCosignatoryModificationType.REMOVE;
-        case 1:
+      case 1:
         return MultisigCosignatoryModificationType.ADD;
       default:
         throw new IllegalArgumentException(value + " is not a valid value");
     }
   }
 
-	/**
-	 * Returns enum value.
-	 *
-	 * @return int
-	 */
-	public int getValue() {
-		return value;
-	}
-
+  /**
+   * Returns enum value.
+   *
+   * @return int
+   */
+  public int getValue() {
+    return value;
+  }
 }
-

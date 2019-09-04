@@ -32,119 +32,122 @@ import java.nio.ByteBuffer;
 import java.util.LinkedList;
 import java.util.List;
 
-/**
- * Verify the connection to the catapult server.
- */
+/** Verify the connection to the catapult server. */
 class VerifyServerHandler {
-	/* Server socket */
-	private final SocketClient serverSocket;
-	/* Client key pair value */
-	private final KeyPair clientKeyPair;
-	private final PublicKey publicKey;
-	private final ConnectionSecurityMode securityMode;
-	private final List<PacketTraits> packetHandlers;
-	private ByteBuffer serverChallenge;
+  /* Server socket */
+  private final SocketClient serverSocket;
+  /* Client key pair value */
+  private final KeyPair clientKeyPair;
+  private final PublicKey publicKey;
+  private final ConnectionSecurityMode securityMode;
+  private final List<PacketTraits> packetHandlers;
+  private ByteBuffer serverChallenge;
 
-	/**
-	 * Constructor.
-	 *
-	 * @param socket        The socket connection to the catapult server.
-	 * @param clientKeyPair client key pair.
-	 * @param publicKey     server key pair.
-	 * @param mode          Connection security mode.
-	 */
-	VerifyServerHandler(final SocketClient socket, final KeyPair clientKeyPair, final PublicKey publicKey,
-						final ConnectionSecurityMode mode) {
-		this.serverSocket = socket;
-		this.clientKeyPair = clientKeyPair;
-		this.publicKey = publicKey;
-		this.securityMode = mode;
-		this.packetHandlers = new LinkedList<>();
+  /**
+   * Constructor.
+   *
+   * @param socket The socket connection to the catapult server.
+   * @param clientKeyPair client key pair.
+   * @param publicKey server key pair.
+   * @param mode Connection security mode.
+   */
+  VerifyServerHandler(
+      final SocketClient socket,
+      final KeyPair clientKeyPair,
+      final PublicKey publicKey,
+      final ConnectionSecurityMode mode) {
+    this.serverSocket = socket;
+    this.clientKeyPair = clientKeyPair;
+    this.publicKey = publicKey;
+    this.securityMode = mode;
+    this.packetHandlers = new LinkedList<>();
 
-		// add handshake requirements for successful processing of
-		// a server challenge and a client challenge
-		this.packetHandlers.add(new PacketTraits(PacketType.SERVER_CHALLENGE) {
-			@Override
-			public void handleChallenge(ByteBuffer byteBuffer) {
-				handleServerChallenge(byteBuffer);
-			}
+    // add handshake requirements for successful processing of
+    // a server challenge and a client challenge
+    this.packetHandlers.add(
+        new PacketTraits(PacketType.SERVER_CHALLENGE) {
+          @Override
+          public void handleChallenge(ByteBuffer byteBuffer) {
+            handleServerChallenge(byteBuffer);
+          }
 
-			@Override
-			public ByteBuffer tryParse(Packet packet) {
-				return ChallengeParser
-						.tryParseChallenge(packet, this.ChallengeType);
-			}
-		});
+          @Override
+          public ByteBuffer tryParse(Packet packet) {
+            return ChallengeParser.tryParseChallenge(packet, this.ChallengeType);
+          }
+        });
 
-		this.packetHandlers.add(new PacketTraits(PacketType.CLIENT_CHALLENGE) {
-			@Override
-			public void handleChallenge(ByteBuffer byteBuffer) {
-				handleClientChallenge(byteBuffer);
-			}
+    this.packetHandlers.add(
+        new PacketTraits(PacketType.CLIENT_CHALLENGE) {
+          @Override
+          public void handleChallenge(ByteBuffer byteBuffer) {
+            handleClientChallenge(byteBuffer);
+          }
 
-			@Override
-			public ByteBuffer tryParse(Packet packet) {
-				return ChallengeParser
-						.tryParseChallenge(packet, this.ChallengeType);
-			}
-		});
-	}
+          @Override
+          public ByteBuffer tryParse(Packet packet) {
+            return ChallengeParser.tryParseChallenge(packet, this.ChallengeType);
+          }
+        });
+  }
 
-	/**
-	 * Verify the connection with the catapult server
-	 */
-	void process() {
-		ExceptionUtils.propagateVoid(() -> {
-			for (PacketTraits challenge : this.packetHandlers) {
-				final Packet packet = new Packet(this.serverSocket
-						.Read(ChallengeParser.CHALLENGE_PACKET_SIZE));
-				final ByteBuffer parsedPacket = challenge.tryParse(packet);
-				challenge.handleChallenge(parsedPacket);
-			}
-		});
-	}
+  /** Verify the connection with the catapult server */
+  void process() {
+    ExceptionUtils.propagateVoid(
+        () -> {
+          for (PacketTraits challenge : this.packetHandlers) {
+            final Packet packet =
+                new Packet(this.serverSocket.Read(ChallengeParser.CHALLENGE_PACKET_SIZE));
+            final ByteBuffer parsedPacket = challenge.tryParse(packet);
+            challenge.handleChallenge(parsedPacket);
+          }
+        });
+  }
 
-	/**
-	 * Respond to the server challenge
-	 *
-	 * @param packet server packet
-	 */
-	void handleServerChallenge(final ByteBuffer packet) {
-		ExceptionUtils.propagateVoid(() -> {
-			final ByteBuffer response = ChallengeHelper.generateServerChallengeResponse(packet, this.clientKeyPair, this.securityMode);
-			response.position(PacketHeader.SIZE);
-			this.serverChallenge = ByteBuffer.allocate(ChallengeHelper.CHALLENGE_SIZE);
-			final byte[] challenge = this.serverChallenge.array();
-			response.get(challenge);
-			this.serverSocket.Write(response);
-		});
-	}
+  /**
+   * Respond to the server challenge
+   *
+   * @param packet server packet
+   */
+  void handleServerChallenge(final ByteBuffer packet) {
+    ExceptionUtils.propagateVoid(
+        () -> {
+          final ByteBuffer response =
+              ChallengeHelper.generateServerChallengeResponse(
+                  packet, this.clientKeyPair, this.securityMode);
+          response.position(PacketHeader.SIZE);
+          this.serverChallenge = ByteBuffer.allocate(ChallengeHelper.CHALLENGE_SIZE);
+          final byte[] challenge = this.serverChallenge.array();
+          response.get(challenge);
+          this.serverSocket.Write(response);
+        });
+  }
 
-	/**
-	 * Handles client challenge.
-	 *
-	 * @param response Server response.
-	 */
-	void handleClientChallenge(final ByteBuffer response) {
-		final boolean isVerified = ChallengeHelper.verifyClientChallengeResponse(response, this.publicKey, this.serverChallenge);
-		if (!isVerified) {
-			throw new VerifyPeerException("Server signature verification failed.");
-		}
-	}
+  /**
+   * Handles client challenge.
+   *
+   * @param response Server response.
+   */
+  void handleClientChallenge(final ByteBuffer response) {
+    final boolean isVerified =
+        ChallengeHelper.verifyClientChallengeResponse(
+            response, this.publicKey, this.serverChallenge);
+    if (!isVerified) {
+      throw new VerifyPeerException("Server signature verification failed.");
+    }
+  }
 
-	/**
-	 * Handles server packet traits.
-	 */
-	abstract class PacketTraits {
+  /** Handles server packet traits. */
+  abstract class PacketTraits {
 
-		final protected PacketType ChallengeType;
+    protected final PacketType ChallengeType;
 
-		public PacketTraits(PacketType packetType) {
-			this.ChallengeType = packetType;
-		}
+    public PacketTraits(PacketType packetType) {
+      this.ChallengeType = packetType;
+    }
 
-		abstract public void handleChallenge(ByteBuffer byteBuffer);
+    public abstract void handleChallenge(ByteBuffer byteBuffer);
 
-		abstract public ByteBuffer tryParse(Packet packet);
-	}
+    public abstract ByteBuffer tryParse(Packet packet);
+  }
 }

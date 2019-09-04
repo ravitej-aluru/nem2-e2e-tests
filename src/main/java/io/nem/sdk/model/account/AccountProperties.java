@@ -18,24 +18,22 @@ package io.nem.sdk.model.account;
 
 import java.util.List;
 
-/**
- * Account properties structure describes property information for an account.
- */
+/** Account properties structure describes property information for an account. */
 public class AccountProperties {
 
-	private final Address address;
-	private final List<AccountProperty> properties;
+  private final Address address;
+  private final List<AccountProperty> properties;
 
-	public AccountProperties(Address address, List<AccountProperty> properties) {
-		this.address = address;
-		this.properties = properties;
-	}
+  public AccountProperties(Address address, List<AccountProperty> properties) {
+    this.address = address;
+    this.properties = properties;
+  }
 
-	public Address getAddress() {
-		return address;
-	}
+  public Address getAddress() {
+    return address;
+  }
 
-	public List<AccountProperty> getProperties() {
-		return properties;
-	}
+  public List<AccountProperty> getProperties() {
+    return properties;
+  }
 }

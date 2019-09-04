@@ -26,40 +26,39 @@ import io.nem.sdk.infrastructure.directconnect.packet.PacketType;
 
 import java.nio.ByteBuffer;
 
-/**
- * Challenge parser.
- */
+/** Challenge parser. */
 public class ChallengeParser {
-	/* Challenge packet size. */
-	public final static int CHALLENGE_PACKET_SIZE = 72;
+  /* Challenge packet size. */
+  public static final int CHALLENGE_PACKET_SIZE = 72;
 
-	/**
-	 * Verify that the packet header is valid.
-	 *
-	 * @param packetHeader Packet header.
-	 * @param packetType   Packet type.
-	 * @param size         Size of the packet.
-	 * @return True if the packet is valid.
-	 */
-	private static boolean isPacketHeaderValid(final PacketHeader packetHeader, final PacketType packetType, final int size) {
-		return (packetHeader.getPacketType() == packetType) && (packetHeader.getPacketSize() == size);
-	}
+  /**
+   * Verify that the packet header is valid.
+   *
+   * @param packetHeader Packet header.
+   * @param packetType Packet type.
+   * @param size Size of the packet.
+   * @return True if the packet is valid.
+   */
+  private static boolean isPacketHeaderValid(
+      final PacketHeader packetHeader, final PacketType packetType, final int size) {
+    return (packetHeader.getPacketType() == packetType) && (packetHeader.getPacketSize() == size);
+  }
 
-	/**
-	 * Tries to parse a server challenge request packet.
-	 *
-	 * @param packet     The raw packet to parse.
-	 * @param packetType The expected packet type.
-	 * @returns Parsed packet.
-	 */
-	public static ByteBuffer tryParseChallenge(final Packet packet, final PacketType packetType) {
-		if (!isPacketHeaderValid(packet.getPacketHeader(), packetType,
-				CHALLENGE_PACKET_SIZE)) {
-			throw new VerifyPeerException(String.format(
-					"Invalid header server challenge (size: %d, type: %d).",
-					packet.getPacketHeader().getPacketType().toInteger(),
-					packet.getPacketHeader().getPacketSize()));
-		}
-		return packet.getData();
-	}
+  /**
+   * Tries to parse a server challenge request packet.
+   *
+   * @param packet The raw packet to parse.
+   * @param packetType The expected packet type.
+   * @returns Parsed packet.
+   */
+  public static ByteBuffer tryParseChallenge(final Packet packet, final PacketType packetType) {
+    if (!isPacketHeaderValid(packet.getPacketHeader(), packetType, CHALLENGE_PACKET_SIZE)) {
+      throw new VerifyPeerException(
+          String.format(
+              "Invalid header server challenge (size: %d, type: %d).",
+              packet.getPacketHeader().getPacketType().toInteger(),
+              packet.getPacketHeader().getPacketSize()));
+    }
+    return packet.getData();
+  }
 }

@@ -22,9 +22,7 @@ package io.nem.sdk.infrastructure.directconnect.dataaccess.database.mongoDb;
 
 import io.nem.sdk.infrastructure.common.CatapultContext;
 
-/**
- * Partial transactions collection.
- */
+/** Partial transactions collection. */
 public class PartialTransactionsCollection extends TransactionCollectionBase {
   /**
    * Constructor.

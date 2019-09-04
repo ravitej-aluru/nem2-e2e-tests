@@ -21,17 +21,15 @@ import org.apache.commons.lang3.Validate;
 import java.math.BigInteger;
 import java.util.Optional;
 
-/**
- * The transaction information model included in all transactions.
- */
+/** The transaction information model included in all transactions. */
 public class TransactionInfo {
-	private final BigInteger height;
-	private final Optional<Integer> index;
-	private final Optional<String> id;
-	private final Optional<String> hash;
-	private final Optional<String> merkleComponentHash;
-	private final Optional<String> aggregateHash;
-	private final Optional<String> aggregateId;
+  private final BigInteger height;
+  private final Optional<Integer> index;
+  private final Optional<String> id;
+  private final Optional<String> hash;
+  private final Optional<String> merkleComponentHash;
+  private final Optional<String> aggregateHash;
+  private final Optional<String> aggregateId;
 
   private TransactionInfo(
       BigInteger height,
@@ -124,75 +122,76 @@ public class TransactionInfo {
    */
   public static TransactionInfo create(BigInteger height, String hash) {
     return new TransactionInfo(
-            height,
-            Optional.empty(),
-            Optional.empty(),
-            Optional.of(hash),
-            Optional.empty(),
-            Optional.empty(),
-            Optional.empty());
+        height,
+        Optional.empty(),
+        Optional.empty(),
+        Optional.of(hash),
+        Optional.empty(),
+        Optional.empty(),
+        Optional.empty());
   }
 
-	/**
-	 * Returns block height in which the transaction was included.
-	 *
-	 * @return block height
-	 */
-	public BigInteger getHeight() {
-		return height;
-	}
+  /**
+   * Returns block height in which the transaction was included.
+   *
+   * @return block height
+   */
+  public BigInteger getHeight() {
+    return height;
+  }
 
-	/**
-	 * Returns index representing either transaction index/position within block or within an aggregate transaction.
-	 *
-	 * @return optional index
-	 */
-	public Optional<Integer> getIndex() {
-		return index;
-	}
+  /**
+   * Returns index representing either transaction index/position within block or within an
+   * aggregate transaction.
+   *
+   * @return optional index
+   */
+  public Optional<Integer> getIndex() {
+    return index;
+  }
 
-	/**
-	 * Returns transaction id.
-	 *
-	 * @return transaction id
-	 */
-	public Optional<String> getId() {
-		return id;
-	}
+  /**
+   * Returns transaction id.
+   *
+   * @return transaction id
+   */
+  public Optional<String> getId() {
+    return id;
+  }
 
-	/**
-	 * Returns transaction hash.
-	 *
-	 * @return transaction hash
-	 */
-	public Optional<String> getHash() {
-		return hash;
-	}
+  /**
+   * Returns transaction hash.
+   *
+   * @return transaction hash
+   */
+  public Optional<String> getHash() {
+    return hash;
+  }
 
-	/**
-	 * Returns transaction merkle component hash.
-	 *
-	 * @return transaction merkle component hash
-	 */
-	public Optional<String> getMerkleComponentHash() {
-		return merkleComponentHash;
-	}
+  /**
+   * Returns transaction merkle component hash.
+   *
+   * @return transaction merkle component hash
+   */
+  public Optional<String> getMerkleComponentHash() {
+    return merkleComponentHash;
+  }
 
-	/**
-	 * Returns hash of the aggregate transaction.
-	 *
-	 * @return aggregate transaction hash
-	 */
-	public Optional<String> getAggregateHash() {
-		return aggregateHash;
-	}
+  /**
+   * Returns hash of the aggregate transaction.
+   *
+   * @return aggregate transaction hash
+   */
+  public Optional<String> getAggregateHash() {
+    return aggregateHash;
+  }
 
-	/**
-	 * Returns id of the aggregate transaction.
-	 *
-	 * @return aggregate transaction id
-	 */
-	public Optional<String> getAggregateId() {
-		return aggregateId;
-	}
+  /**
+   * Returns id of the aggregate transaction.
+   *
+   * @return aggregate transaction id
+   */
+  public Optional<String> getAggregateId() {
+    return aggregateId;
+  }
 }

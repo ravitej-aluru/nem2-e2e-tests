@@ -43,14 +43,14 @@ public class MultisigAccountInfo {
     this.multisigAccounts = multisigAccounts;
   }
 
-	/**
-	 * Returns account multisig public account.
-	 *
-	 * @return PublicAccount
-	 */
-	public PublicAccount getAccount() {
-		return account;
-	}
+  /**
+   * Returns account multisig public account.
+   *
+   * @return PublicAccount
+   */
+  public PublicAccount getAccount() {
+    return account;
+  }
 
   /**
    * Returns number of signatures needed to approve a transaction.
@@ -70,50 +70,50 @@ public class MultisigAccountInfo {
     return minRemoval;
   }
 
-	/**
-	 * Returns multisig account cosignatories.
-	 *
-	 * @return List <{@link PublicAccount}>
-	 */
-	public List<PublicAccount> getCosignatories() {
-		return cosignatories;
-	}
+  /**
+   * Returns multisig account cosignatories.
+   *
+   * @return List <{@link PublicAccount}>
+   */
+  public List<PublicAccount> getCosignatories() {
+    return cosignatories;
+  }
 
-	/**
-	 * Returns multisig accounts this account is cosigner of.
-	 *
-	 * @return {List<PublicAccount>}
-	 */
-	public List<PublicAccount> getMultisigAccounts() {
-		return multisigAccounts;
-	}
+  /**
+   * Returns multisig accounts this account is cosigner of.
+   *
+   * @return {List<PublicAccount>}
+   */
+  public List<PublicAccount> getMultisigAccounts() {
+    return multisigAccounts;
+  }
 
-	/**
-	 * Checks if an account is cosignatory of the multisig account.
-	 *
-	 * @param account PublicAccount
-	 * @return boolean
-	 */
-	public boolean hasCosigner(PublicAccount account) {
-		return this.cosignatories.contains(account);
-	}
+  /**
+   * Checks if an account is cosignatory of the multisig account.
+   *
+   * @param account PublicAccount
+   * @return boolean
+   */
+  public boolean hasCosigner(PublicAccount account) {
+    return this.cosignatories.contains(account);
+  }
 
-	/**
-	 * Checks if the multisig account is cosignatory of an account.
-	 *
-	 * @param account PublicAccount
-	 * @return boolean
-	 */
-	public boolean isCosignerOfMultisigAccount(PublicAccount account) {
-		return this.multisigAccounts.contains(account);
-	}
+  /**
+   * Checks if the multisig account is cosignatory of an account.
+   *
+   * @param account PublicAccount
+   * @return boolean
+   */
+  public boolean isCosignerOfMultisigAccount(PublicAccount account) {
+    return this.multisigAccounts.contains(account);
+  }
 
-	/**
-	 * Checks if the account is a multisig account.
-	 *
-	 * @return boolean
-	 */
-	public boolean isMultisig() {
-		return minApproval != 0 && minRemoval != 0;
-	}
+  /**
+   * Checks if the account is a multisig account.
+   *
+   * @return boolean
+   */
+  public boolean isMultisig() {
+    return minApproval != 0 && minRemoval != 0;
+  }
 }

@@ -23,6 +23,7 @@ package io.nem.catapult.builders;
 import java.io.DataInput;
 import java.util.ArrayList;
 import java.nio.ByteBuffer;
+import java.util.List;
 
 /** Binary layout for a non-embedded transfer transaction. */
 public final class TransferTransactionBuilder extends TransactionBuilder {
@@ -98,7 +99,7 @@ public final class TransferTransactionBuilder extends TransactionBuilder {
      *
      * @return Attached mosaics.
      */
-    public ArrayList<UnresolvedMosaicBuilder> getMosaics() {
+    public List<UnresolvedMosaicBuilder> getMosaics() {
         return this.transferTransactionBody.getMosaics();
     }
 

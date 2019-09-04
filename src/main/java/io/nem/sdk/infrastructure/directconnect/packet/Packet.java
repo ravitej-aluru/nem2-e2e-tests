@@ -23,58 +23,56 @@ package io.nem.sdk.infrastructure.directconnect.packet;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
-/**
- * Packet.
- */
+/** Packet. */
 public class Packet {
-	/* Packet header. */
-	final PacketHeader packetHeader;
-	/* Packet data. */
-	final ByteBuffer data;
+  /* Packet header. */
+  final PacketHeader packetHeader;
+  /* Packet data. */
+  final ByteBuffer data;
 
-	/**
-	 * Constructor.
-	 *
-	 * @param bytebuffer Byte buffer.
-	 */
-	public Packet(final ByteBuffer bytebuffer) {
-		this.packetHeader = new PacketHeader(bytebuffer);
-		this.data = ByteBuffer.allocate(bytebuffer.remaining());
-		bytebuffer.get(data.array());
-	}
+  /**
+   * Constructor.
+   *
+   * @param bytebuffer Byte buffer.
+   */
+  public Packet(final ByteBuffer bytebuffer) {
+    this.packetHeader = new PacketHeader(bytebuffer);
+    this.data = ByteBuffer.allocate(bytebuffer.remaining());
+    bytebuffer.get(data.array());
+  }
 
-	/**
-	 * Creates a packet buffer.
-	 *
-	 * @param packetType Packet type.
-	 * @param bytes      Packet data.
-	 * @return Byte buffer.
-	 */
-	public static ByteBuffer CreatePacketByteBuffer(final PacketType packetType, final byte[] bytes) {
-		final int packetSize = PacketHeader.SIZE + bytes.length;
-		final ByteBuffer buffer = ByteBuffer.allocate(packetSize);
-		buffer.order(ByteOrder.LITTLE_ENDIAN);
-		buffer.put(PacketHeader.createPacketHeader(packetType, packetSize));
-		buffer.put(bytes);
-		buffer.rewind();
-		return buffer;
-	}
+  /**
+   * Creates a packet buffer.
+   *
+   * @param packetType Packet type.
+   * @param bytes Packet data.
+   * @return Byte buffer.
+   */
+  public static ByteBuffer CreatePacketByteBuffer(final PacketType packetType, final byte[] bytes) {
+    final int packetSize = PacketHeader.SIZE + bytes.length;
+    final ByteBuffer buffer = ByteBuffer.allocate(packetSize);
+    buffer.order(ByteOrder.LITTLE_ENDIAN);
+    buffer.put(PacketHeader.createPacketHeader(packetType, packetSize));
+    buffer.put(bytes);
+    buffer.rewind();
+    return buffer;
+  }
 
-	/**
-	 * Gets the packet header.
-	 *
-	 * @return Packet header.
-	 */
-	public PacketHeader getPacketHeader() {
-		return this.packetHeader;
-	}
+  /**
+   * Gets the packet header.
+   *
+   * @return Packet header.
+   */
+  public PacketHeader getPacketHeader() {
+    return this.packetHeader;
+  }
 
-	/**
-	 * Gets the packet data.
-	 *
-	 * @return Packet data.
-	 */
-	public ByteBuffer getData() {
-		return this.data;
-	}
+  /**
+   * Gets the packet data.
+   *
+   * @return Packet data.
+   */
+  public ByteBuffer getData() {
+    return this.data;
+  }
 }

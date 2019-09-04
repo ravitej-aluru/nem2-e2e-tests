@@ -20,76 +20,58 @@
 
 package io.nem.sdk.infrastructure.directconnect.packet;
 
-/**
- * Packet types.
- */
+/** Packet types. */
 public enum PacketType {
-	/**
-	 * A challenge from a server to a client.
-	 */
-	SERVER_CHALLENGE(1),
-	/**
-	 * A challenge from a client to a server.
-	 */
-	CLIENT_CHALLENGE(2),
-	/**
-	 * Blocks have been pushed by a peer.
-	 */
-	PUSH_BLOCK(3),
-	/**
-	 * Transactions have been pushed by an api-node or a peer.
-	 */
-	PUSH_TRANSACTIONS(9),
-	/**
-	 * Partial aggregate transactions have been pushed by an api-node.
-	 */
-	PUSH_PARTIAL_TRANSACTIONS(500),
-	/**
-	 * Detached cosignatures have been pushed by an api-node.
-	 */
-	PUSH_DETACTED_COSIGNATURES(501),
-	/**
-	 * Node information has been requested by a peer.
-	 */
-	NODE_DISCOVERY_PULL_PING(601),
-	/**
-	 * Node time information has been requested by a peer.
-	 */
-	TIME_SYNC_NODE_TIME(700);
+  /** A challenge from a server to a client. */
+  SERVER_CHALLENGE(1),
+  /** A challenge from a client to a server. */
+  CLIENT_CHALLENGE(2),
+  /** Blocks have been pushed by a peer. */
+  PUSH_BLOCK(3),
+  /** Transactions have been pushed by an api-node or a peer. */
+  PUSH_TRANSACTIONS(9),
+  /** Partial aggregate transactions have been pushed by an api-node. */
+  PUSH_PARTIAL_TRANSACTIONS(500),
+  /** Detached cosignatures have been pushed by an api-node. */
+  PUSH_DETACTED_COSIGNATURES(501),
+  /** Node information has been requested by a peer. */
+  NODE_DISCOVERY_PULL_PING(601),
+  /** Node time information has been requested by a peer. */
+  TIME_SYNC_NODE_TIME(700);
 
-	/* Enum value. */
-	final int packetType;
+  /* Enum value. */
+  final int packetType;
 
-	/**
-	 * Constructor.
-	 *
-	 * @param packetType Packet type.
-	 */
-	PacketType(final int packetType) {
-		this.packetType = packetType;
-	}
+  /**
+   * Constructor.
+   *
+   * @param packetType Packet type.
+   */
+  PacketType(final int packetType) {
+    this.packetType = packetType;
+  }
 
-	/**
-	 * Gets the enum type of raw value.
-	 *
-	 * @param val Raw value of the enum.
-	 * @return Enum value.
-	 */
-	public static PacketType rawValueOf(final int val) {
-		for (PacketType current : PacketType.values()) {
-			if (val == current.packetType) {
-				return current;
-			}
-		}
-		throw new IllegalArgumentException(val + " was not a backing value for PacketType.");
-	}
+  /**
+   * Gets the enum type of raw value.
+   *
+   * @param val Raw value of the enum.
+   * @return Enum value.
+   */
+  public static PacketType rawValueOf(final int val) {
+    for (PacketType current : PacketType.values()) {
+      if (val == current.packetType) {
+        return current;
+      }
+    }
+    throw new IllegalArgumentException(val + " was not a backing value for PacketType.");
+  }
 
-	/**
-	 * Gets the packet type value.
-	 *
-	 * @return Packet type value.
-	 */
-	public int toInteger() {
-		return this.packetType;
-	}
+  /**
+   * Gets the packet type value.
+   *
+   * @return Packet type value.
+   */
+  public int toInteger() {
+    return this.packetType;
+  }
 }

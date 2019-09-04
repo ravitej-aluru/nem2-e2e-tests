@@ -24,43 +24,41 @@ import com.mongodb.MongoClient;
 import com.mongodb.client.MongoDatabase;
 import io.nem.sdk.infrastructure.directconnect.dataaccess.database.mongoDb.MongoClientFactory;
 
-/**
- * Catapult Mongo database client.
- */
+/** Catapult Mongo database client. */
 public class CatapultMongoDbClient implements DatabaseClient<MongoDatabase> {
-	/* Catapult database name */
-	static final String DATABASE_NAME = "catapult";
-	/* Mongodb client */
-	final MongoClient mongoClient;
+  /* Catapult database name */
+  static final String DATABASE_NAME = "catapult";
+  /* Mongodb client */
+  final MongoClient mongoClient;
 
-	/**
-	 * Constructor.
-	 *
-	 * @param host Mongodb server.
-	 * @param port Mongodb port.
-	 */
-	private CatapultMongoDbClient(final String host, final int port) {
-		mongoClient = MongoClientFactory.Create(host, port);
-	}
+  /**
+   * Constructor.
+   *
+   * @param host Mongodb server.
+   * @param port Mongodb port.
+   */
+  private CatapultMongoDbClient(final String host, final int port) {
+    mongoClient = MongoClientFactory.Create(host, port);
+  }
 
-	/**
-	 * Creates a catapult mongo database connection.
-	 *
-	 * @param host Mongodb server.
-	 * @param port Mongodb port.
-	 * @return Catapult mongo database connection.
-	 */
-	public static CatapultMongoDbClient create(final String host, final int port) {
-		return new CatapultMongoDbClient(host, port);
-	}
+  /**
+   * Creates a catapult mongo database connection.
+   *
+   * @param host Mongodb server.
+   * @param port Mongodb port.
+   * @return Catapult mongo database connection.
+   */
+  public static CatapultMongoDbClient create(final String host, final int port) {
+    return new CatapultMongoDbClient(host, port);
+  }
 
-	/**
-	 * Gets catapult Mongo database.
-	 *
-	 * @return Mongo database.
-	 */
-	@Override
-	public MongoDatabase getDatabase() {
-		return mongoClient.getDatabase(DATABASE_NAME);
-	}
+  /**
+   * Gets catapult Mongo database.
+   *
+   * @return Mongo database.
+   */
+  @Override
+  public MongoDatabase getDatabase() {
+    return mongoClient.getDatabase(DATABASE_NAME);
+  }
 }

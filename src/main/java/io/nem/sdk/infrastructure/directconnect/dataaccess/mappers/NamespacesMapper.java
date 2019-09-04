@@ -31,36 +31,41 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
-/**
- * Namespace mapper.
- */
+/** Namespace mapper. */
 public class NamespacesMapper implements Function<JsonObject, NamespaceInfo> {
-	/**
-	 * Creates a namespace info object from json.
-	 *
-	 * @param jsonObject Json object.
-	 * @return namespace info.
-	 */
-	public NamespaceInfo apply(final JsonObject jsonObject) {
-		final JsonObject metaJsonObject = jsonObject.getJsonObject("meta");
-		final boolean active = metaJsonObject.getBoolean("active");
-		final Integer index = metaJsonObject.getInteger("index");
-		final JsonObject namespaceJsonObject = jsonObject.getJsonObject("namespace");
-		final String metaId = "";
-		final NamespaceType type = NamespaceType.rawValueOf(namespaceJsonObject.getInteger("type"));
-		final Integer depth = namespaceJsonObject.getInteger("depth");
-		final List<NamespaceId> levels = new ArrayList<>(depth);
-		for (int i = 0; i < depth; i++) {
-			levels.add(new NamespaceId(MapperUtils.extractBigInteger(namespaceJsonObject, "level" + i)));
-		}
-		final NamespaceId parentId = new NamespaceId(MapperUtils.extractBigInteger(namespaceJsonObject, "parentId"));
-		final Address address = Address.createFromEncoded(namespaceJsonObject.getString("ownerAddress"));
-		final PublicAccount owner = new PublicAccount(namespaceJsonObject.getString("owner"), address.getNetworkType());
-		final BigInteger startHeight = MapperUtils.extractBigInteger(namespaceJsonObject, "startHeight");
-		final BigInteger endHeight = MapperUtils.extractBigInteger(namespaceJsonObject, "endHeight");
-		final Alias alias = getAlias(namespaceJsonObject);
-		return new NamespaceInfo(active, index, metaId, type, depth, levels, parentId, owner, startHeight, endHeight, alias);
-	}
+  /**
+   * Creates a namespace info object from json.
+   *
+   * @param jsonObject Json object.
+   * @return namespace info.
+   */
+  public NamespaceInfo apply(final JsonObject jsonObject) {
+    final JsonObject metaJsonObject = jsonObject.getJsonObject("meta");
+    final boolean active = metaJsonObject.getBoolean("active");
+    final Integer index = metaJsonObject.getInteger("index");
+    final JsonObject namespaceJsonObject = jsonObject.getJsonObject("namespace");
+    final String metaId = "";
+    final NamespaceType type =
+        NamespaceType.rawValueOf(namespaceJsonObject.getInteger("registrationType"));
+    final Integer depth = namespaceJsonObject.getInteger("depth");
+    final List<NamespaceId> levels = new ArrayList<>(depth);
+    for (int i = 0; i < depth; i++) {
+      levels.add(new NamespaceId(MapperUtils.extractBigInteger(namespaceJsonObject, "level" + i)));
+    }
+    final NamespaceId parentId =
+        new NamespaceId(MapperUtils.extractBigInteger(namespaceJsonObject, "parentId"));
+    final Address address =
+        Address.createFromEncoded(namespaceJsonObject.getString("ownerAddress"));
+    final PublicAccount owner =
+        new PublicAccount(
+            namespaceJsonObject.getString("ownerPublicKey"), address.getNetworkType());
+    final BigInteger startHeight =
+        MapperUtils.extractBigInteger(namespaceJsonObject, "startHeight");
+    final BigInteger endHeight = MapperUtils.extractBigInteger(namespaceJsonObject, "endHeight");
+    final Alias alias = getAlias(namespaceJsonObject);
+    return new NamespaceInfo(
+        active, index, metaId, type, depth, levels, parentId, owner, startHeight, endHeight, alias);
+  }
 
   /**
    * Gets the alias if present

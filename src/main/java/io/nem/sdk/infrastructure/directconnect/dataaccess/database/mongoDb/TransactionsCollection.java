@@ -25,18 +25,16 @@ import io.nem.sdk.model.transaction.Transaction;
 
 import java.util.List;
 
-/**
- * Transactions collection.
- */
+/** Transactions collection. */
 public class TransactionsCollection extends TransactionCollectionBase {
-	/**
-	 * Constructor.
-	 *
-	 * @param context Catapult context.
-	 */
-	public TransactionsCollection(final CatapultContext context) {
-		super(context, "transactions");
-	}
+  /**
+   * Constructor.
+   *
+   * @param context Catapult context.
+   */
+  public TransactionsCollection(final CatapultContext context) {
+    super(context, "transactions");
+  }
 
   /**
    * Find transactions for a block.

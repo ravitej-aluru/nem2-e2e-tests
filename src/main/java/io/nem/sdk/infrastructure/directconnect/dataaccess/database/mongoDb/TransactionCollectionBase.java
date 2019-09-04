@@ -38,16 +38,18 @@ public abstract class TransactionCollectionBase implements TransactionState {
   /* Catapult context. */
   protected final CatapultContext context;
 
-	/**
-	 * Constructor.
-	 *
-	 * @param context        Catapult context.
-	 * @param collectionName Collection name.
-	 */
-	public TransactionCollectionBase(final CatapultContext context, final String collectionName) {
-		catapultCollection = new CatapultCollection<>(context.getCatapultMongoDbClient(), collectionName, TransactionMapper::new);
-		this.context = context;
-	}
+  /**
+   * Constructor.
+   *
+   * @param context Catapult context.
+   * @param collectionName Collection name.
+   */
+  public TransactionCollectionBase(final CatapultContext context, final String collectionName) {
+    catapultCollection =
+        new CatapultCollection<>(
+            context.getCatapultMongoDbClient(), collectionName, TransactionMapper::new);
+    this.context = context;
+  }
 
   /**
    * Returns transaction status group "failed", "unconfirmed", "confirmed", etc...
@@ -109,8 +111,7 @@ public abstract class TransactionCollectionBase implements TransactionState {
    * @param signerBytes Signer bytes.
    * @return Transaction.
    */
-  public List<Transaction> findBySigner(
-          final byte[] signerBytes) {
+  public List<Transaction> findBySigner(final byte[] signerBytes) {
     final String keyName = "transaction.signer";
     return catapultCollection.find(keyName, signerBytes, context.getDatabaseTimeoutInSeconds());
   }

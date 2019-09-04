@@ -15,49 +15,42 @@
  */
 package io.nem.sdk.model.transaction;
 
-/**
- * Enum containing account restriction modification type constants.
- */
+/** Enum containing account restriction modification type constants. */
 public enum AccountRestrictionModificationType {
-    /**
-     * Add account restriction value.
-     */
-    ADD((byte) 0),
+  /** Add account restriction value. */
+  ADD((byte) 0),
 
-    /**
-     * Remove account restriction value
-     */
-    REMOVE((byte) 1);
+  /** Remove account restriction value */
+  REMOVE((byte) 1);
 
-    private byte value;
+  private byte value;
 
-    AccountRestrictionModificationType(final byte value) {
-        this.value = value;
+  AccountRestrictionModificationType(final byte value) {
+    this.value = value;
+  }
+
+  /**
+   * Gets enum value.
+   *
+   * @param value Raw value of the enum.
+   * @return Enum value.
+   */
+  public static AccountRestrictionModificationType rawValueOf(final byte value) {
+    for (AccountRestrictionModificationType current : AccountRestrictionModificationType.values()) {
+      if (value == current.value) {
+        return current;
+      }
     }
+    throw new IllegalArgumentException(
+        value + " was not a backing value for AccountRestrictionModificationType.");
+  }
 
-    /**
-     * Gets enum value.
-     *
-     * @param value Raw value of the enum.
-     * @return Enum value.
-     */
-    public static AccountRestrictionModificationType rawValueOf(final byte value) {
-        for (AccountRestrictionModificationType current : AccountRestrictionModificationType
-            .values()) {
-            if (value == current.value) {
-                return current;
-            }
-        }
-        throw new IllegalArgumentException(
-            value + " was not a backing value for AccountRestrictionModificationType.");
-    }
-
-    /**
-     * Returns enum value.
-     *
-     * @return byte
-     */
-    public byte getValue() {
-        return value;
-    }
+  /**
+   * Returns enum value.
+   *
+   * @return byte
+   */
+  public byte getValue() {
+    return value;
+  }
 }

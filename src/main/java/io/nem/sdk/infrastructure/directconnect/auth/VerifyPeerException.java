@@ -20,17 +20,15 @@
 
 package io.nem.sdk.infrastructure.directconnect.auth;
 
-/**
- * The exception thrown when the server verification fails.
- */
-final public class VerifyPeerException extends RuntimeException {
+/** The exception thrown when the server verification fails. */
+public final class VerifyPeerException extends RuntimeException {
 
-	/**
-	 * Constructor.
-	 *
-	 * @param message The error message on why the server verification failed.
-	 */
-	public VerifyPeerException(final String message) {
-		super(message);
-	}
+  /**
+   * Constructor.
+   *
+   * @param message The error message on why the server verification failed.
+   */
+  public VerifyPeerException(final String message) {
+    super(message);
+  }
 }

@@ -20,38 +20,28 @@
 
 package io.nem.sdk.infrastructure.directconnect.auth;
 
-/**
- * Possible results of a verification handshake with a peer.
- */
+/** Possible results of a verification handshake with a peer. */
 public enum VerifyResult {
-	/**
-	 * Peer was verified.
-	 */
-	SUCCESS(0),
+  /** Peer was verified. */
+  SUCCESS(0),
 
-	/**
-	 * An i/o error was encountered during verification.
-	 */
-	IO_ERROR(1),
+  /** An i/o error was encountered during verification. */
+  IO_ERROR(1),
 
-	/**
-	 * Peer sent malformed data.
-	 */
-	MALFORMED_DATA(2),
+  /** Peer sent malformed data. */
+  MALFORMED_DATA(2),
 
-	/**
-	 * Peer failed the challenge.
-	 */
-	FAILED_CHALLENGE(3);
+  /** Peer failed the challenge. */
+  FAILED_CHALLENGE(3);
 
-	private final int value;
+  private final int value;
 
-	/**
-	 * Constructor.
-	 *
-	 * @param value Enum value.
-	 */
-	VerifyResult(final int value) {
-		this.value = value;
-	}
+  /**
+   * Constructor.
+   *
+   * @param value Enum value.
+   */
+  VerifyResult(final int value) {
+    this.value = value;
+  }
 }

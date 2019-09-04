@@ -21,26 +21,23 @@
 package io.nem.sdk.infrastructure.directconnect.dataaccess.mappers;
 
 import io.nem.sdk.model.mosaic.MosaicProperties;
-import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
 import java.math.BigInteger;
 import java.util.function.Function;
 
-/**
- * Mosaic properties mapper.
- */
+/** Mosaic properties mapper. */
 public class MosaicPropertiesMapper implements Function<JsonObject, MosaicProperties> {
-	/**
-	 * Gets a flag value from a long.
-	 *
-	 * @param flag  Flags value.
-	 * @param index Flag position.
-	 * @return Flag value.
-	 */
-	boolean getFlag(final long flag, final int index) {
-		return ((flag >>> index) & 1) == 1;
-	}
+  /**
+   * Gets a flag value from a long.
+   *
+   * @param flag Flags value.
+   * @param index Flag position.
+   * @return Flag value.
+   */
+  boolean getFlag(final long flag, final int index) {
+    return ((flag >>> index) & 1) == 1;
+  }
 
   /**
    * Converts a json object to mosaic properties.
@@ -50,14 +47,12 @@ public class MosaicPropertiesMapper implements Function<JsonObject, MosaicProper
    */
   @Override
   public MosaicProperties apply(final JsonObject jsonObject) {
-    final JsonObject mosaicProperties = jsonObject.containsKey("properties") ? jsonObject.getJsonObject("properties") : jsonObject;
+    final JsonObject mosaicProperties =
+        jsonObject.containsKey("properties") ? jsonObject.getJsonObject("properties") : jsonObject;
     final Long flags = mosaicProperties.getLong("flags");
     final int divisibility = mosaicProperties.getInteger("divisibility");
     final Long duration = mosaicProperties.getLong("duration");
     return MosaicProperties.create(
-        getFlag(flags, 0),
-        getFlag(flags, 1),
-            divisibility,
-        BigInteger.valueOf(duration));
+        getFlag(flags, 0), getFlag(flags, 1), divisibility, BigInteger.valueOf(duration));
   }
 }

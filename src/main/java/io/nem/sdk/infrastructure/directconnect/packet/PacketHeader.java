@@ -23,59 +23,56 @@ package io.nem.sdk.infrastructure.directconnect.packet;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
-/**
- * Packet header
- */
+/** Packet header */
 public class PacketHeader {
-	/**
-	 * The size (in bytes) of a packet header.
-	 */
-	final public static byte SIZE = 8;
-	final private int packetSize;
-	final private PacketType packetType;
+  /** The size (in bytes) of a packet header. */
+  public static final byte SIZE = 8;
 
-	/**
-	 * Constructor.
-	 *
-	 * @param byteBuffer Packet header bytes.
-	 */
-	public PacketHeader(final ByteBuffer byteBuffer) {
-		byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
-		this.packetSize = byteBuffer.getInt();
-		packetType = PacketType.rawValueOf(byteBuffer.getInt());
-	}
+  private final int packetSize;
+  private final PacketType packetType;
 
-	/**
-	 * Creates a packet header buffer.
-	 *
-	 * @param packetType Packet type.
-	 * @param size       Packet size.
-	 * @return Packet header buffer.
-	 */
-	public static ByteBuffer createPacketHeader(final PacketType packetType, final int size) {
-		final ByteBuffer header = ByteBuffer.allocate(PacketHeader.SIZE);
-		header.order(ByteOrder.LITTLE_ENDIAN);
-		header.putInt(size);
-		header.putInt(packetType.toInteger());
-		header.rewind();
-		return header;
-	}
+  /**
+   * Constructor.
+   *
+   * @param byteBuffer Packet header bytes.
+   */
+  public PacketHeader(final ByteBuffer byteBuffer) {
+    byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
+    this.packetSize = byteBuffer.getInt();
+    packetType = PacketType.rawValueOf(byteBuffer.getInt());
+  }
 
-	/**
-	 * Gets the packet size.
-	 *
-	 * @return Packet size.
-	 */
-	public int getPacketSize() {
-		return this.packetSize;
-	}
+  /**
+   * Creates a packet header buffer.
+   *
+   * @param packetType Packet type.
+   * @param size Packet size.
+   * @return Packet header buffer.
+   */
+  public static ByteBuffer createPacketHeader(final PacketType packetType, final int size) {
+    final ByteBuffer header = ByteBuffer.allocate(PacketHeader.SIZE);
+    header.order(ByteOrder.LITTLE_ENDIAN);
+    header.putInt(size);
+    header.putInt(packetType.toInteger());
+    header.rewind();
+    return header;
+  }
 
-	/**
-	 * Gets the packet type.
-	 *
-	 * @return Packet type.
-	 */
-	public PacketType getPacketType() {
-		return this.packetType;
-	}
+  /**
+   * Gets the packet size.
+   *
+   * @return Packet size.
+   */
+  public int getPacketSize() {
+    return this.packetSize;
+  }
+
+  /**
+   * Gets the packet type.
+   *
+   * @return Packet type.
+   */
+  public PacketType getPacketType() {
+    return this.packetType;
+  }
 }

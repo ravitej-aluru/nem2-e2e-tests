@@ -33,19 +33,20 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * The transfer transactions object contain data about transfers of mosaics and message to another account.
+ * The transfer transactions object contain data about transfers of mosaics and message to another
+ * account.
  */
 public class TransferTransaction extends Transaction {
-	private final Optional<Address> recipient;
-	private final List<Mosaic> mosaics;
-	private final Message message;
-	private final Optional<NamespaceId> namespaceId;
+  private final Optional<Address> recipient;
+  private final List<Mosaic> mosaics;
+  private final Message message;
+  private final Optional<NamespaceId> namespaceId;
 
   public TransferTransaction(
       final NetworkType networkType,
-      final Integer version,
+      final Short version,
       final Deadline deadline,
-      final BigInteger fee,
+      final BigInteger maxFee,
       final Address recipient,
       final List<Mosaic> mosaics,
       final Message message,
@@ -56,7 +57,7 @@ public class TransferTransaction extends Transaction {
         networkType,
         version,
         deadline,
-        fee,
+        maxFee,
         Optional.of(recipient),
         Optional.empty(),
         mosaics,
@@ -68,9 +69,9 @@ public class TransferTransaction extends Transaction {
 
   public TransferTransaction(
       final NetworkType networkType,
-      final Integer version,
+      final Short version,
       final Deadline deadline,
-      final BigInteger fee,
+      final BigInteger maxFee,
       final NamespaceId namespaceId,
       final List<Mosaic> mosaics,
       final Message message,
@@ -81,7 +82,7 @@ public class TransferTransaction extends Transaction {
         networkType,
         version,
         deadline,
-        fee,
+        maxFee,
         Optional.empty(),
         Optional.of(namespaceId),
         mosaics,
@@ -90,192 +91,257 @@ public class TransferTransaction extends Transaction {
         Optional.of(signer),
         Optional.of(transactionInfo));
   }
-	private TransferTransaction(final NetworkType networkType, final Integer version, final Deadline deadline, final BigInteger fee,
-								final Optional<Address> recipient, final Optional<NamespaceId> namespaceId, final List<Mosaic> mosaics,
-								final Message message) {
-		this(networkType, version, deadline, fee, recipient, namespaceId, mosaics, message, Optional.empty(), Optional.empty(),
-				Optional.empty());
-	}
 
-	private TransferTransaction(final NetworkType networkType, final Integer version, final Deadline deadline, final BigInteger fee,
-								final Optional<Address> recipient, final Optional<NamespaceId> namespaceId, final List<Mosaic> mosaics,
-								final Message message,
-								final Optional<String> signature, final Optional<PublicAccount> signer,
-								final Optional<TransactionInfo> transactionInfo) {
-		super(TransactionType.TRANSFER, networkType, version, deadline, fee, signature, signer, transactionInfo);
-		Validate.notNull(recipient, "Recipient must not be null");
-		Validate.notNull(mosaics, "Mosaics must not be null");
-		Validate.notNull(message, "Message must not be null");
-		this.recipient = recipient;
-		this.mosaics = mosaics;
-		this.message = message;
-		this.namespaceId = namespaceId;
-	}
+  private TransferTransaction(
+      final NetworkType networkType,
+      final Short version,
+      final Deadline deadline,
+      final BigInteger maxFee,
+      final Optional<Address> recipient,
+      final Optional<NamespaceId> namespaceId,
+      final List<Mosaic> mosaics,
+      final Message message) {
+    this(
+        networkType,
+        version,
+        deadline,
+        maxFee,
+        recipient,
+        namespaceId,
+        mosaics,
+        message,
+        Optional.empty(),
+        Optional.empty(),
+        Optional.empty());
+  }
 
-	/**
-	 * Create a transfer transaction object.
-	 *
-	 * @param deadline    Deadline to include the transaction.
-	 * @param fee         Fee for the transaction.
-	 * @param recipient   Recipient of the transaction.
-	 * @param mosaics     Array of mosaics.
-	 * @param message     Transaction message.
-	 * @param networkType Network type.
-	 * @return Transfer transaction.
-	 */
-	public static TransferTransaction create(final Deadline deadline, final BigInteger fee, final Address recipient,
-											 final List<Mosaic> mosaics, final Message message, final NetworkType networkType) {
-		return new TransferTransaction(networkType, TransactionVersion.TRANSFER.getValue(), deadline, fee, Optional.of(recipient),
-				Optional.empty(), mosaics, message);
-	}
+  private TransferTransaction(
+      final NetworkType networkType,
+      final Short version,
+      final Deadline deadline,
+      final BigInteger maxFee,
+      final Optional<Address> recipient,
+      final Optional<NamespaceId> namespaceId,
+      final List<Mosaic> mosaics,
+      final Message message,
+      final Optional<String> signature,
+      final Optional<PublicAccount> signer,
+      final Optional<TransactionInfo> transactionInfo) {
+    super(
+        TransactionType.TRANSFER,
+        networkType,
+        version,
+        deadline,
+        maxFee,
+        signature,
+        signer,
+        transactionInfo);
+    Validate.notNull(recipient, "Recipient must not be null");
+    Validate.notNull(mosaics, "Mosaics must not be null");
+    Validate.notNull(message, "Message must not be null");
+    this.recipient = recipient;
+    this.mosaics = mosaics;
+    this.message = message;
+    this.namespaceId = namespaceId;
+  }
 
-	/**
-	 * Create a transfer transaction object.
-	 *
-	 * @param deadline    Deadline to include the transaction.
-	 * @param fee         Fee for the transaction.
-	 * @param namespaceId Recipient alias.
-	 * @param mosaics     Array of mosaics.
-	 * @param message     Transaction message.
-	 * @param networkType Network type.
-	 * @return Transfer transaction.
-	 */
-	public static TransferTransaction create(final Deadline deadline, final BigInteger fee, final NamespaceId namespaceId,
-											 final List<Mosaic> mosaics, final Message message, final NetworkType networkType) {
-		return new TransferTransaction(networkType, TransactionVersion.TRANSFER.getValue(), deadline, fee, Optional.empty(),
-				Optional.of(namespaceId), mosaics, message);
-	}
+  /**
+   * Create a transfer transaction object.
+   *
+   * @param deadline Deadline to include the transaction.
+   * @param maxFee Fee for the transaction.
+   * @param recipient Recipient of the transaction.
+   * @param mosaics Array of mosaics.
+   * @param message Transaction message.
+   * @param networkType Network type.
+   * @return Transfer transaction.
+   */
+  public static TransferTransaction create(
+      final Deadline deadline,
+      final BigInteger maxFee,
+      final Address recipient,
+      final List<Mosaic> mosaics,
+      final Message message,
+      final NetworkType networkType) {
+    return new TransferTransaction(
+        networkType,
+        TransactionVersion.TRANSFER.getValue(),
+        deadline,
+        maxFee,
+        Optional.of(recipient),
+        Optional.empty(),
+        mosaics,
+        message);
+  }
 
-	/**
-	 * Returns address of the recipient.
-	 *
-	 * @return recipient address
-	 */
-	public Optional<Address> getRecipient() {
-		return recipient;
-	}
+  /**
+   * Create a transfer transaction object.
+   *
+   * @param deadline Deadline to include the transaction.
+   * @param maxFee Fee for the transaction.
+   * @param namespaceId Recipient alias.
+   * @param mosaics Array of mosaics.
+   * @param message Transaction message.
+   * @param networkType Network type.
+   * @return Transfer transaction.
+   */
+  public static TransferTransaction create(
+      final Deadline deadline,
+      final BigInteger maxFee,
+      final NamespaceId namespaceId,
+      final List<Mosaic> mosaics,
+      final Message message,
+      final NetworkType networkType) {
+    return new TransferTransaction(
+        networkType,
+        TransactionVersion.TRANSFER.getValue(),
+        deadline,
+        maxFee,
+        Optional.empty(),
+        Optional.of(namespaceId),
+        mosaics,
+        message);
+  }
 
-	/**
-	 * Gets namespace id alias for the address of the recipient.
-	 *
-	 * @return Namespace id.
-	 */
-	public Optional<NamespaceId> getNamespaceId() {
-		return namespaceId;
-	}
+  /**
+   * Returns address of the recipient.
+   *
+   * @return recipient address
+   */
+  public Optional<Address> getRecipient() {
+    return recipient;
+  }
 
-	/**
-	 * Returns list of mosaic objects.
-	 *
-	 * @return Link<{ @ link Mosaic }>.
-	 */
-	public List<Mosaic> getMosaics() {
-		return mosaics;
-	}
+  /**
+   * Gets namespace id alias for the address of the recipient.
+   *
+   * @return Namespace id.
+   */
+  public Optional<NamespaceId> getNamespaceId() {
+    return namespaceId;
+  }
 
-	/**
-	 * Returns transaction message.
-	 *
-	 * @return Message.
-	 */
-	public Message getMessage() {
-		return message;
-	}
+  /**
+   * Returns list of mosaic objects.
+   *
+   * @return Link<{ @ link Mosaic }>.
+   */
+  public List<Mosaic> getMosaics() {
+    return mosaics;
+  }
 
+  /**
+   * Returns transaction message.
+   *
+   * @return Message.
+   */
+  public Message getMessage() {
+    return message;
+  }
 
-	/**
-	 * Serialized the transfer transaction.
-	 *
-	 * @return bytes of the transaction.
-	 */
-	@Override
-	byte[] generateBytes() {
-		// Add place holders to the signer and signature until actually signed
-		final ByteBuffer signerBuffer = ByteBuffer.allocate(32);
-		final ByteBuffer signatureBuffer = ByteBuffer.allocate(64);
+  /**
+   * Serialized the transfer transaction.
+   *
+   * @return bytes of the transaction.
+   */
+  @Override
+  byte[] generateBytes() {
+    // Add place holders to the signer and signature until actually signed
+    final ByteBuffer signerBuffer = ByteBuffer.allocate(32);
+    final ByteBuffer signatureBuffer = ByteBuffer.allocate(64);
 
-		final TransferTransactionBuilder txBuilder =
-				TransferTransactionBuilder.create(new SignatureDto(signatureBuffer),
-						new KeyDto(signerBuffer), getNetworkVersion(),
-						EntityTypeDto.TRANSFER_TRANSACTION,
-						new AmountDto(getFee().longValue()), new TimestampDto(getDeadline().getInstant()),
-						new UnresolvedAddressDto(getUnresolveAddressBuffer()), getMessageBuffer(), getUnresolvedMosaicArray());
-		return txBuilder.serialize();
-	}
+    final TransferTransactionBuilder txBuilder =
+        TransferTransactionBuilder.create(
+            new SignatureDto(signatureBuffer),
+            new KeyDto(signerBuffer),
+            getNetworkVersion(),
+            EntityTypeDto.TRANSFER_TRANSACTION,
+            new AmountDto(getFee().longValue()),
+            new TimestampDto(getDeadline().getInstant()),
+            new UnresolvedAddressDto(getUnresolveAddressBuffer()),
+            getMessageBuffer(),
+            getUnresolvedMosaicArray());
+    return txBuilder.serialize();
+  }
 
-	/**
-	 * Serialized the transfer transaction to embedded bytes.
-	 *
-	 * @return bytes of the transaction.
-	 */
-	@Override
-	byte[] generateEmbeddedBytes() {
-		EmbeddedTransferTransactionBuilder txBuilder =
-				EmbeddedTransferTransactionBuilder.create(new KeyDto(getSignerBytes().get()), getNetworkVersion(),
-						EntityTypeDto.TRANSFER_TRANSACTION,
-						new UnresolvedAddressDto(getUnresolveAddressBuffer()), getMessageBuffer(), getUnresolvedMosaicArray());
-		return txBuilder.serialize();
-	}
+  /**
+   * Serialized the transfer transaction to embedded bytes.
+   *
+   * @return bytes of the transaction.
+   */
+  @Override
+  byte[] generateEmbeddedBytes() {
+    EmbeddedTransferTransactionBuilder txBuilder =
+        EmbeddedTransferTransactionBuilder.create(
+            new KeyDto(getSignerBytes().get()),
+            getNetworkVersion(),
+            EntityTypeDto.TRANSFER_TRANSACTION,
+            new UnresolvedAddressDto(getUnresolveAddressBuffer()),
+            getMessageBuffer(),
+            getUnresolvedMosaicArray());
+    return txBuilder.serialize();
+  }
 
-	/**
-	 * Gets mosaic array.
-	 *
-	 * @return Mosaic array.
-	 */
-	private ArrayList<UnresolvedMosaicBuilder> getUnresolvedMosaicArray() {
-		// Create Mosaics
-		final ArrayList<UnresolvedMosaicBuilder> unresolvedMosaicArrayList = new ArrayList<>(mosaics.size());
-		for (int i = 0; i < mosaics.size(); ++i) {
-			final Mosaic mosaic = mosaics.get(i);
-			final UnresolvedMosaicBuilder mosaicBuilder =
-					UnresolvedMosaicBuilder.create(
-							new UnresolvedMosaicIdDto(
-									mosaic.getId().getId().longValue()),
-							new AmountDto(mosaic.getAmount().longValue()));
-			unresolvedMosaicArrayList.add(mosaicBuilder);
-		}
-		return unresolvedMosaicArrayList;
-	}
+  /**
+   * Gets mosaic array.
+   *
+   * @return Mosaic array.
+   */
+  private ArrayList<UnresolvedMosaicBuilder> getUnresolvedMosaicArray() {
+    // Create Mosaics
+    final ArrayList<UnresolvedMosaicBuilder> unresolvedMosaicArrayList =
+        new ArrayList<>(mosaics.size());
+    for (int i = 0; i < mosaics.size(); ++i) {
+      final Mosaic mosaic = mosaics.get(i);
+      final UnresolvedMosaicBuilder mosaicBuilder =
+          UnresolvedMosaicBuilder.create(
+              new UnresolvedMosaicIdDto(mosaic.getId().getId().longValue()),
+              new AmountDto(mosaic.getAmount().longValue()));
+      unresolvedMosaicArrayList.add(mosaicBuilder);
+    }
+    return unresolvedMosaicArrayList;
+  }
 
-	/**
-	 * Gets message buffer.
-	 *
-	 * @return Message buffer.
-	 */
-	private ByteBuffer getMessageBuffer() {
-		final byte byteMessageType = (byte) message.getType();
-		final byte[] bytePayload = message.getPayload().getBytes(StandardCharsets.UTF_8);
-		final ByteBuffer messageBuffer = ByteBuffer.allocate(bytePayload.length + 1 /* for the message type */);
-		messageBuffer.put(byteMessageType);
-		messageBuffer.put(bytePayload);
-		return messageBuffer;
-	}
+  /**
+   * Gets message buffer.
+   *
+   * @return Message buffer.
+   */
+  private ByteBuffer getMessageBuffer() {
+    final byte byteMessageType = (byte) message.getType();
+    final byte[] bytePayload = message.getPayload().getBytes(StandardCharsets.UTF_8);
+    final ByteBuffer messageBuffer =
+        ByteBuffer.allocate(bytePayload.length + 1 /* for the message type */);
+    messageBuffer.put(byteMessageType);
+    messageBuffer.put(bytePayload);
+    return messageBuffer;
+  }
 
-	/**
-	 * Gets unresolve address buffer.
-	 *
-	 * @return Unresolve address buffer
-	 */
-	private ByteBuffer getUnresolveAddressBuffer() {
-		if (getRecipient().isPresent()) {
-			return getRecipient().get().getByteBuffer();
-		} else if (getNamespaceId().isPresent()) {
-			return getNamespaceIdAsUnresolveAddressBuffer();
-		}
-		throw new IllegalStateException("Address or namespace alias must be set.");
-	}
+  /**
+   * Gets unresolve address buffer.
+   *
+   * @return Unresolve address buffer
+   */
+  private ByteBuffer getUnresolveAddressBuffer() {
+    if (getRecipient().isPresent()) {
+      return getRecipient().get().getByteBuffer();
+    } else if (getNamespaceId().isPresent()) {
+      return getNamespaceIdAsUnresolveAddressBuffer();
+    }
+    throw new IllegalStateException("Address or namespace alias must be set.");
+  }
 
-	/**
-	 * Gets the namespace id as unresolve address.
-	 *
-	 * @return Unresolve address buffer.
-	 */
-	private ByteBuffer getNamespaceIdAsUnresolveAddressBuffer() {
-		final ByteBuffer namespaceIdAlias = ByteBuffer.allocate(25);
-    final byte firstByte = (byte)(this.getNetworkType().getValue() | 0x01);
-		namespaceIdAlias.order(ByteOrder.LITTLE_ENDIAN);
-		namespaceIdAlias.put(firstByte);
-		namespaceIdAlias.putLong(namespaceId.get().getIdAsLong());
-		return namespaceIdAlias;
-	}
+  /**
+   * Gets the namespace id as unresolve address.
+   *
+   * @return Unresolve address buffer.
+   */
+  private ByteBuffer getNamespaceIdAsUnresolveAddressBuffer() {
+    final ByteBuffer namespaceIdAlias = ByteBuffer.allocate(25);
+    final byte firstByte = (byte) (this.getNetworkType().getValue() | 0x01);
+    namespaceIdAlias.order(ByteOrder.LITTLE_ENDIAN);
+    namespaceIdAlias.put(firstByte);
+    namespaceIdAlias.putLong(namespaceId.get().getIdAsLong());
+    return namespaceIdAlias;
+  }
 }

@@ -20,24 +20,22 @@
 
 package io.nem.sdk.infrastructure.directconnect.dataaccess.database.common;
 
-/**
- * Searchable entity by key
- */
+/** Searchable entity by key */
 public interface Searchable<T, R> {
-	/**
-	 * Find key if present.
-	 *
-	 * @param key Key to find.
-	 * @return Object of type R.
-	 */
-	R find(final T key);
+  /**
+   * Find key if present.
+   *
+   * @param key Key to find.
+   * @return Object of type R.
+   */
+  R find(final T key);
 
-	/**
-	 * Find key with timeout.
-	 *
-	 * @param key     Key to find.
-	 * @param timeout Timeout value.
-	 * @return Object of type R.
-	 */
-	R find(final T key, final int timeout);
+  /**
+   * Find key with timeout.
+   *
+   * @param key Key to find.
+   * @param timeout Timeout value.
+   * @return Object of type R.
+   */
+  R find(final T key, final int timeout);
 }

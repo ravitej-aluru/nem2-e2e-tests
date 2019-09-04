@@ -26,36 +26,36 @@ import io.nem.sdk.model.mosaic.MosaicInfo;
 
 import java.util.Optional;
 
-/**
- * Mosaics collection
- */
+/** Mosaics collection */
 public class MosaicsCollection {
-	/**
-	 * Catapult collection
-	 */
-	final private CatapultCollection<MosaicInfo, MosaicInfoMapper> catapultCollection;
-	/* Catapult context. */
-	final private CatapultContext context;
+  /** Catapult collection */
+  private final CatapultCollection<MosaicInfo, MosaicInfoMapper> catapultCollection;
+  /* Catapult context. */
+  private final CatapultContext context;
 
-	/**
-	 * Constructor.
-	 *
-	 * @param context Catapult context.
-	 */
-	public MosaicsCollection(final CatapultContext context) {
-		this.context = context;
-		catapultCollection = new CatapultCollection<>(context.getCatapultMongoDbClient(), "mosaics",
-				() -> new MosaicInfoMapper(new BlocksCollection(context).find(1).get().getNetworkType()));
-	}
+  /**
+   * Constructor.
+   *
+   * @param context Catapult context.
+   */
+  public MosaicsCollection(final CatapultContext context) {
+    this.context = context;
+    catapultCollection =
+        new CatapultCollection<>(
+            context.getCatapultMongoDbClient(),
+            "mosaics",
+            () ->
+                new MosaicInfoMapper(new BlocksCollection(context).find(1).get().getNetworkType()));
+  }
 
-	/**
-	 * Gets mosaic id info.
-	 *
-	 * @param mosaicId Mosaic id.
-	 * @return Mosaic account info.
-	 */
-	public Optional<MosaicInfo> find(final long mosaicId) {
+  /**
+   * Gets mosaic id info.
+   *
+   * @param mosaicId Mosaic id.
+   * @return Mosaic account info.
+   */
+  public Optional<MosaicInfo> find(final long mosaicId) {
     final String keyName = "mosaic.id";
-		return catapultCollection.findOne(keyName, mosaicId, context.getDatabaseTimeoutInSeconds());
-	}
+    return catapultCollection.findOne(keyName, mosaicId, context.getDatabaseTimeoutInSeconds());
+  }
 }

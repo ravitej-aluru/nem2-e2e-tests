@@ -20,37 +20,31 @@
 
 package io.nem.sdk.infrastructure.directconnect.auth;
 
-/**
- * Connection security mode.
- */
+/** Connection security mode. */
 public enum ConnectionSecurityMode {
-	/**
-	 * No security.
-	 */
-	NONE((byte) 1),
-	/**
-	 * Signed security.
-	 */
-	SIGNED((byte) 2);
+  /** No security. */
+  NONE((byte) 1),
+  /** Signed security. */
+  SIGNED((byte) 2);
 
-	/* Security mode value. */
-	private final byte mode;
+  /* Security mode value. */
+  private final byte mode;
 
-	/**
-	 * Constructor.
-	 *
-	 * @param mode Security mode.
-	 */
-	ConnectionSecurityMode(final byte mode) {
-		this.mode = mode;
-	}
+  /**
+   * Constructor.
+   *
+   * @param mode Security mode.
+   */
+  ConnectionSecurityMode(final byte mode) {
+    this.mode = mode;
+  }
 
-	/**
-	 * Gets the value of the enum.
-	 *
-	 * @return Value of the enum.
-	 */
-	byte getValue() {
-		return this.mode;
-	}
+  /**
+   * Gets the value of the enum.
+   *
+   * @return Value of the enum.
+   */
+  byte getValue() {
+    return this.mode;
+  }
 }

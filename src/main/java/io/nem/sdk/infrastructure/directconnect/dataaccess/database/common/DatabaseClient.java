@@ -20,14 +20,12 @@
 
 package io.nem.sdk.infrastructure.directconnect.dataaccess.database.common;
 
-/**
- * Database client.
- */
+/** Database client. */
 public interface DatabaseClient<T> {
-	/**
-	 * Gets database
-	 *
-	 * @return Database of type T.
-	 */
-	T getDatabase();
+  /**
+   * Gets database
+   *
+   * @return Database of type T.
+   */
+  T getDatabase();
 }

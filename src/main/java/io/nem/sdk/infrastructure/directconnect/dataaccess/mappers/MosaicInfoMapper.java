@@ -30,40 +30,36 @@ import io.vertx.core.json.JsonObject;
 import java.math.BigInteger;
 import java.util.function.Function;
 
-/**
- * Mosaics mapper.
- */
+/** Mosaics mapper. */
 public class MosaicInfoMapper implements Function<JsonObject, MosaicInfo> {
-	/* Network type. */
-	private final NetworkType networkType;
+  /* Network type. */
+  private final NetworkType networkType;
 
-	/**
-	 * Constructor.
-	 *
-	 * @param networkType Network type.
-	 */
-	public MosaicInfoMapper(final NetworkType networkType) {
-		this.networkType = networkType;
-	}
+  /**
+   * Constructor.
+   *
+   * @param networkType Network type.
+   */
+  public MosaicInfoMapper(final NetworkType networkType) {
+    this.networkType = networkType;
+  }
 
-	/**
-	 * Converts json to mosaic info.
-	 *
-	 * @param jsonObject Json Object.
-	 * @return Mosaic info.
-	 */
-	public MosaicInfo apply(final JsonObject jsonObject) {
-
-    final String metaId = jsonObject.getJsonObject("meta").getString("id");
+  /**
+   * Converts json to mosaic info.
+   *
+   * @param jsonObject Json Object.
+   * @return Mosaic info.
+   */
+  public MosaicInfo apply(final JsonObject jsonObject) {
     final JsonObject mosaicJsonObject = jsonObject.getJsonObject("mosaic");
-    final MosaicId mosaicId =
-        new MosaicId(MapperUtils.extractBigInteger(mosaicJsonObject, "id"));
+    final MosaicId mosaicId = new MosaicId(MapperUtils.extractBigInteger(mosaicJsonObject, "id"));
     final BigInteger supply = MapperUtils.extractBigInteger(mosaicJsonObject, "supply");
-    final BigInteger height = MapperUtils.extractBigInteger(mosaicJsonObject, "height");
+    final BigInteger height = MapperUtils.extractBigInteger(mosaicJsonObject, "startHeight");
     final PublicAccount owner =
-        PublicAccount.createFromPublicKey(mosaicJsonObject.getString("owner"), networkType);
+        PublicAccount.createFromPublicKey(
+            mosaicJsonObject.getString("ownerPublicKey"), networkType);
     final int revision = mosaicJsonObject.getInteger("revision");
     final MosaicProperties properties = new MosaicPropertiesMapper().apply(mosaicJsonObject);
-    return MosaicInfo.create(metaId, mosaicId, supply, height, owner, revision, properties);
+    return MosaicInfo.create(mosaicId, supply, height, owner, revision, properties);
   }
 }

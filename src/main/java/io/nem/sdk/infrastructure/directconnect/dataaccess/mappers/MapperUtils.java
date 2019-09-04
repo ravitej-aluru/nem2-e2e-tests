@@ -24,18 +24,16 @@ import io.vertx.core.json.JsonObject;
 
 import java.math.BigInteger;
 
-/**
- * Mapper utils.
- */
+/** Mapper utils. */
 final class MapperUtils {
-	/**
-	 * Gets a Biginteger value from json.
-	 *
-	 * @param jsonObject Json object.
-	 * @param name       Name of the property.
-	 * @return BigInteger of the name.¬
-	 */
-	public static BigInteger extractBigInteger(final JsonObject jsonObject, final String name) {
-		return BigInteger.valueOf(jsonObject.getLong(name));
-	}
+  /**
+   * Gets a Biginteger value from json.
+   *
+   * @param jsonObject Json object.
+   * @param name Name of the property.
+   * @return BigInteger of the name.¬
+   */
+  public static BigInteger extractBigInteger(final JsonObject jsonObject, final String name) {
+    return BigInteger.valueOf(jsonObject.getLong(name));
+  }
 }

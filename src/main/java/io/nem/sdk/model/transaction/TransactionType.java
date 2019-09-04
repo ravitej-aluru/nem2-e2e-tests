@@ -16,9 +16,7 @@
 
 package io.nem.sdk.model.transaction;
 
-/**
- * Enum containing transaction type constants.
- */
+/** Enum containing transaction type constants. */
 public enum TransactionType {
 
   /** RESERVED */
@@ -67,6 +65,16 @@ public enum TransactionType {
 
   /** Account properties entity type transaction type */
   ACCOUNT_PROPERTIES_ENTITY_TYPE((short) 0x4350),
+
+  // Metadata
+  /** Account metadata */
+  ACCOUNT_METADATA((short) 0x4144),
+
+  /** Mosaic metadata */
+  MOSAIC_METADATA((short) 0x4244),
+
+  /** Namespace metadata */
+  NAMESPACE_METADATA((short) 0x4344),
 
   // Cross-chain swaps
   /** Secret Lock Transaction type */

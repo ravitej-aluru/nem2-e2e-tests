@@ -16,24 +16,22 @@
 
 package io.nem.sdk.model.account;
 
-/**
- * Account properties structure describes property information for an account.
- */
+/** Account properties structure describes property information for an account. */
 public class AccountPropertiesInfo {
 
-	private final String metaId;
-	private final AccountProperties accountProperties;
+  private final String metaId;
+  private final AccountProperties accountProperties;
 
-	public AccountPropertiesInfo(String metaId, AccountProperties accountProperties) {
-		this.metaId = metaId;
-		this.accountProperties = accountProperties;
-	}
+  public AccountPropertiesInfo(String metaId, AccountProperties accountProperties) {
+    this.metaId = metaId;
+    this.accountProperties = accountProperties;
+  }
 
-	public String getMetaId() {
-		return metaId;
-	}
+  public String getMetaId() {
+    return metaId;
+  }
 
-	public AccountProperties getAccountProperties() {
-		return accountProperties;
-	}
+  public AccountProperties getAccountProperties() {
+    return accountProperties;
+  }
 }

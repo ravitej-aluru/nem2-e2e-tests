@@ -27,38 +27,36 @@ import io.reactivex.Observable;
 import java.math.BigInteger;
 import java.util.List;
 
-/**
- * Blockchain interface repository
- */
+/** Blockchain interface repository */
 public interface BlockchainRepository {
 
-	/**
-	 * Gets a BlockInfo for a given block height.
-	 *
-	 * @param height Height of the block.
-	 * @return Observable of {@link BlockInfo}
-	 */
-	Observable<BlockInfo> getBlockByHeight(BigInteger height);
+  /**
+   * Gets a BlockInfo for a given block height.
+   *
+   * @param height Height of the block.
+   * @return Observable of {@link BlockInfo}
+   */
+  Observable<BlockInfo> getBlockByHeight(BigInteger height);
 
-	/**
-	 * Gets list of transactions included in a block for a block height
-	 *
-	 * @param height Height of the block.
-	 * @return Observable of List<{@link Transaction}>
-	 */
-	Observable<List<Transaction>> getBlockTransactions(BigInteger height);
+  /**
+   * Gets list of transactions included in a block for a block height
+   *
+   * @param height Height of the block.
+   * @return Observable of List<{@link Transaction}>
+   */
+  Observable<List<Transaction>> getBlockTransactions(BigInteger height);
 
-	/**
-	 * Gets current blockchain height.
-	 *
-	 * @return Observable of BigInteger
-	 */
-	Observable<BigInteger> getBlockchainHeight();
+  /**
+   * Gets current blockchain height.
+   *
+   * @return Observable of BigInteger
+   */
+  Observable<BigInteger> getBlockchainHeight();
 
-	/**
-	 * Gets current blockchain score.
-	 *
-	 * @return Observable of BigInteger
-	 */
-	Observable<BigInteger> getBlockchainScore();
+  /**
+   * Gets current blockchain score.
+   *
+   * @return Observable of BigInteger
+   */
+  Observable<BigInteger> getBlockchainScore();
 }

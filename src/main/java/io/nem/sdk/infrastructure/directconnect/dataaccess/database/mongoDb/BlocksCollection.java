@@ -26,35 +26,33 @@ import io.nem.sdk.model.blockchain.BlockInfo;
 
 import java.util.Optional;
 
-/**
- * Block collection
- */
+/** Block collection */
 public class BlocksCollection {
-	/**
-	 * Catapult collection
-	 */
-	final private CatapultCollection<BlockInfo, BlocksInfoMapper> catapultCollection;
-	/* Catapult context. */
-	final private CatapultContext context;
+  /** Catapult collection */
+  private final CatapultCollection<BlockInfo, BlocksInfoMapper> catapultCollection;
+  /* Catapult context. */
+  private final CatapultContext context;
 
-	/**
-	 * Constructor.
-	 *
-	 * @param context Catapult context.
-	 */
-	public BlocksCollection(final CatapultContext context) {
-		catapultCollection = new CatapultCollection<>(context.getCatapultMongoDbClient(), "blocks", BlocksInfoMapper::new);
-		this.context = context;
-	}
+  /**
+   * Constructor.
+   *
+   * @param context Catapult context.
+   */
+  public BlocksCollection(final CatapultContext context) {
+    catapultCollection =
+        new CatapultCollection<>(
+            context.getCatapultMongoDbClient(), "blocks", BlocksInfoMapper::new);
+    this.context = context;
+  }
 
-	/**
-	 * Gets blocks info.
-	 *
-	 * @param height Block height.
-	 * @return Block info.
-	 */
-	public Optional<BlockInfo> find(final long height) {
-		final String keyName = "block.height";
-		return catapultCollection.findOne(keyName, height, context.getDatabaseTimeoutInSeconds());
-	}
+  /**
+   * Gets blocks info.
+   *
+   * @param height Block height.
+   * @return Block info.
+   */
+  public Optional<BlockInfo> find(final long height) {
+    final String keyName = "block.height";
+    return catapultCollection.findOne(keyName, height, context.getDatabaseTimeoutInSeconds());
+  }
 }

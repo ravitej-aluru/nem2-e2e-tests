@@ -31,31 +31,33 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-/**
- * Account info mapper.
- */
+/** Account info mapper. */
 public class AccountInfoMapper implements Function<JsonObject, AccountInfo> {
-	/**
-	 * Converts a json object to account info.
-	 *
-	 * @param jsonObject Json object.
-	 * @return Account info.
-	 */
-	public AccountInfo apply(final JsonObject jsonObject) {
-		final JsonObject accountJsonObject = jsonObject.getJsonObject("account");
-		final Address address = Address.createFromEncoded(accountJsonObject.getString("address"));
-		final BigInteger addressHeight = MapperUtils.extractBigInteger(accountJsonObject, "addressHeight");
-		final String publicKey = accountJsonObject.getString("publicKey");
-		final BigInteger publicHeight = MapperUtils.extractBigInteger(accountJsonObject, "publicKeyHeight");
-		final ImportancesMapper importancesMapper = new ImportancesMapper();
-		final List<Importances> importances =
-				accountJsonObject.getJsonArray("importances").stream().map(jsonObj -> importancesMapper.apply((JsonObject) jsonObj))
-						.collect(Collectors.toList());
+  /**
+   * Converts a json object to account info.
+   *
+   * @param jsonObject Json object.
+   * @return Account info.
+   */
+  public AccountInfo apply(final JsonObject jsonObject) {
+    final JsonObject accountJsonObject = jsonObject.getJsonObject("account");
+    final Address address = Address.createFromEncoded(accountJsonObject.getString("address"));
+    final BigInteger addressHeight =
+        MapperUtils.extractBigInteger(accountJsonObject, "addressHeight");
+    final String publicKey = accountJsonObject.getString("publicKey");
+    final BigInteger publicHeight =
+        MapperUtils.extractBigInteger(accountJsonObject, "publicKeyHeight");
+    final ImportancesMapper importancesMapper = new ImportancesMapper();
+    final List<Importances> importances =
+        accountJsonObject.getJsonArray("importances").stream()
+            .map(jsonObj -> importancesMapper.apply((JsonObject) jsonObj))
+            .collect(Collectors.toList());
 
-		final MosaicMapper mosaicMapper = new MosaicMapper();
-		final List<Mosaic> mosaics =
-				accountJsonObject.getJsonArray("mosaics").stream().map(jsonObj -> mosaicMapper.apply((JsonObject) jsonObj))
-						.collect(Collectors.toList());
-		return new AccountInfo(address, addressHeight, publicKey, publicHeight, importances, mosaics);
-	}
+    final MosaicMapper mosaicMapper = new MosaicMapper();
+    final List<Mosaic> mosaics =
+        accountJsonObject.getJsonArray("mosaics").stream()
+            .map(jsonObj -> mosaicMapper.apply((JsonObject) jsonObj))
+            .collect(Collectors.toList());
+    return new AccountInfo(address, addressHeight, publicKey, publicHeight, importances, mosaics);
+  }
 }

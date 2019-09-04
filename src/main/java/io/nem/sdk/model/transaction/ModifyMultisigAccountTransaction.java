@@ -28,43 +28,87 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Modify multisig account transactions are part of the NEM's multisig account system.
- * A modify multisig account transaction holds an array of multisig cosignatory modifications, min number of signatures to approve a transaction and a min number of signatures to remove a cosignatory.
+ * Modify multisig account transactions are part of the NEM's multisig account system. A modify
+ * multisig account transaction holds an array of multisig cosignatory modifications, min number of
+ * signatures to approve a transaction and a min number of signatures to remove a cosignatory.
  *
  * @since 1.0
  */
 public class ModifyMultisigAccountTransaction extends Transaction {
-	private final byte minApprovalDelta;
-	private final byte minRemovalDelta;
-	private final List<MultisigCosignatoryModification> modifications;
+  private final byte minApprovalDelta;
+  private final byte minRemovalDelta;
+  private final List<MultisigCosignatoryModification> modifications;
 
-	public ModifyMultisigAccountTransaction(NetworkType networkType, Integer version, Deadline deadline,
-											BigInteger fee, byte minApprovalDelta, byte minRemovalDelta,
-											List<MultisigCosignatoryModification> modifications, String signature,
-											PublicAccount signer, TransactionInfo transactionInfo) {
-		this(networkType, version, deadline, fee, minApprovalDelta, minRemovalDelta, modifications,
-				Optional.of(signature), Optional.of(signer), Optional.of(transactionInfo));
-	}
+  public ModifyMultisigAccountTransaction(
+      NetworkType networkType,
+      Short version,
+      Deadline deadline,
+      BigInteger maxFee,
+      byte minApprovalDelta,
+      byte minRemovalDelta,
+      List<MultisigCosignatoryModification> modifications,
+      String signature,
+      PublicAccount signer,
+      TransactionInfo transactionInfo) {
+    this(
+        networkType,
+        version,
+        deadline,
+        maxFee,
+        minApprovalDelta,
+        minRemovalDelta,
+        modifications,
+        Optional.of(signature),
+        Optional.of(signer),
+        Optional.of(transactionInfo));
+  }
 
-	public ModifyMultisigAccountTransaction(NetworkType networkType, Integer version, Deadline deadline,
-											BigInteger fee, byte minApprovalDelta, byte minRemovalDelta,
-											List<MultisigCosignatoryModification> modifications) {
-		this(networkType, version, deadline, fee, minApprovalDelta, minRemovalDelta, modifications, Optional.empty(),
-				Optional.empty(), Optional.empty());
-	}
+  public ModifyMultisigAccountTransaction(
+      NetworkType networkType,
+      Short version,
+      Deadline deadline,
+      BigInteger maxFee,
+      byte minApprovalDelta,
+      byte minRemovalDelta,
+      List<MultisigCosignatoryModification> modifications) {
+    this(
+        networkType,
+        version,
+        deadline,
+        maxFee,
+        minApprovalDelta,
+        minRemovalDelta,
+        modifications,
+        Optional.empty(),
+        Optional.empty(),
+        Optional.empty());
+  }
 
-	private ModifyMultisigAccountTransaction(NetworkType networkType, Integer version, Deadline deadline,
-											 BigInteger fee, byte minApprovalDelta, byte minRemovalDelta,
-											 List<MultisigCosignatoryModification> modifications,
-											 Optional<String> signature, Optional<PublicAccount> signer,
-											 Optional<TransactionInfo> transactionInfo) {
-		super(TransactionType.MODIFY_MULTISIG_ACCOUNT, networkType, version, deadline, fee, signature, signer,
-				transactionInfo);
-		Validate.notNull(modifications, "Modifications must not be null");
-		this.minApprovalDelta = minApprovalDelta;
-		this.minRemovalDelta = minRemovalDelta;
-		this.modifications = modifications;
-	}
+  private ModifyMultisigAccountTransaction(
+      NetworkType networkType,
+      Short version,
+      Deadline deadline,
+      BigInteger maxFee,
+      byte minApprovalDelta,
+      byte minRemovalDelta,
+      List<MultisigCosignatoryModification> modifications,
+      Optional<String> signature,
+      Optional<PublicAccount> signer,
+      Optional<TransactionInfo> transactionInfo) {
+    super(
+        TransactionType.MODIFY_MULTISIG_ACCOUNT,
+        networkType,
+        version,
+        deadline,
+        maxFee,
+        signature,
+        signer,
+        transactionInfo);
+    Validate.notNull(modifications, "Modifications must not be null");
+    this.minApprovalDelta = minApprovalDelta;
+    this.minRemovalDelta = minRemovalDelta;
+    this.modifications = modifications;
+  }
 
   /**
    * Create a modify multisig account transaction object.
@@ -94,46 +138,44 @@ public class ModifyMultisigAccountTransaction extends Transaction {
         modifications);
   }
 
-	/**
-	 * Return number of signatures needed to approve a transaction.
-	 * If we are modifying and existing multi-signature account this indicates
-	 * the relative change of the minimum cosignatories.
-	 *
-	 * @return byte
-	 */
-	public byte getMinApprovalDelta() {
-		return minApprovalDelta;
-	}
+  /**
+   * Return number of signatures needed to approve a transaction. If we are modifying and existing
+   * multi-signature account this indicates the relative change of the minimum cosignatories.
+   *
+   * @return byte
+   */
+  public byte getMinApprovalDelta() {
+    return minApprovalDelta;
+  }
 
-	/**
-	 * Return number of signatures needed to remove a cosignatory.
-	 * If we are modifying and existing multi-signature account this indicates
-	 * the relative change of the minimum cosignatories.
-	 *
-	 * @return byte
-	 */
-	public byte getMinRemovalDelta() {
-		return minRemovalDelta;
-	}
+  /**
+   * Return number of signatures needed to remove a cosignatory. If we are modifying and existing
+   * multi-signature account this indicates the relative change of the minimum cosignatories.
+   *
+   * @return byte
+   */
+  public byte getMinRemovalDelta() {
+    return minRemovalDelta;
+  }
 
-	/**
-	 * The List of cosigner accounts added or removed from the multi-signature account.
-	 *
-	 * @return List<{ @ link MultisigCosignatoryModification }>
-	 */
-	public List<MultisigCosignatoryModification> getModifications() {
-		return modifications;
-	}
+  /**
+   * The List of cosigner accounts added or removed from the multi-signature account.
+   *
+   * @return List<{ @ link MultisigCosignatoryModification }>
+   */
+  public List<MultisigCosignatoryModification> getModifications() {
+    return modifications;
+  }
 
-	/**
-	 * Serialized the transaction.
-	 *
-	 * @return bytes of the transaction.
-	 */
-	byte[] generateBytes() {
-		// Add place holders to the signer and signature until actually signed
-		final ByteBuffer signerBuffer = ByteBuffer.allocate(32);
-		final ByteBuffer signatureBuffer = ByteBuffer.allocate(64);
+  /**
+   * Serialized the transaction.
+   *
+   * @return bytes of the transaction.
+   */
+  byte[] generateBytes() {
+    // Add place holders to the signer and signature until actually signed
+    final ByteBuffer signerBuffer = ByteBuffer.allocate(32);
+    final ByteBuffer signatureBuffer = ByteBuffer.allocate(64);
 
     MultisigAccountModificationTransactionBuilder txBuilder =
         MultisigAccountModificationTransactionBuilder.create(

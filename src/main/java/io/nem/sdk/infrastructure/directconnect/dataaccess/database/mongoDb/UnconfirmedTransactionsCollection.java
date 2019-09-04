@@ -22,9 +22,7 @@ package io.nem.sdk.infrastructure.directconnect.dataaccess.database.mongoDb;
 
 import io.nem.sdk.infrastructure.common.CatapultContext;
 
-/**
- * Unconfirmed transactions collection.
- */
+/** Unconfirmed transactions collection. */
 public class UnconfirmedTransactionsCollection extends TransactionCollectionBase {
   /**
    * Constructor.

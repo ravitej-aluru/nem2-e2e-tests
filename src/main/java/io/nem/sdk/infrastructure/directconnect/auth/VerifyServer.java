@@ -24,30 +24,29 @@ import io.nem.core.crypto.KeyPair;
 import io.nem.core.crypto.PublicKey;
 import io.nem.sdk.infrastructure.directconnect.network.SocketClient;
 
-/**
- * Verifies a connection with a catapult server.
- */
+/** Verifies a connection with a catapult server. */
 public class VerifyServer {
-	/* Verifier server handler */
-	final VerifyServerHandler verifyHandler;
+  /* Verifier server handler */
+  final VerifyServerHandler verifyHandler;
 
-	/**
-	 * Constructor.
-	 *
-	 * @param socket        Socket connection to the catapult server.
-	 * @param clientKeyPair Client key pair.
-	 * @param publicKey     Server public key.
-	 * @param mode          Connection security mode.
-	 */
-	public VerifyServer(final SocketClient socket, final KeyPair clientKeyPair, final PublicKey publicKey,
-						final ConnectionSecurityMode mode) {
-		this.verifyHandler = new VerifyServerHandler(socket, clientKeyPair, publicKey, mode);
-	}
+  /**
+   * Constructor.
+   *
+   * @param socket Socket connection to the catapult server.
+   * @param clientKeyPair Client key pair.
+   * @param publicKey Server public key.
+   * @param mode Connection security mode.
+   */
+  public VerifyServer(
+      final SocketClient socket,
+      final KeyPair clientKeyPair,
+      final PublicKey publicKey,
+      final ConnectionSecurityMode mode) {
+    this.verifyHandler = new VerifyServerHandler(socket, clientKeyPair, publicKey, mode);
+  }
 
-	/**
-	 * Verify that the socket is connected to a catapult server.
-	 */
-	public void verifyConnection() {
-		this.verifyHandler.process();
-	}
+  /** Verify that the socket is connected to a catapult server. */
+  public void verifyConnection() {
+    this.verifyHandler.process();
+  }
 }

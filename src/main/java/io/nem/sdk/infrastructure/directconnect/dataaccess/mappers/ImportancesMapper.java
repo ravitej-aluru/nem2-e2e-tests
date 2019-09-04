@@ -25,18 +25,17 @@ import io.vertx.core.json.JsonObject;
 
 import java.util.function.Function;
 
-/**
- * Importances mapper
- */
+/** Importances mapper */
 public class ImportancesMapper implements Function<JsonObject, Importances> {
-	/**
-	 * Converts from Json to Importances.
-	 *
-	 * @param jsonObject Json object.
-	 * @return Importances pbject.
-	 */
-	public Importances apply(final JsonObject jsonObject) {
-		return new Importances(MapperUtils.extractBigInteger(jsonObject, "value"),
-				MapperUtils.extractBigInteger(jsonObject, "height"));
-	}
+  /**
+   * Converts from Json to Importances.
+   *
+   * @param jsonObject Json object.
+   * @return Importances pbject.
+   */
+  public Importances apply(final JsonObject jsonObject) {
+    return new Importances(
+        MapperUtils.extractBigInteger(jsonObject, "value"),
+        MapperUtils.extractBigInteger(jsonObject, "height"));
+  }
 }

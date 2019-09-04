@@ -24,15 +24,13 @@ import io.nem.sdk.model.transaction.TransactionStatus;
 
 import java.util.Optional;
 
-/**
- * Transaction state.
- */
+/** Transaction state. */
 public interface TransactionState {
-	/**
-	 * Gets the transaction status.
-	 *
-	 * @param hash Transaction hash.
-	 * @return Transaction status if found.
-	 */
-	Optional<TransactionStatus> getStatus(final String hash);
+  /**
+   * Gets the transaction status.
+   *
+   * @param hash Transaction hash.
+   * @return Transaction status if found.
+   */
+  Optional<TransactionStatus> getStatus(final String hash);
 }

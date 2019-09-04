@@ -36,39 +36,38 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Transaction dao repository.
- */
+/** Transaction dao repository. */
 public class TransactionDao implements TransactionRepository {
-	/* Catapult context. */
-	private final CatapultContext catapultContext;
+  /* Catapult context. */
+  private final CatapultContext catapultContext;
 
-	/**
-	 * Constructor.
-	 *
-	 * @param context Catapult context.
-	 */
-	public TransactionDao(final CatapultContext context) {
-		this.catapultContext = context;
-	}
+  /**
+   * Constructor.
+   *
+   * @param context Catapult context.
+   */
+  public TransactionDao(final CatapultContext context) {
+    this.catapultContext = context;
+  }
 
-	/**
-	 * Gets a transaction for a given hash.
-	 *
-	 * @param transactionHash Transaction hash.
-	 * @return Observable of Transaction.
-	 */
-	@Override
-	public Observable<Transaction> getTransaction(final String transactionHash) {
-		return Observable.fromCallable(() -> {
-			Optional<Transaction> transaction =
-					new TransactionsCollection(catapultContext).findByHash(transactionHash);
-			if (transaction.isPresent()) {
-				return transaction.get();
-			}
-			throw new IllegalArgumentException("Transaction hash " + transactionHash + " not found.");
-		});
-	}
+  /**
+   * Gets a transaction for a given hash.
+   *
+   * @param transactionHash Transaction hash.
+   * @return Observable of Transaction.
+   */
+  @Override
+  public Observable<Transaction> getTransaction(final String transactionHash) {
+    return Observable.fromCallable(
+        () -> {
+          Optional<Transaction> transaction =
+              new TransactionsCollection(catapultContext).findByHash(transactionHash);
+          if (transaction.isPresent()) {
+            return transaction.get();
+          }
+          throw new IllegalArgumentException("Transaction hash " + transactionHash + " not found.");
+        });
+  }
 
   /**
    * Gets a transaction status for a transaction hash.

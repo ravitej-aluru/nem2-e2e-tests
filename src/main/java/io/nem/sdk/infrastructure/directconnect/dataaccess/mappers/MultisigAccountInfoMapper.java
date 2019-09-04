@@ -30,9 +30,7 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-/**
- * Multisigs account mapper.
- */
+/** Multisigs account mapper. */
 public class MultisigAccountInfoMapper implements Function<JsonObject, MultisigAccountInfo> {
   /**
    * Gets public accounts from json.
@@ -60,13 +58,14 @@ public class MultisigAccountInfoMapper implements Function<JsonObject, MultisigA
     final Address address =
         Address.createFromEncoded(multisigJsonObject.getString("accountAddress"));
     final PublicAccount account =
-        new PublicAccount(multisigJsonObject.getString("account"), address.getNetworkType());
+        new PublicAccount(
+            multisigJsonObject.getString("accountPublicKey"), address.getNetworkType());
     final byte minApproval = multisigJsonObject.getInteger("minApproval").byteValue();
     final byte minRemoval = multisigJsonObject.getInteger("minRemoval").byteValue();
     final List<PublicAccount> cosignatories =
-        getPublicAccounts(multisigJsonObject, "cosignatories", address.getNetworkType());
+        getPublicAccounts(multisigJsonObject, "cosignatoryPublicKeys", address.getNetworkType());
     final List<PublicAccount> multisigAccounts =
-        getPublicAccounts(multisigJsonObject, "multisigAccounts", address.getNetworkType());
+        getPublicAccounts(multisigJsonObject, "multisigPublicKeys", address.getNetworkType());
     return new MultisigAccountInfo(
         account, minApproval, minRemoval, cosignatories, multisigAccounts);
   }

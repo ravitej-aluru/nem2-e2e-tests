@@ -16,25 +16,23 @@
 
 package io.nem.sdk.model.namespace;
 
-/**
- * The alias action.
- */
+/** The alias action. */
 public enum AliasAction {
   /** Unlink an alias. */
   Unlink((byte) 0),
   /** Link an alias. */
   Link((byte) 1);
 
-	private byte value;
+  private byte value;
 
-	/**
-	 * Constructor.
-	 *
-	 * @param value Enum value.
-	 */
-	AliasAction(final byte value) {
-		this.value = value;
-	}
+  /**
+   * Constructor.
+   *
+   * @param value Enum value.
+   */
+  AliasAction(final byte value) {
+    this.value = value;
+  }
 
   /**
    * Gets the alias action from raw value.
@@ -46,7 +44,7 @@ public enum AliasAction {
     switch (value) {
       case 0:
         return AliasAction.Unlink;
-        case 1:
+      case 1:
         return AliasAction.Link;
 
       default:
@@ -54,12 +52,12 @@ public enum AliasAction {
     }
   }
 
-	/**
-	 * Returns enum value.
-	 *
-	 * @return enum value
-	 */
-	public byte getValue() {
-		return this.value;
-	}
+  /**
+   * Returns enum value.
+   *
+   * @return enum value
+   */
+  public byte getValue() {
+    return this.value;
+  }
 }

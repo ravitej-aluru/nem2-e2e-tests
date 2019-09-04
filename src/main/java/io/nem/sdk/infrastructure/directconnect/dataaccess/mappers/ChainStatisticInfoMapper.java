@@ -20,26 +20,26 @@
 
 package io.nem.sdk.infrastructure.directconnect.dataaccess.mappers;
 
-import io.nem.sdk.model.blockchain.ChainInfo;
+import io.nem.sdk.model.blockchain.ChainStatisticInfo;
 import io.vertx.core.json.JsonObject;
 
 import java.math.BigInteger;
 import java.util.function.Function;
 
-/**
- * Chain info mapper.
- */
-public class ChainInfoMapper implements Function<JsonObject, ChainInfo> {
-	/**
-	 * Converts a json object to block info.
-	 *
-	 * @param jsonObject Json object.
-	 * @return Chain info.
-	 */
-	public ChainInfo apply(final JsonObject jsonObject) {
-		final BigInteger height = MapperUtils.extractBigInteger(jsonObject, "height");
-		final BigInteger scoreHigh = MapperUtils.extractBigInteger(jsonObject, "scoreHigh");
-		final BigInteger scoreLow = MapperUtils.extractBigInteger(jsonObject, "scoreLow");
-		return ChainInfo.create(height, scoreHigh, scoreLow);
-	}
+/** Chain info mapper. */
+public class ChainStatisticInfoMapper implements Function<JsonObject, ChainStatisticInfo> {
+  /**
+   * Converts a json object to block info.
+   *
+   * @param jsonObject Json object.
+   * @return Chain info.
+   */
+  public ChainStatisticInfo apply(final JsonObject jsonObject) {
+    final JsonObject chainStatisticJsonObject = jsonObject.getJsonObject("current");
+    final BigInteger height = MapperUtils.extractBigInteger(chainStatisticJsonObject, "height");
+    final BigInteger scoreHigh =
+        MapperUtils.extractBigInteger(chainStatisticJsonObject, "scoreHigh");
+    final BigInteger scoreLow = MapperUtils.extractBigInteger(chainStatisticJsonObject, "scoreLow");
+    return ChainStatisticInfo.create(height, scoreHigh, scoreLow);
+  }
 }

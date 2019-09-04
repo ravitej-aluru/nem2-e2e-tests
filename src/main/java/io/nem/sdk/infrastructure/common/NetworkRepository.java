@@ -23,15 +23,13 @@ package io.nem.sdk.infrastructure.common;
 import io.nem.sdk.model.blockchain.NetworkType;
 import io.reactivex.Observable;
 
-/**
- * Network interface repository.
- */
+/** Network interface repository. */
 public interface NetworkRepository {
 
-	/**
-	 * Get current network type.
-	 *
-	 * @return Network type.
-	 */
-	Observable<NetworkType> getNetworkType();
+  /**
+   * Get current network type.
+   *
+   * @return Network type.
+   */
+  Observable<NetworkType> getNetworkType();
 }

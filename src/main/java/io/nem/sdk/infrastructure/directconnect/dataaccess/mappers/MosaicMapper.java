@@ -26,18 +26,17 @@ import io.vertx.core.json.JsonObject;
 
 import java.util.function.Function;
 
-/**
- * Mosaic mapper.
- */
+/** Mosaic mapper. */
 public class MosaicMapper implements Function<JsonObject, Mosaic> {
-	/**
-	 * Create a mosaic object from json.
-	 *
-	 * @param jsonObject Json object.
-	 * @return Mosaic object.
-	 */
-	public Mosaic apply(final JsonObject jsonObject) {
-		return new Mosaic(new MosaicId(MapperUtils.extractBigInteger(jsonObject, "id")),
-				MapperUtils.extractBigInteger(jsonObject, "amount"));
-	}
+  /**
+   * Create a mosaic object from json.
+   *
+   * @param jsonObject Json object.
+   * @return Mosaic object.
+   */
+  public Mosaic apply(final JsonObject jsonObject) {
+    return new Mosaic(
+        new MosaicId(MapperUtils.extractBigInteger(jsonObject, "id")),
+        MapperUtils.extractBigInteger(jsonObject, "amount"));
+  }
 }

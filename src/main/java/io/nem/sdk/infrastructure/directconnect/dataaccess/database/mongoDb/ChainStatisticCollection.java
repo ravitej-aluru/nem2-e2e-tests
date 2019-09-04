@@ -21,33 +21,33 @@
 package io.nem.sdk.infrastructure.directconnect.dataaccess.database.mongoDb;
 
 import io.nem.sdk.infrastructure.common.CatapultContext;
-import io.nem.sdk.infrastructure.directconnect.dataaccess.mappers.ChainInfoMapper;
-import io.nem.sdk.model.blockchain.ChainInfo;
+import io.nem.sdk.infrastructure.directconnect.dataaccess.mappers.ChainStatisticInfoMapper;
+import io.nem.sdk.model.blockchain.ChainStatisticInfo;
 
-public class ChainInfoCollection {
-	/**
-	 * Catapult collection
-	 */
-	final private CatapultCollection<ChainInfo, ChainInfoMapper> catapultCollection;
-	/* Catapult context. */
-	final private CatapultContext context;
+public class ChainStatisticCollection {
+  /** Catapult collection */
+  private final CatapultCollection<ChainStatisticInfo, ChainStatisticInfoMapper> catapultCollection;
+  /* Catapult context. */
+  private final CatapultContext context;
 
-	/**
-	 * Constructor.
-	 *
-	 * @param context Catapult context.
-	 */
-	public ChainInfoCollection(final CatapultContext context) {
-		catapultCollection = new CatapultCollection<>(context.getCatapultMongoDbClient(), "chainInfo", ChainInfoMapper::new);
-		this.context = context;
-	}
+  /**
+   * Constructor.
+   *
+   * @param context Catapult context.
+   */
+  public ChainStatisticCollection(final CatapultContext context) {
+    catapultCollection =
+        new CatapultCollection<>(
+            context.getCatapultMongoDbClient(), "chainStatistic", ChainStatisticInfoMapper::new);
+    this.context = context;
+  }
 
-	/**
-	 * Gets chain info.
-	 *
-	 * @return Chain info.
-	 */
-	public ChainInfo get() {
-		return catapultCollection.findAll().get(0);
-	}
+  /**
+   * Gets chain info.
+   *
+   * @return Chain info.
+   */
+  public ChainStatisticInfo get() {
+    return catapultCollection.findAll().get(0);
+  }
 }

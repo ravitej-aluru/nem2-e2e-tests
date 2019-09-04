@@ -27,31 +27,29 @@ import io.nem.sdk.model.mosaic.MosaicId;
 import io.nem.sdk.model.mosaic.MosaicInfo;
 import io.reactivex.Observable;
 
-
-/**
- * Mosaic dao repository.
- */
+/** Mosaic dao repository. */
 public class MosaicsDao implements MosaicRepository {
-	/* Catapult context. */
-	final private CatapultContext catapultContext;
+  /* Catapult context. */
+  private final CatapultContext catapultContext;
 
-	/**
-	 * Constructor.
-	 *
-	 * @param context Catapult context.
-	 */
-	public MosaicsDao(final CatapultContext context) {
-		this.catapultContext = context;
-	}
+  /**
+   * Constructor.
+   *
+   * @param context Catapult context.
+   */
+  public MosaicsDao(final CatapultContext context) {
+    this.catapultContext = context;
+  }
 
-	/**
-	 * Gets the mosaic info.
-	 *
-	 * @param mosaicId Mosaic id.
-	 * @return Observable of mosaic info.
-	 */
-	@Override
-	public Observable<MosaicInfo> getMosaic(final MosaicId mosaicId) {
-		return Observable.fromCallable(() -> new MosaicsCollection(catapultContext).find(mosaicId.getIdAsLong()).get());
-	}
+  /**
+   * Gets the mosaic info.
+   *
+   * @param mosaicId Mosaic id.
+   * @return Observable of mosaic info.
+   */
+  @Override
+  public Observable<MosaicInfo> getMosaic(final MosaicId mosaicId) {
+    return Observable.fromCallable(
+        () -> new MosaicsCollection(catapultContext).find(mosaicId.getIdAsLong()).get());
+  }
 }

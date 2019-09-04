@@ -26,44 +26,44 @@ import io.nem.sdk.model.account.AccountInfo;
 
 import java.util.Optional;
 
-/**
- * Accounts collection
- */
+/** Accounts collection */
 public class AccountsCollection {
-	/* Catapult collection */
-	final private CatapultCollection<AccountInfo, AccountInfoMapper> accountCollection;
-	/* Catapult context. */
-	final private CatapultContext context;
+  /* Catapult collection */
+  private final CatapultCollection<AccountInfo, AccountInfoMapper> accountCollection;
+  /* Catapult context. */
+  private final CatapultContext context;
 
-	/**
-	 * Constructor.
-	 *
-	 * @param context Catapult context.
-	 */
-	public AccountsCollection(final CatapultContext context) {
-		accountCollection = new CatapultCollection<>(context.getCatapultMongoDbClient(), "accounts", AccountInfoMapper::new);
-		this.context = context;
-	}
+  /**
+   * Constructor.
+   *
+   * @param context Catapult context.
+   */
+  public AccountsCollection(final CatapultContext context) {
+    accountCollection =
+        new CatapultCollection<>(
+            context.getCatapultMongoDbClient(), "accounts", AccountInfoMapper::new);
+    this.context = context;
+  }
 
-	/**
-	 * Find an account by address.
-	 *
-	 * @param address Account address.
-	 * @return Account information.
-	 */
-	public Optional<AccountInfo> findByAddress(final byte[] address) {
-		return findByAddress(address, context.getDatabaseTimeoutInSeconds());
-	}
+  /**
+   * Find an account by address.
+   *
+   * @param address Account address.
+   * @return Account information.
+   */
+  public Optional<AccountInfo> findByAddress(final byte[] address) {
+    return findByAddress(address, context.getDatabaseTimeoutInSeconds());
+  }
 
-	/**
-	 * Find an account by address.
-	 *
-	 * @param address          Account address.
-	 * @param timeoutInSeconds Timeout in seconds.
-	 * @return Account information.
-	 */
-	public Optional<AccountInfo> findByAddress(final byte[] address, final int timeoutInSeconds) {
-		final String keyName = "account.address";
-		return accountCollection.findOne(keyName, address, timeoutInSeconds);
-	}
+  /**
+   * Find an account by address.
+   *
+   * @param address Account address.
+   * @param timeoutInSeconds Timeout in seconds.
+   * @return Account information.
+   */
+  public Optional<AccountInfo> findByAddress(final byte[] address, final int timeoutInSeconds) {
+    final String keyName = "account.address";
+    return accountCollection.findOne(keyName, address, timeoutInSeconds);
+  }
 }

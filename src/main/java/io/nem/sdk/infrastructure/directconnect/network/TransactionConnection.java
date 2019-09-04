@@ -35,68 +35,79 @@ import org.apache.commons.codec.binary.Hex;
 
 import java.nio.ByteBuffer;
 
-/**
- * Transaction connection.
- */
+/** Transaction connection. */
 public class TransactionConnection {
-	/* Authenticated socket. */
-	final AuthenticatedSocket authenticatedSocket;
+  /* Authenticated socket. */
+  final AuthenticatedSocket authenticatedSocket;
 
-	/**
-	 * Constructor.
-	 *
-	 * @param socket Authenticated socket
-	 */
-	public TransactionConnection(final AuthenticatedSocket socket) {
-		this.authenticatedSocket = socket;
-	}
+  /**
+   * Constructor.
+   *
+   * @param socket Authenticated socket
+   */
+  public TransactionConnection(final AuthenticatedSocket socket) {
+    this.authenticatedSocket = socket;
+  }
 
-	/**
-	 * Announce a signed transaction to the blockchain.
-	 *
-	 * @param transaction Signed transaction.
-	 */
-	public void announce(final SignedTransaction transaction) {
-		ExceptionUtils.propagateVoid(() -> annouceTransaction(PacketType.PUSH_TRANSACTIONS, Hex.decodeHex(transaction.getPayload())));
-	}
+  /**
+   * Announce a signed transaction to the blockchain.
+   *
+   * @param transaction Signed transaction.
+   */
+  public void announce(final SignedTransaction transaction) {
+    ExceptionUtils.propagateVoid(
+        () ->
+            annouceTransaction(
+                PacketType.PUSH_TRANSACTIONS, Hex.decodeHex(transaction.getPayload())));
+  }
 
-	/**
-	 * Announce an aggregate bonded cosignature to the blockchain.
-	 *
-	 * @param transaction Aggregate bonded cosignature transaction.
-	 */
-	public void announceAggregateBonded(final SignedTransaction transaction) {
-		ExceptionUtils
-				.propagateVoid(() -> annouceTransaction(PacketType.PUSH_PARTIAL_TRANSACTIONS, Hex.decodeHex(transaction.getPayload())));
-	}
+  /**
+   * Announce an aggregate bonded cosignature to the blockchain.
+   *
+   * @param transaction Aggregate bonded cosignature transaction.
+   */
+  public void announceAggregateBonded(final SignedTransaction transaction) {
+    ExceptionUtils.propagateVoid(
+        () ->
+            annouceTransaction(
+                PacketType.PUSH_PARTIAL_TRANSACTIONS, Hex.decodeHex(transaction.getPayload())));
+  }
 
-	/**
-	 * Send a cosignature signed transaction of an already announced transaction.
-	 *
-	 * @param cosignatureSignedTransaction Cosignature signed transaction.
-	 */
-	public void announceAggregateBondedCosignature(final CosignatureSignedTransaction cosignatureSignedTransaction) {
-		final byte[] signerBytes = PublicKey.fromHexString(cosignatureSignedTransaction.getSigner()).getBytes();
-		final ByteBuffer signerBuffer = ByteBuffer.wrap(signerBytes);
-		final byte[] signatureBytes = HexEncoder.getBytes(cosignatureSignedTransaction.getSignature());
-		final ByteBuffer signatureBuffer = ByteBuffer.wrap(signatureBytes);
-		final byte[] parentHashBytes = HexEncoder.getBytes(cosignatureSignedTransaction.getParentHash());
-		final ByteBuffer parentHashBuffer = ByteBuffer.wrap(parentHashBytes);
-		DetachedCosignatureBuilder detachedCosignatureBuilder = DetachedCosignatureBuilder.create(new KeyDto(signerBuffer),
-				new SignatureDto(signatureBuffer), new Hash256Dto(parentHashBuffer));
-		annouceTransaction(PacketType.PUSH_DETACTED_COSIGNATURES, detachedCosignatureBuilder.serialize());
-	}
+  /**
+   * Send a cosignature signed transaction of an already announced transaction.
+   *
+   * @param cosignatureSignedTransaction Cosignature signed transaction.
+   */
+  public void announceAggregateBondedCosignature(
+      final CosignatureSignedTransaction cosignatureSignedTransaction) {
+    final byte[] signerBytes =
+        PublicKey.fromHexString(cosignatureSignedTransaction.getSigner()).getBytes();
+    final ByteBuffer signerBuffer = ByteBuffer.wrap(signerBytes);
+    final byte[] signatureBytes = HexEncoder.getBytes(cosignatureSignedTransaction.getSignature());
+    final ByteBuffer signatureBuffer = ByteBuffer.wrap(signatureBytes);
+    final byte[] parentHashBytes =
+        HexEncoder.getBytes(cosignatureSignedTransaction.getParentHash());
+    final ByteBuffer parentHashBuffer = ByteBuffer.wrap(parentHashBytes);
+    DetachedCosignatureBuilder detachedCosignatureBuilder =
+        DetachedCosignatureBuilder.create(
+            new KeyDto(signerBuffer),
+            new SignatureDto(signatureBuffer),
+            new Hash256Dto(parentHashBuffer));
+    annouceTransaction(
+        PacketType.PUSH_DETACTED_COSIGNATURES, detachedCosignatureBuilder.serialize());
+  }
 
-	/**
-	 * Annouce a request to the network.
-	 *
-	 * @param packetType       Packet type.
-	 * @param transactionBytes Transaction bytes.
-	 */
-	private void annouceTransaction(final PacketType packetType, final byte[] transactionBytes) {
-		ExceptionUtils.propagateVoid(() -> {
-			final ByteBuffer ph = Packet.CreatePacketByteBuffer(packetType, transactionBytes);
-			authenticatedSocket.getSocketClient().Write(ph);
-		});
-	}
+  /**
+   * Annouce a request to the network.
+   *
+   * @param packetType Packet type.
+   * @param transactionBytes Transaction bytes.
+   */
+  private void annouceTransaction(final PacketType packetType, final byte[] transactionBytes) {
+    ExceptionUtils.propagateVoid(
+        () -> {
+          final ByteBuffer ph = Packet.CreatePacketByteBuffer(packetType, transactionBytes);
+          authenticatedSocket.getSocketClient().Write(ph);
+        });
+  }
 }

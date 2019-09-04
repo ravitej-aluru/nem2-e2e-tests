@@ -26,35 +26,35 @@ import io.nem.sdk.model.account.MultisigAccountInfo;
 
 import java.util.Optional;
 
-/**
- * Multisigs collection.
- */
+/** Multisigs collection. */
 public class MultisigsCollection {
-	/* Catapult context. */
-	final CatapultContext context;
-	/**
-	 * Catapult collection.
-	 */
-	final private CatapultCollection<MultisigAccountInfo, MultisigAccountInfoMapper> catapultCollection;
+  /* Catapult context. */
+  final CatapultContext context;
+  /** Catapult collection. */
+  private final CatapultCollection<MultisigAccountInfo, MultisigAccountInfoMapper>
+      catapultCollection;
 
-	/**
-	 * Constructor.
-	 *
-	 * @param context Catapult context.
-	 */
-	public MultisigsCollection(final CatapultContext context) {
-		catapultCollection = new CatapultCollection<>(context.getCatapultMongoDbClient(), "multisigs", MultisigAccountInfoMapper::new);
-		this.context = context;
-	}
+  /**
+   * Constructor.
+   *
+   * @param context Catapult context.
+   */
+  public MultisigsCollection(final CatapultContext context) {
+    catapultCollection =
+        new CatapultCollection<>(
+            context.getCatapultMongoDbClient(), "multisigs", MultisigAccountInfoMapper::new);
+    this.context = context;
+  }
 
-	/**
-	 * Get Multisig account info.
-	 *
-	 * @param address Account address.
-	 * @return Multisig account info.
-	 */
-	public Optional<MultisigAccountInfo> findByAddress(final byte[] address) {
-		final String keyName = "multisig.accountAddress";
-		return catapultCollection.findOne(keyName, address, context.getDatabaseTimeoutInSeconds());
-	}
+  /**
+   * Get Multisig account info.
+   *
+   * @param address Account address.
+   * @return Multisig account info.
+   */
+  public Optional<MultisigAccountInfo> findByAddress(final byte[] address) {
+    final String keyName = "multisig.accountAddress";
+    final int timeoutInSeconds = 10;
+    return catapultCollection.findOne(keyName, address, timeoutInSeconds);
+  }
 }

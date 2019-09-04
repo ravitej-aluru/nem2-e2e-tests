@@ -27,20 +27,19 @@ import io.vertx.core.json.JsonObject;
 import java.math.BigInteger;
 import java.util.function.Function;
 
-/**
- * Transaction status error mapper
- */
+/** Transaction status error mapper */
 public class TransactionStatusErrorMapper implements Function<JsonObject, TransactionStatusError> {
-	/**
-	 * Create a transaction status object from json.
-	 *
-	 * @param jsonObject Json object.
-	 * @return Transaction status object.
-	 */
-	public TransactionStatusError apply(final JsonObject jsonObject) {
-		return new TransactionStatusError(
-				jsonObject.getString("hash"),
-				TransactionStatusCode.rawValueOf(jsonObject.getInteger("status")).toString(),
-				new Deadline(BigInteger.valueOf(jsonObject.getLong("deadline"))));
-	}
+  /**
+   * Create a transaction status object from json.
+   *
+   * @param jsonObject Json object.
+   * @return Transaction status object.
+   */
+  public TransactionStatusError apply(final JsonObject jsonObject) {
+    final JsonObject jsonStatusObject = jsonObject.getJsonObject("status");
+    return new TransactionStatusError(
+        jsonStatusObject.getString("hash"),
+        TransactionStatusCode.rawValueOf(jsonStatusObject.getInteger("code")).toString(),
+        new Deadline(BigInteger.valueOf(jsonStatusObject.getLong("deadline"))));
+  }
 }

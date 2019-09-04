@@ -32,75 +32,80 @@ import java.util.List;
 import java.util.Optional;
 
 public class NamespacesCollection {
-	/* Catapult context. */
-	final CatapultContext context;
-	/**
-	 * Catapult collection
-	 */
-	final private CatapultCollection<NamespaceInfo, NamespacesMapper> catapultCollection;
+  /* Catapult context. */
+  final CatapultContext context;
+  /** Catapult collection */
+  private final CatapultCollection<NamespaceInfo, NamespacesMapper> catapultCollection;
 
-	/**
-	 * Constructor.
-	 *
-	 * @param context Catapult context.
-	 */
-	public NamespacesCollection(final CatapultContext context) {
-		this.context = context;
-		catapultCollection = new CatapultCollection<>(context.getCatapultMongoDbClient(), "namespaces", NamespacesMapper::new);
-	}
+  /**
+   * Constructor.
+   *
+   * @param context Catapult context.
+   */
+  public NamespacesCollection(final CatapultContext context) {
+    this.context = context;
+    catapultCollection =
+        new CatapultCollection<>(
+            context.getCatapultMongoDbClient(), "namespaces", NamespacesMapper::new);
+  }
 
-	/**
-	 * Gets namespace info.
-	 *
-	 * @param namespaceId Namespace id.
-	 * @return Namespace info.
-	 */
-	public Optional<NamespaceInfo> findById(final long namespaceId) {
-		return findById(namespaceId, context.getDatabaseTimeoutInSeconds());
-	}
+  /**
+   * Gets namespace info.
+   *
+   * @param namespaceId Namespace id.
+   * @return Namespace info.
+   */
+  public Optional<NamespaceInfo> findById(final long namespaceId) {
+    return findById(namespaceId, context.getDatabaseTimeoutInSeconds());
+  }
 
-	/**
-	 * Gets namespace info.
-	 *
-	 * @param namespaceId      Namespace id.
-	 * @param timeoutInSeconds Timeout in seconds.
-	 * @return Namespace info.
-	 */
-	public Optional<NamespaceInfo> findById(final long namespaceId, final int timeoutInSeconds) {
-		final String keyLevelName = "namespace.level";
-		final String keyDepthName = "namespace.depth";
-		final int maxDepth = 3;
+  /**
+   * Gets namespace info.
+   *
+   * @param namespaceId Namespace id.
+   * @param timeoutInSeconds Timeout in seconds.
+   * @return Namespace info.
+   */
+  public Optional<NamespaceInfo> findById(final long namespaceId, final int timeoutInSeconds) {
+    final String keyLevelName = "namespace.level";
+    final String keyDepthName = "namespace.depth";
+    final int maxDepth = 3;
 
-		final List<Bson> filters = new ArrayList<>(maxDepth);
-		for (int i = 0; i < maxDepth; ++i) {
-			filters.add(Filters.and(Filters.eq(keyLevelName + i, namespaceId), Filters.eq(keyDepthName, i + 1)));
-		}
-		final List<Document> results = catapultCollection.find(addFilterActiveTrueCondition(Filters.or(filters)),
-				timeoutInSeconds);
-		final List<NamespaceInfo> namespaceInfos = catapultCollection.ConvertResult(results);
-		return catapultCollection.GetOneResult(namespaceInfos);
-	}
+    final List<Bson> filters = new ArrayList<>(maxDepth);
+    for (int i = 0; i < maxDepth; ++i) {
+      filters.add(
+          Filters.and(Filters.eq(keyLevelName + i, namespaceId), Filters.eq(keyDepthName, i + 1)));
+    }
+    final List<Document> results =
+        catapultCollection.find(
+            addFilterActiveTrueCondition(Filters.or(filters)), timeoutInSeconds);
+    final List<NamespaceInfo> namespaceInfos = catapultCollection.ConvertResult(results);
+    return catapultCollection.GetOneResult(namespaceInfos);
+  }
 
-	/**
-	 * Gets namespace info.
-	 *
-	 * @param address User address.
-	 * @return List of Namespace info.
-	 */
-	public List<NamespaceInfo> findByAddress(final byte[] address) {
-		final String keyName = "namespace.ownerAddress";
-		final List<Document> results = catapultCollection.find(addFilterActiveTrueCondition(Filters.eq(keyName, address)), context.getDatabaseTimeoutInSeconds());
-		return catapultCollection.ConvertResult(results);
-	}
+  /**
+   * Gets namespace info.
+   *
+   * @param address User address.
+   * @return List of Namespace info.
+   */
+  public List<NamespaceInfo> findByAddress(final byte[] address) {
+    final String keyName = "namespace.ownerAddress";
+    final List<Document> results =
+        catapultCollection.find(
+            addFilterActiveTrueCondition(Filters.eq(keyName, address)),
+            context.getDatabaseTimeoutInSeconds());
+    return catapultCollection.ConvertResult(results);
+  }
 
-	/**
-	 * Add active true condition to the current filter.
-	 *
-	 * @param filter Current filter.
-	 * @return Combined filter.
-	 */
-	private Bson addFilterActiveTrueCondition(final Bson filter){
-		final String keyActiveName = "meta.active";
-		return Filters.and(Filters.eq(keyActiveName, true), filter);
-	}
+  /**
+   * Add active true condition to the current filter.
+   *
+   * @param filter Current filter.
+   * @return Combined filter.
+   */
+  private Bson addFilterActiveTrueCondition(final Bson filter) {
+    final String keyActiveName = "meta.active";
+    return Filters.and(Filters.eq(keyActiveName, true), filter);
+  }
 }

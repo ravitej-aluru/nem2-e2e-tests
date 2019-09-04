@@ -21,8 +21,12 @@
 package io.nem.catapult.builders;
 
 import java.io.DataInput;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.nio.ByteBuffer;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /** Binary layout for a transfer transaction. */
 final class TransferTransactionBodyBuilder {
@@ -31,7 +35,7 @@ final class TransferTransactionBodyBuilder {
     /** Transaction message. */
     private final ByteBuffer message;
     /** Attached mosaics. */
-    private final ArrayList<UnresolvedMosaicBuilder> mosaics;
+    private final List<UnresolvedMosaicBuilder> mosaics;
 
     /**
      * Constructor - Creates an object from stream.
@@ -67,7 +71,8 @@ final class TransferTransactionBodyBuilder {
         GeneratorUtils.notNull(mosaics, "mosaics is null");
         this.recipient = recipient;
         this.message = message;
-        this.mosaics = mosaics;
+        this.mosaics =
+                mosaics.stream().sorted((o1, o2) -> BigInteger.valueOf(o1.getMosaicId().getUnresolvedMosaicId()).compareTo(BigInteger.valueOf(o2.getMosaicId().getUnresolvedMosaicId()))).collect(Collectors.toList());
     }
 
     /**
@@ -105,7 +110,7 @@ final class TransferTransactionBodyBuilder {
      *
      * @return Attached mosaics.
      */
-    public ArrayList<UnresolvedMosaicBuilder> getMosaics() {
+    public List<UnresolvedMosaicBuilder> getMosaics() {
         return this.mosaics;
     }
 

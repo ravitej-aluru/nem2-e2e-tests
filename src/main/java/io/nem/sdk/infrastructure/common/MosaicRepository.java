@@ -24,16 +24,13 @@ import io.nem.sdk.model.mosaic.MosaicId;
 import io.nem.sdk.model.mosaic.MosaicInfo;
 import io.reactivex.Observable;
 
-
-/**
- * Mosaic interface repository.
- */
+/** Mosaic interface repository. */
 public interface MosaicRepository {
-	/**
-	 * Gets a MosaicInfo for a given mosaicId
-	 *
-	 * @param mosaicId BigInteger
-	 * @return Observable of {@link MosaicInfo}
-	 */
-	Observable<MosaicInfo> getMosaic(final MosaicId mosaicId);
+  /**
+   * Gets a MosaicInfo for a given mosaicId
+   *
+   * @param mosaicId BigInteger
+   * @return Observable of {@link MosaicInfo}
+   */
+  Observable<MosaicInfo> getMosaic(final MosaicId mosaicId);
 }
