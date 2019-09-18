@@ -22,6 +22,7 @@ package io.nem.automation.common;
 
 import io.nem.automationHelpers.common.TestContext;
 import io.nem.automationHelpers.helper.*;
+import io.nem.core.utils.ExceptionUtils;
 import io.nem.sdk.model.account.Account;
 import io.nem.sdk.model.account.AccountInfo;
 import io.nem.sdk.model.account.Address;
@@ -57,6 +58,7 @@ public abstract class BaseTest {
 	private static boolean initialized = false;
 	protected final String COSIGNATORIES_LIST = "cosignatories";
 	protected final String MULTISIG_ACCOUNT_INFO = "multisigAccount";
+	protected final int BLOCK_CREATION_TIME_IN_SECONDS = 15;
 	private TestContext testContext;
 
 	/**
@@ -89,13 +91,19 @@ public abstract class BaseTest {
 			CORE_USER_ACCOUNTS.put(AUTOMATION_USER_BOB, accountBob);
 			final NamespaceHelper namespaceHelper = new NamespaceHelper(testContext);
 			final NamespaceId eurosNamespaceId = new NamespaceId(MOSAIC_EUROS_KEY);
-			final Optional<NamespaceInfo> optionalNamespaceInfo = namespaceHelper.getNamesapceInfoNoThrow(eurosNamespaceId);
+			final Optional<NamespaceInfo> optionalNamespaceInfo = namespaceHelper.getNamespaceInfoNoThrow(eurosNamespaceId);
 			MosaicId mosaicId;
 			if (optionalNamespaceInfo.isPresent()) {
-				mosaicId = namespaceHelper.getLinkedMosaicId(eurosNamespaceId);
-				namespaceHelper.submitUnlinkMosaicAliasAndWait(aliceAccount, eurosNamespaceId, mosaicId);
+				try {
+					mosaicId = namespaceHelper.getLinkedMosaicId(eurosNamespaceId);
+					namespaceHelper.submitUnlinkMosaicAliasAndWait(aliceAccount, eurosNamespaceId, mosaicId);
+				} catch (final Exception e) {
+
+				}
 			}
-			namespaceHelper.createRootNamespaceAndWait(aliceAccount, MOSAIC_EUROS_KEY, BigInteger.valueOf(1000));
+			else {
+				namespaceHelper.createRootNamespaceAndWait(aliceAccount, MOSAIC_EUROS_KEY, BigInteger.valueOf(1000));
+			}
 			final MosaicInfo mosaicInfo = new MosaicHelper(testContext)
 					.createMosaic(
 							testContext.getDefaultSignerAccount(),
@@ -129,7 +137,7 @@ public abstract class BaseTest {
 	 */
 	protected Account getUser(final String username) {
 		final Account account = CommonHelper.getAccount(
-				username, getTestContext().getConfigFileReader().getNetworkType());
+				username, getTestContext().getNetworkType());
 		storeUserinContext(username, account);
 		return account;
 	}
@@ -143,7 +151,7 @@ public abstract class BaseTest {
 	protected Account getUserWithCurrency(final String username) {
 		if (CommonHelper.accountExist(username)) {
 			return CommonHelper.getAccount(
-					username, getTestContext().getConfigFileReader().getNetworkType());
+					username, getTestContext().getNetworkType());
 		}
 		final Mosaic mosaic = NetworkCurrencyMosaic.createRelative(BigInteger.valueOf(100));
 		final Account account = new AccountHelper(testContext).createAccountWithAsset(mosaic);
@@ -296,5 +304,12 @@ public abstract class BaseTest {
 		final SignedTransaction signedTransaction = getTestContext().getSignedTransaction();
 		final TransactionHelper transactionHelper = new TransactionHelper(getTestContext());
 		return transactionHelper.waitForTransactionToComplete(signedTransaction);
+	}
+
+	protected void waitForBlockChainHeight(final long height) {
+		final BlockChainHelper blockChainDao = new BlockChainHelper(getTestContext());
+		while (blockChainDao.getBlockchainHeight().longValue() <= height) {
+			ExceptionUtils.propagateVoid(() -> Thread.sleep(1000));
+		}
 	}
 }

@@ -24,11 +24,11 @@ import cucumber.api.java.en.And;
 import cucumber.api.java.en.When;
 import io.nem.automation.common.BaseTest;
 import io.nem.automationHelpers.common.TestContext;
-import io.nem.automationHelpers.helper.BlockChainHelper;
 import io.nem.automationHelpers.helper.NamespaceHelper;
-import io.nem.core.utils.ExceptionUtils;
 import io.nem.sdk.model.account.Account;
 import io.nem.sdk.model.namespace.NamespaceInfo;
+import io.nem.sdk.model.transaction.NamespaceRegistrationTransaction;
+import io.nem.sdk.model.transaction.TransactionType;
 
 import java.math.BigInteger;
 
@@ -71,13 +71,12 @@ public class ExtendNamespaceRegistration extends BaseTest {
 
 	@And("^the namespace is now under grace period$")
 	public void waitForNamespaceToExpire() {
-		final NamespaceInfo namespaceInfo =
-				getTestContext().getScenarioContext().getContext(NAMESPACE_INFO_KEY);
-		final BlockChainHelper blockchainDao = new BlockChainHelper(getTestContext());
-		while (blockchainDao.getBlockchainHeight().longValue()
-				<= namespaceInfo.getEndHeight().longValue()) {
-			ExceptionUtils.propagateVoid(() -> Thread.sleep(1000));
-		}
+		final NamespaceRegistrationTransaction namespaceRegistrationTransaction =
+				getTestContext().<NamespaceRegistrationTransaction>findTransaction(TransactionType.NAMESPACE_REGISTRATION).get();
+		final BigInteger expiredHeight =
+				namespaceRegistrationTransaction.getTransactionInfo().get().getHeight()
+						.add(namespaceRegistrationTransaction.getDuration().get());
+		waitForBlockChainHeight(expiredHeight.longValue());
 		getTestContext().getScenarioContext().setContext(EXTEND_AFTER_EXPIRED, true);
 	}
 
@@ -88,8 +87,11 @@ public class ExtendNamespaceRegistration extends BaseTest {
 		final boolean extendAfterExpiration =
 				getTestContext().getScenarioContext().isContains(EXTEND_AFTER_EXPIRED) &&
 						getTestContext().getScenarioContext().<Boolean>getContext(EXTEND_AFTER_EXPIRED);
-		final BigInteger updateDuration = extendAfterExpiration ? duration :
-				namespaceFirstInfo.getEndHeight().subtract(namespaceFirstInfo.getStartHeight()).add(duration);
+		final int gracePeriod = getTestContext().getConfigFileReader().getNamespaceGracePeriodInBlocks();
+		final BigInteger totalBlocks =
+				namespaceFirstInfo.getEndHeight().subtract(namespaceFirstInfo.getStartHeight()).subtract(BigInteger.valueOf(gracePeriod));
+		final BigInteger updateDuration = extendAfterExpiration ? duration : duration.add(totalBlocks);
+						;
 		new RegisterNamespace(getTestContext()).verifyNamespaceInfo(namespaceFirstInfo.getId(), updateDuration);
 	}
 }

@@ -1,4 +1,5 @@
-Feature: Register an asset
+  @Testing
+  Feature: Register an asset
   As Alice
   I want to register an asset
   So that I can send one unit to Bob.
@@ -37,7 +38,7 @@ Feature: Register an asset
 
     Examples:
       | duration | divisibility | error                                |
-      | 0        | 0            | Failure_Mosaic_Invalid_Duration      |
+      | -1       | 0            | Failure_Mosaic_Invalid_Duration      |
       | 1        | -1           | Failure_Mosaic_Invalid_Divisibility  |
       | 22000000 | 0            | Failure_Mosaic_Invalid_Duration      |
       | 60       | 7            | Failure_Mosaic_Invalid_Divisibility  |

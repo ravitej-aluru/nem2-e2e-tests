@@ -1,4 +1,4 @@
-Feature: Extend a namespace registration period
+  Feature: Extend a namespace registration period
   As Alice
   I want to extend the namespace registration
   So that I can continue organizing and naming assets.
@@ -9,7 +9,7 @@ Feature: Extend a namespace registration period
     And the maximum registration period is 1 year
     And Alice has 10000000 "cat.currency" in her account
     And the grace period of a namespace is 1 day
-  
+
   @bvt
   Scenario Outline: An account extends a namespace registration period
     Given Alice registered the namespace named "alice" for 10 blocks
@@ -23,15 +23,16 @@ Feature: Extend a namespace registration period
       | 10       | 10   |
       | 20       | 20   |
 
+  @Testing93
   Scenario: An account tries to extend a namespace registration period and this is under grace period
     Given Alice registered the namespace named "aliceexp" for 6 block
-    And   the namespace is now under grace period
+    And the namespace is now under grace period
     When Alice extends the registration of the namespace named "aliceexp" for 6 block
     Then she should receive a confirmation message
     And the namespace registration period should be extended for at least 6 blocks
     And her "cat.currency" balance should decrease in 6 units
 
-  Scenario: An account tries to extend a namespace registration period, this is under gracebut the account didn't created it
+  Scenario: An account tries to extend a namespace registration period, this is under grace but the account didn't created it
     Given Bob registered the namespace named "bobnew" for 5 block
     And the namespace is now under grace period
     When Alice tries to extends the registration of the namespace named "bobnew" for 6 block

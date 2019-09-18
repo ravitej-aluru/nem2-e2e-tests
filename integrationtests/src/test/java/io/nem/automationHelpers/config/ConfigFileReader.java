@@ -178,6 +178,15 @@ public class ConfigFileReader {
 	}
 
 	/**
+	 * Gets the namespace grace period in blocks.
+	 *
+	 * @return Namespace grace period in blocks.
+	 */
+	public int getNamespaceGracePeriodInBlocks() {
+		return Integer.parseInt(getPropertyValue("namespaceGracePeriodInBlocks"));
+	}
+
+	/**
 	 * Gets a property value from the config file.
 	 *
 	 * @param propertyName Property name.

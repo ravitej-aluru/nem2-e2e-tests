@@ -123,7 +123,7 @@ public class SendTransaction extends BaseTest {
 				transactionHelper.signTransaction(
 						transferTransaction,
 						signingAccount,
-						getTestContext().getConfigFileReader().getGenerationHash().replace('0', '1'));
+						getTestContext().getGenerationHash().replace('0', '1'));
 		transactionHelper.announceTransaction(signedInvalidTransaction);
 		final SignedTransaction signedTransaction =
 				transactionHelper.signTransaction(transferTransaction, signingAccount);

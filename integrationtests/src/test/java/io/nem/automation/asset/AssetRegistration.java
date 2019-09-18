@@ -61,11 +61,11 @@ public class AssetRegistration extends BaseTest {
 	private void createMosaicAndSaveAccount(
 			final TestContext testContext,
 			final Account account,
-			final Supplier<SignedTransaction> createMosaicDefinition) {
+			final Runnable createMosaicDefinition) {
 		final AccountInfo accountInfo =
 				new AccountHelper(testContext).getAccountInfo(account.getAddress());
 		getTestContext().getScenarioContext().setContext(ACCOUNT_INFO_KEY, accountInfo);
-		createMosaicDefinition.get();
+		createMosaicDefinition.run();
 	}
 
 	private void verifyAsset(final Account account, final BigInteger duration) {
@@ -139,7 +139,7 @@ public class AssetRegistration extends BaseTest {
 				getTestContext(),
 				userAccount,
 				() ->
-						mosaicHelper.createExpiringMosaicDefinitionTransactionAndAnnounce(
+						mosaicHelper.submitExpiringMosaicDefinitionAndWait(
 								userAccount,
 								supplyMutable,
 								transferable,
@@ -168,7 +168,7 @@ public class AssetRegistration extends BaseTest {
 				getTestContext(),
 				userAccount,
 				() ->
-						mosaicHelper.createMosaicDefinitionTransactionAndAnnounce(
+						mosaicHelper.submitMosaicDefinitionAndWait(
 								userAccount,
 								CommonHelper.getRandomNextBoolean(),
 								CommonHelper.getRandomNextBoolean(),
@@ -182,7 +182,7 @@ public class AssetRegistration extends BaseTest {
 		verifyAsset(userAccount, BigInteger.ZERO);
 	}
 
-	@When("^(\\w+) registers an asset for (\\d+) in blocks with (-?\\d+) divisibility$")
+	@When("^(\\w+) registers an asset for (-?\\d+) in blocks with (-?\\d+) divisibility$")
 	public void registerInvalidAssest(
 			final String username, final int duration, final int divisibility) {
 		final Account userAccount = getUser(username);

@@ -22,16 +22,22 @@ package io.nem.automationHelpers.helper;
 
 import io.nem.automationHelpers.common.TestContext;
 import io.nem.core.utils.ExceptionUtils;
+import io.nem.core.utils.HexEncoder;
 import io.nem.sdk.infrastructure.directconnect.dataaccess.dao.NamespaceDao;
 import io.nem.sdk.model.account.Account;
 import io.nem.sdk.model.account.Address;
+import io.nem.sdk.model.blockchain.NetworkType;
 import io.nem.sdk.model.mosaic.MosaicId;
 import io.nem.sdk.model.namespace.AliasAction;
 import io.nem.sdk.model.namespace.NamespaceId;
 import io.nem.sdk.model.namespace.NamespaceInfo;
 import io.nem.sdk.model.transaction.*;
+import org.apache.commons.codec.binary.Base32;
+import org.apache.commons.math3.analysis.function.Add;
 
 import java.math.BigInteger;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.Optional;
 
 /**
@@ -49,29 +55,29 @@ public class NamespaceHelper {
 		this.testContext = testContext;
 	}
 
-	private RegisterNamespaceTransaction createRootNamespaceTransaction(
+	private NamespaceRegistrationTransaction createRootNamespaceTransaction(
 			final Deadline deadline,
 			final BigInteger maxFee,
 			final String namespaceName,
 			final BigInteger duration) {
-		return RegisterNamespaceTransaction.createRootNamespace(
-				deadline, maxFee, namespaceName, duration, new NetworkHelper(testContext).getNetworkType());
+		return NamespaceRegistrationTransaction.createRootNamespace(
+				deadline, maxFee, namespaceName, duration, testContext.getNetworkType());
 	}
 
-	private RegisterNamespaceTransaction createSubNamespaceTransaction(
+	private NamespaceRegistrationTransaction createSubNamespaceTransaction(
 			final Deadline deadline,
 			final BigInteger maxFee,
 			final String namespaceName,
 			final String parentNamespaceName) {
-		return RegisterNamespaceTransaction.createSubNamespace(
+		return NamespaceRegistrationTransaction.createSubNamespace(
 				deadline,
 				maxFee,
 				namespaceName,
 				parentNamespaceName,
-				new NetworkHelper(testContext).getNetworkType());
+				testContext.getNetworkType());
 	}
 
-	private RegisterNamespaceTransaction createSubNamespaceTransaction(
+	private NamespaceRegistrationTransaction createSubNamespaceTransaction(
 			final String namespaceName, final String parentNamespaceName) {
 		return createSubNamespaceTransaction(
 				TransactionHelper.getDefaultDeadline(),
@@ -92,7 +98,7 @@ public class NamespaceHelper {
 				aliasAction,
 				namespaceId,
 				address,
-				new NetworkHelper(testContext).getNetworkType());
+				testContext.getNetworkType());
 	}
 
 	private AddressAliasTransaction createAddressAliasTransaction(
@@ -117,7 +123,7 @@ public class NamespaceHelper {
 				aliasAction,
 				namespaceId,
 				mosaicId,
-				new NetworkHelper(testContext).getNetworkType());
+				testContext.getNetworkType());
 	}
 
 	private MosaicAliasTransaction createMosaicAliasTransaction(
@@ -136,7 +142,7 @@ public class NamespaceHelper {
 	 * @param duration Duration of the namespace.
 	 * @return Register namespace transaction.
 	 */
-	public RegisterNamespaceTransaction createRootNamespaceTransaction(
+	public NamespaceRegistrationTransaction createRootNamespaceTransaction(
 			final String namespaceName, final BigInteger duration) {
 		return createRootNamespaceTransaction(
 				TransactionHelper.getDefaultDeadline(),
@@ -168,7 +174,7 @@ public class NamespaceHelper {
 	 * @param duration      Duration.
 	 * @return Namespace transaction.
 	 */
-	public RegisterNamespaceTransaction createRootNamespaceAndWait(
+	public NamespaceRegistrationTransaction createRootNamespaceAndWait(
 			final Account account, final String namespaceName, final BigInteger duration) {
 		return new TransactionHelper(testContext)
 				.signAndAnnounceTransactionAndWait(
@@ -198,7 +204,7 @@ public class NamespaceHelper {
 	 * @param parentNamespaceName Parent namespace name.
 	 * @return Signed transaction.
 	 */
-	public RegisterNamespaceTransaction createSubNamespaceAndWait(
+	public NamespaceRegistrationTransaction createSubNamespaceAndWait(
 			final Account account, final String namespaceName, final String parentNamespaceName) {
 		return new TransactionHelper(testContext)
 				.signAndAnnounceTransactionAndWait(
@@ -389,5 +395,20 @@ public class NamespaceHelper {
 		return new TransactionHelper(testContext)
 				.signAndAnnounceTransactionAndWait(
 						account, () -> createMosaicAliasTransaction(AliasAction.Unlink, namespaceId, mosaicId));
+	}
+
+	/**
+	 * Gets the namespace id as unresolve address.
+	 *
+	 * @return Unresolve address buffer.
+	 */
+	public Address getNamespaceIdAsUnresolvedAddressBuffer(final NamespaceId namespaceId, final NetworkType networkType) {
+		final ByteBuffer namespaceIdAlias = ByteBuffer.allocate(25);
+		final byte firstByte = (byte) (networkType.getValue() | 0x01);
+		namespaceIdAlias.order(ByteOrder.LITTLE_ENDIAN);
+		namespaceIdAlias.put(firstByte);
+		namespaceIdAlias.putLong(namespaceId.getIdAsLong());
+		final String encodedAddress = HexEncoder.getString(namespaceIdAlias.array());
+		return Address.createFromEncoded(encodedAddress);
 	}
 }

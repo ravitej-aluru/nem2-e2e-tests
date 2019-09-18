@@ -47,13 +47,13 @@ public class AggregateHelper {
 	private AggregateTransaction createAggregateCompleteTransaction(
 			final Deadline deadline, final BigInteger maxFee, final List<Transaction> innerTransaction) {
 		return AggregateTransaction.createComplete(
-				deadline, maxFee, innerTransaction, new NetworkHelper(testContext).getNetworkType());
+				deadline, maxFee, innerTransaction, testContext.getNetworkType());
 	}
 
 	private AggregateTransaction createAggregateBondedTransaction(
 			final Deadline deadline, final BigInteger maxFee, final List<Transaction> innerTransaction) {
 		return AggregateTransaction.createBonded(
-				deadline, maxFee, innerTransaction, new NetworkHelper(testContext).getNetworkType());
+				deadline, maxFee, innerTransaction, testContext.getNetworkType());
 	}
 
 	private LockFundsTransaction createLockFundsTransaction(
@@ -68,7 +68,7 @@ public class AggregateHelper {
 				mosaic,
 				duration,
 				signedTransaction,
-				new NetworkHelper(testContext).getNetworkType());
+				testContext.getNetworkType());
 	}
 
 	private LockFundsTransaction createLockFundsTransaction(
@@ -248,7 +248,7 @@ public class AggregateHelper {
 	public SignedTransaction signTransactionWithCosigners(final AggregateTransaction aggregateTransaction, final Account initiatorAccount,
 														  final List<Account> cosigners) {
 		final SignedTransaction signedTransaction = aggregateTransaction.signTransactionWithCosigners(initiatorAccount, cosigners,
-				testContext.getConfigFileReader().getGenerationHash());
+				testContext.getGenerationHash());
 		testContext.addTransaction(aggregateTransaction);
 		testContext.setSignedTransaction(signedTransaction);
 		return signedTransaction;

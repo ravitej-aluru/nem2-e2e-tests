@@ -21,14 +21,20 @@
 package io.nem.automationHelpers.common;
 
 import io.nem.automationHelpers.config.ConfigFileReader;
+import io.nem.automationHelpers.helper.BlockChainHelper;
 import io.nem.core.crypto.PublicKey;
+import io.nem.core.utils.ExceptionUtils;
 import io.nem.sdk.infrastructure.common.CatapultContext;
+import io.nem.sdk.infrastructure.directconnect.dataaccess.dao.BlockchainDao;
 import io.nem.sdk.model.account.Account;
 import io.nem.sdk.model.blockchain.BlockInfo;
+import io.nem.sdk.model.blockchain.NetworkType;
+import io.nem.sdk.model.mosaic.NetworkCurrencyMosaic;
 import io.nem.sdk.model.transaction.SignedTransaction;
 import io.nem.sdk.model.transaction.Transaction;
 import io.nem.sdk.model.transaction.TransactionType;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -63,9 +69,10 @@ public class TestContext {
 						configFileReader.getSocketTimeoutInMilliseconds());
 		transactions = new ArrayList<>();
 
+		firstBlock = ExceptionUtils.propagate(() -> new BlockchainDao(catapultContext).getBlockByHeight(BigInteger.ONE).toFuture().get());
 		final String privateString = configFileReader.getUserPrivateKey();
 		defaultSignerAccount =
-				Account.createFromPrivateKey(privateString, configFileReader.getNetworkType());
+				Account.createFromPrivateKey(privateString, getNetworkType());
 	}
 
 	/**
@@ -182,5 +189,17 @@ public class TestContext {
 			logger = Log.getLogger("TestAutomation");
 		}
 		return logger;
+	}
+
+	public String getGenerationHash() {
+		return 	firstBlock.getGenerationHash();
+	}
+
+	public NetworkType getNetworkType() {
+		return firstBlock.getNetworkType();
+	}
+
+	public BigInteger getCatCurrencyId() {
+		return NetworkCurrencyMosaic.NAMESPACEID.getId();
 	}
 }

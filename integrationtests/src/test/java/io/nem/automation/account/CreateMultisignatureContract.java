@@ -249,7 +249,8 @@ public class CreateMultisignatureContract extends BaseTest {
 				cosignatories.subList(1, cosignatories.size()));
 		publishBondedTransaction(userName);
 		cosignMultiSignatureAccount();
-		waitForLastTransactionToComplete();
+		final AggregateTransaction aggregateTransaction =  waitForLastTransactionToComplete();
+		getTestContext().addTransaction(aggregateTransaction);
 	}
 
 	@Given("^(\\w+) is cosignatory of (\\d+) multisignature contracts$")

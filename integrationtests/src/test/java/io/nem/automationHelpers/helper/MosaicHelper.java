@@ -61,10 +61,10 @@ public class MosaicHelper {
 				mosaicNonce,
 				mosaicId,
 				MosaicProperties.create(supplyMutable, transferable, divisibility, duration),
-				new NetworkHelper(testContext).getNetworkType());
+				testContext.getNetworkType());
 	}
 
-	private MosaicDefinitionTransaction createExpiringMosaicDefinitionTransaction(
+	public MosaicDefinitionTransaction createExpiringMosaicDefinitionTransaction(
 			final Account account,
 			final boolean supplyMutable,
 			final boolean transferable,
@@ -89,7 +89,7 @@ public class MosaicHelper {
 				nonce,
 				MosaicId.createFromNonce(nonce, account.getPublicAccount()),
 				MosaicProperties.create(supplyMutable, transferable, divisibility),
-				new NetworkHelper(testContext).getNetworkType());
+				testContext.getNetworkType());
 	}
 
 	private MosaicSupplyChangeTransaction createMosaicSupplyChangeTransaction(
@@ -104,7 +104,7 @@ public class MosaicHelper {
 				mosaicId,
 				supplyType,
 				delta,
-				new NetworkHelper(testContext).getNetworkType());
+				testContext.getNetworkType());
 	}
 
 
@@ -153,6 +153,29 @@ public class MosaicHelper {
 	}
 
 	/**
+	 * Creates a mosaic transaction, announce it to the network and wait for confirmed status.
+	 *
+	 * @param account       User account.
+	 * @param supplyMutable Supply mutable.
+	 * @param transferable  Transferable.
+	 * @param divisibility  Divisibility.
+	 * @return Mosaic definition transaction.
+	 */
+	public MosaicDefinitionTransaction submitMosaicDefinitionAndWait(
+			final Account account,
+			final boolean supplyMutable,
+			final boolean transferable,
+			final int divisibility) {
+		final TransactionHelper transactionHelper = new TransactionHelper(testContext);
+		return transactionHelper.signAndAnnounceTransactionAndWait(
+				account,
+				() ->
+						createMosaicDefinitionTransaction(
+								account, supplyMutable, transferable, divisibility));
+	}
+
+
+	/**
 	 * Creates a mosaic supply change transaction and announce it to the network.
 	 *
 	 * @param account       User account.
@@ -170,6 +193,30 @@ public class MosaicHelper {
 			final BigInteger duration) {
 		final TransactionHelper transactionHelper = new TransactionHelper(testContext);
 		return transactionHelper.signAndAnnounceTransaction(
+				account,
+				() ->
+						createExpiringMosaicDefinitionTransaction(
+								account, supplyMutable, transferable, divisibility, duration));
+	}
+
+	/**
+	 * Creates an expiring mosaic transaction, announce it to the network and wait for confirmed status.
+	 *
+	 * @param account       User account.
+	 * @param supplyMutable Supply mutable.
+	 * @param transferable  Transferable.
+	 * @param divisibility  Divisibility.
+	 * @param duration      Duration.
+	 * @return Mosaic definition transaction.
+	 */
+	public MosaicDefinitionTransaction submitExpiringMosaicDefinitionAndWait(
+			final Account account,
+			final boolean supplyMutable,
+			final boolean transferable,
+			final int divisibility,
+			final BigInteger duration) {
+		final TransactionHelper transactionHelper = new TransactionHelper(testContext);
+		return transactionHelper.signAndAnnounceTransactionAndWait(
 				account,
 				() ->
 						createExpiringMosaicDefinitionTransaction(

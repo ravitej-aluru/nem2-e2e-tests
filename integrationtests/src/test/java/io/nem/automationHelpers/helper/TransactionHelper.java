@@ -82,7 +82,7 @@ public class TransactionHelper {
 	public SignedTransaction signTransaction(
 			final Transaction transaction, final Account account, final String generationHash) {
 		final SignedTransaction signedTransaction = account.sign(transaction, generationHash);
-		testContext.addTransaction(transaction);
+		//testContext.addTransaction(transaction);
 		testContext.setSignedTransaction(signedTransaction);
 		return signedTransaction;
 	}
@@ -96,7 +96,7 @@ public class TransactionHelper {
 	 */
 	public SignedTransaction signTransaction(final Transaction transaction, final Account account) {
 		return signTransaction(
-				transaction, account, testContext.getConfigFileReader().getGenerationHash());
+				transaction, account, testContext.getGenerationHash());
 	}
 
 	/**
@@ -167,7 +167,6 @@ public class TransactionHelper {
 	 * Waits for a transaction to show in the pt cache.
 	 *
 	 * @param signedTransaction Signed transaction to wait for.
-	 * @param <T>               Transaction type.
 	 * @return Transaction of type T.
 	 */
 	public AggregateTransaction waitForBondedTransaction(
@@ -298,7 +297,9 @@ public class TransactionHelper {
 			final Account signer, final Supplier<T> transactionSupplier) {
 		final SignedTransaction signedTransaction =
 				signAndAnnounceTransaction(signer, transactionSupplier);
-		return waitForTransactionToComplete(signedTransaction);
+		final T transaction = waitForTransactionToComplete(signedTransaction);
+		testContext.addTransaction(transaction);
+		return transaction;
 	}
 
 	/**

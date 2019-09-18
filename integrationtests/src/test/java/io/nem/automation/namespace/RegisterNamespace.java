@@ -34,7 +34,7 @@ import io.nem.sdk.model.account.AccountInfo;
 import io.nem.sdk.model.namespace.NamespaceId;
 import io.nem.sdk.model.namespace.NamespaceInfo;
 import io.nem.sdk.model.namespace.NamespaceType;
-import io.nem.sdk.model.transaction.RegisterNamespaceTransaction;
+import io.nem.sdk.model.transaction.NamespaceRegistrationTransaction;
 
 import java.math.BigInteger;
 
@@ -66,13 +66,14 @@ public class RegisterNamespace extends BaseTest {
 	void registerNamespaceForUserAndWait(
 			final Account account, final String name, final BigInteger duration) {
 		saveInitialAccountInfo(account);
-		final RegisterNamespaceTransaction registerNamespaceTransaction =
+		final NamespaceRegistrationTransaction namespaceRegistrationTransaction =
 				namespaceHelper.createRootNamespaceAndWait(account, name, duration);
 		final NamespaceInfo namespaceInfo =
 				new NamespaceHelper(getTestContext())
-						.getNamesapceInfo(registerNamespaceTransaction.getNamespaceId());
+						.getNamesapceInfo(namespaceRegistrationTransaction.getNamespaceId());
 		getTestContext().getScenarioContext().setContext(NAMESPACE_INFO_KEY, namespaceInfo);
-		getTestContext().addTransaction(registerNamespaceTransaction);
+		getTestContext().clearTransaction();
+		getTestContext().addTransaction(namespaceRegistrationTransaction);
 	}
 
 	void verifyNamespaceInfo(final NamespaceId namespaceId, final BigInteger duration) {
@@ -86,10 +87,11 @@ public class RegisterNamespace extends BaseTest {
 				errorMessage,
 				accountInfo.getAddress().plain(),
 				namespaceInfo.getOwner().getAddress().plain());
+		final int gracePeriod = getTestContext().getConfigFileReader().getNamespaceGracePeriodInBlocks();
 		assertEquals(
 				errorMessage,
 				duration.longValue(),
-				namespaceInfo.getEndHeight().longValue() - namespaceInfo.getStartHeight().longValue());
+				namespaceInfo.getEndHeight().longValue() - namespaceInfo.getStartHeight().longValue() - gracePeriod);
 		assertEquals(errorMessage, NamespaceType.RootNamespace, namespaceInfo.getType());
 		assertEquals(errorMessage, 1, namespaceInfo.getDepth().intValue());
 		assertEquals(errorMessage, 0, namespaceInfo.parentNamespaceId().getIdAsLong());

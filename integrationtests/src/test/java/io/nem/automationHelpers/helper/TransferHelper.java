@@ -63,7 +63,7 @@ public class TransferHelper {
 				recipientAddress,
 				mosaics,
 				message,
-				new NetworkHelper(testContext).getNetworkType());
+				testContext.getNetworkType());
 	}
 
 	private TransferTransaction createTransferTransaction(
@@ -78,7 +78,7 @@ public class TransferHelper {
 				namespaceId,
 				mosaics,
 				message,
-				new NetworkHelper(testContext).getNetworkType());
+				testContext.getNetworkType());
 	}
 
 	private TransferTransaction createTransferTransaction(

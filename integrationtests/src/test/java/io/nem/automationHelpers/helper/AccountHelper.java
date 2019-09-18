@@ -84,7 +84,7 @@ public class AccountHelper {
 	 * @return Account.
 	 */
 	public Account createAccountWithAsset(final Mosaic mosaic) {
-		final NetworkType networkType = new NetworkHelper(testContext).getNetworkType();
+		final NetworkType networkType = testContext.getNetworkType();
 		final Account account = Account.generateNewAccount(networkType);
 		final TransferHelper transferHelper = new TransferHelper(testContext);
 		transferHelper.submitTransferAndWait(

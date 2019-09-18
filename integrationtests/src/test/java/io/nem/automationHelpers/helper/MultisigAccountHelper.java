@@ -57,7 +57,7 @@ public class MultisigAccountHelper {
 				minApprovalDelta,
 				minRemovalDelta,
 				modifications,
-				new NetworkHelper(testContext).getNetworkType());
+				testContext.getNetworkType());
 	}
 
 	/**
