@@ -21,14 +21,18 @@
 package io.nem.sdk.infrastructure.directconnect.dataaccess.database.mongoDb;
 
 import io.nem.sdk.infrastructure.common.CatapultContext;
-import io.nem.sdk.infrastructure.directconnect.dataaccess.mappers.ChainStatisticInfoMapper;
-import io.nem.sdk.model.blockchain.ChainStatisticInfo;
+import io.nem.sdk.infrastructure.directconnect.dataaccess.mappers.MosaicResolutionStatementsMapper;
+import io.nem.sdk.model.mosaic.MosaicId;
+import io.nem.sdk.model.receipt.ResolutionStatement;
 
-public class ChainStatisticCollection {
+import java.util.List;
+import java.util.Optional;
+
+public class MosaicResolutionStatementsCollection {
 	/**
 	 * Catapult collection
 	 */
-	private final CatapultCollection<ChainStatisticInfo, ChainStatisticInfoMapper> catapultCollection;
+	private final CatapultCollection<ResolutionStatement<MosaicId>, MosaicResolutionStatementsMapper> catapultCollection;
 	/* Catapult context. */
 	private final CatapultContext context;
 
@@ -37,19 +41,24 @@ public class ChainStatisticCollection {
 	 *
 	 * @param context Catapult context.
 	 */
-	public ChainStatisticCollection(final CatapultContext context) {
+	public MosaicResolutionStatementsCollection(final CatapultContext context) {
+		this.context = context;
 		catapultCollection =
 				new CatapultCollection<>(
-						context.getCatapultMongoDbClient(), "chainStatistic", ChainStatisticInfoMapper::new);
-		this.context = context;
+						context.getCatapultMongoDbClient(),
+						"mosaicResolutionStatements",
+						MosaicResolutionStatementsMapper::new);
 	}
 
 	/**
-	 * Gets chain info.
+	 * Gets resolution statement for an unresolved mosaic id.
 	 *
-	 * @return Chain info.
+	 * @param height Block height.
+	 * @return Resolution statement.
 	 */
-	public ChainStatisticInfo get() {
-		return catapultCollection.findAll().get(0);
+	public List<ResolutionStatement<MosaicId>> findByHeight(final long height) {
+		final String keyName = "statement.height";
+		final int timeoutInSeconds = 0;
+		return catapultCollection.find(keyName, height, timeoutInSeconds);
 	}
 }

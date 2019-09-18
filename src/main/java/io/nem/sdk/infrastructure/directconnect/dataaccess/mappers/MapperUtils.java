@@ -20,20 +20,49 @@
 
 package io.nem.sdk.infrastructure.directconnect.dataaccess.mappers;
 
+import io.nem.sdk.model.receipt.ReceiptSource;
+import io.nem.sdk.model.receipt.ReceiptType;
+import io.nem.sdk.model.receipt.ResolutionEntry;
+import io.nem.sdk.model.receipt.ResolutionStatement;
 import io.vertx.core.json.JsonObject;
 
 import java.math.BigInteger;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
-/** Mapper utils. */
+/**
+ * Mapper utils.
+ */
 final class MapperUtils {
-  /**
-   * Gets a Biginteger value from json.
-   *
-   * @param jsonObject Json object.
-   * @param name Name of the property.
-   * @return BigInteger of the name.¬
-   */
-  public static BigInteger extractBigInteger(final JsonObject jsonObject, final String name) {
-    return BigInteger.valueOf(jsonObject.getLong(name));
-  }
+	/**
+	 * Gets a Biginteger value from json.
+	 *
+	 * @param jsonObject Json object.
+	 * @param name       Name of the property.
+	 * @return BigInteger of the name.¬
+	 */
+	public static BigInteger extractBigInteger(final JsonObject jsonObject, final String name) {
+		return BigInteger.valueOf(jsonObject.getLong(name));
+	}
+
+	public static <T> ResolutionStatement<T> createResolutionStatement(final JsonObject receiptJsonObject,
+																	   final Function<JsonObject, T> getUnresolvedEntry,
+																	   final Function<JsonObject, T> getResolvedEntry,
+																	   final ReceiptType receiptType) {
+		return new ResolutionStatement<T>(
+				extractBigInteger(receiptJsonObject, "height"),
+				getUnresolvedEntry.apply(receiptJsonObject),
+				receiptJsonObject.getJsonArray("resolutionEntries").stream()
+						.map(
+								entry -> {
+									final JsonObject entryJsonObject = (JsonObject) entry;
+									final JsonObject sourceJsonObject = entryJsonObject.getJsonObject("source");
+									return new ResolutionEntry<>(
+											getResolvedEntry.apply(entryJsonObject),
+											new ReceiptSource(
+													sourceJsonObject.getInteger("primaryId"),
+													sourceJsonObject.getInteger("secondaryId")),
+											receiptType);
+								}).collect(Collectors.toList()));
+	}
 }

@@ -21,14 +21,16 @@
 package io.nem.sdk.infrastructure.directconnect.dataaccess.database.mongoDb;
 
 import io.nem.sdk.infrastructure.common.CatapultContext;
-import io.nem.sdk.infrastructure.directconnect.dataaccess.mappers.ChainStatisticInfoMapper;
-import io.nem.sdk.model.blockchain.ChainStatisticInfo;
+import io.nem.sdk.infrastructure.directconnect.dataaccess.mappers.TransactionStatementsMapper;
+import io.nem.sdk.model.receipt.TransactionStatement;
 
-public class ChainStatisticCollection {
+import java.util.List;
+
+public class TransactionStatementsCollection {
 	/**
 	 * Catapult collection
 	 */
-	private final CatapultCollection<ChainStatisticInfo, ChainStatisticInfoMapper> catapultCollection;
+	private final CatapultCollection<TransactionStatement, TransactionStatementsMapper> catapultCollection;
 	/* Catapult context. */
 	private final CatapultContext context;
 
@@ -37,19 +39,25 @@ public class ChainStatisticCollection {
 	 *
 	 * @param context Catapult context.
 	 */
-	public ChainStatisticCollection(final CatapultContext context) {
+	public TransactionStatementsCollection(final CatapultContext context) {
+		this.context = context;
 		catapultCollection =
 				new CatapultCollection<>(
-						context.getCatapultMongoDbClient(), "chainStatistic", ChainStatisticInfoMapper::new);
-		this.context = context;
+						context.getCatapultMongoDbClient(),
+						"transactionStatements",
+						() ->
+								new TransactionStatementsMapper(new BlocksCollection(context).find(1).get().getNetworkType()));
 	}
 
 	/**
-	 * Gets chain info.
+	 * Gets resolution statement for an unresolved address.
 	 *
-	 * @return Chain info.
+	 * @param height Block height.
+	 * @return Resolution statement.
 	 */
-	public ChainStatisticInfo get() {
-		return catapultCollection.findAll().get(0);
+	public List<TransactionStatement> findByHeight(final long height) {
+		final String keyName = "statement.height";
+		final int timeoutInSeconds = 0;
+		return catapultCollection.find(keyName, height, timeoutInSeconds);
 	}
 }

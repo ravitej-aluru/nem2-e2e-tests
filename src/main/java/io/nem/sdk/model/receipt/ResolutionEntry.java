@@ -1,5 +1,7 @@
 package io.nem.sdk.model.receipt;
 
+import io.nem.sdk.model.account.Address;
+import io.nem.sdk.model.mosaic.MosaicId;
 import io.nem.sdk.model.namespace.AddressAlias;
 import io.nem.sdk.model.namespace.MosaicAlias;
 
@@ -65,9 +67,9 @@ public class ResolutionEntry<T> {
    * @return void
    */
   private void validateResolvedType() {
-    Class resolutionClass = this.resolved.getClass();
-    if (!AddressAlias.class.isAssignableFrom(resolutionClass)
-        && !MosaicAlias.class.isAssignableFrom(resolutionClass)) {
+    final Class resolutionClass = this.resolved.getClass();
+    if (!(Address.class.isAssignableFrom(resolutionClass)
+        || MosaicId.class.isAssignableFrom(resolutionClass))) {
       throw new IllegalArgumentException(
           "Resolved type: ["
               + resolutionClass.getName()

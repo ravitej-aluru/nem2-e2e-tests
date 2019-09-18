@@ -50,22 +50,19 @@ public enum ReceiptType {
   /** The mosaicId expiring in this block. It is recorded when a mosaic expires. */
   Mosaic_Expired(0x414D),
   /**
-   * The sender and recipient of the levied mosaic, the mosaicId and amount. It is recorded when a
-   * transaction has a levied mosaic.
-   */
-  Mosaic_Levy(0x124D),
-  /**
    * The sender and recipient of the mosaicId and amount representing the cost of registering the
    * mosaic. It is recorded when a mosaic is registered.
    */
-  Mosaic_Rental_Fee(0x134D),
+  Mosaic_Rental_Fee(0x124D),
   /** The namespaceId expiring in this block. It is recorded when a namespace expires. */
   Namespace_Expired(0x414E),
+  /** The namespaceId was deleted in this block. It is recorded when a namespace deleted. */
+  Namespace_Deleted(0x424E),
   /**
    * The sender and recipient of the mosaicId and amount representing the cost of extending the
    * namespace. It is recorded when a namespace is registered or its duration is extended.
    */
-  Namespace_Rental_Fee(0x124E),
+  Namespace_Rental_Fee(0x134E),
   /**
    * The lockhash sender, mosaicId and amount locked. It is recorded when a valid
    * HashLockTransaction is announced.
@@ -102,7 +99,7 @@ public enum ReceiptType {
    */
   Inflation(0x5143);
 
-  public static EnumSet<ReceiptType> ArtifactExpiry = EnumSet.of(Mosaic_Expired, Namespace_Expired);
+  public static EnumSet<ReceiptType> ArtifactExpiry = EnumSet.of(Mosaic_Expired, Namespace_Expired, Namespace_Deleted);
   public static EnumSet<ReceiptType> BalanceChange =
       EnumSet.of(
           Harvest_Fee,
@@ -142,12 +139,12 @@ public enum ReceiptType {
       case 16717:
         return ReceiptType.Mosaic_Expired;
       case 4685:
-        return ReceiptType.Mosaic_Levy;
-      case 4941:
         return ReceiptType.Mosaic_Rental_Fee;
       case 16718:
         return ReceiptType.Namespace_Expired;
-      case 4686:
+      case 16974:
+        return ReceiptType.Namespace_Deleted;
+      case 4942:
         return ReceiptType.Namespace_Rental_Fee;
       case 12616:
         return ReceiptType.LockHash_Created;

@@ -24,26 +24,33 @@ import com.mongodb.MongoClient;
 
 import java.util.HashMap;
 
-/** Mongo database client factory. */
+/**
+ * Mongo database client factory.
+ */
 public final class MongoClientFactory {
-  /** Map of connections. */
-  private static final HashMap<String, MongoClient> mongoClientHashMap = new HashMap<>();
+	/**
+	 * Map of connections.
+	 */
+	private static final HashMap<String, MongoClient> mongoClientHashMap = new HashMap<>();
 
-  /** Constructor. */
-  private MongoClientFactory() {}
+	/**
+	 * Constructor.
+	 */
+	private MongoClientFactory() {
+	}
 
-  /**
-   * Create a Mongo database connection.
-   *
-   * @param hostname Mongo database host.
-   * @param port Mongo database port.
-   * @return MongoDB client.
-   */
-  public static MongoClient Create(final String hostname, final int port) {
-    final String key = "hostname" + port;
-    if (!mongoClientHashMap.containsKey(key)) {
-      mongoClientHashMap.put(key, new MongoClient(hostname, port));
-    }
-    return mongoClientHashMap.get(key);
-  }
+	/**
+	 * Create a Mongo database connection.
+	 *
+	 * @param hostname Mongo database host.
+	 * @param port     Mongo database port.
+	 * @return MongoDB client.
+	 */
+	public static MongoClient Create(final String hostname, final int port) {
+		final String key = "hostname" + port;
+		if (!mongoClientHashMap.containsKey(key)) {
+			mongoClientHashMap.put(key, new MongoClient(hostname, port));
+		}
+		return mongoClientHashMap.get(key);
+	}
 }

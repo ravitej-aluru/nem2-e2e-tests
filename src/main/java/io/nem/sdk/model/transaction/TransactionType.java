@@ -31,7 +31,7 @@ public enum TransactionType {
 
   // Namespace
   /** Register namespace transaction type. */
-  REGISTER_NAMESPACE((short) 0x414E),
+  NAMESPACE_REGISTRATION((short) 0x414E),
 
   /** Address alias transaction type. */
   ADDRESS_ALIAS((short) 0x424E),
@@ -104,7 +104,7 @@ public enum TransactionType {
       case 16973:
         return TransactionType.MOSAIC_SUPPLY_CHANGE;
       case 16718:
-        return TransactionType.REGISTER_NAMESPACE;
+        return TransactionType.NAMESPACE_REGISTRATION;
       case 16974:
         return TransactionType.ADDRESS_ALIAS;
       case 17230:

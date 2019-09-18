@@ -34,14 +34,14 @@ import java.util.Optional;
  *
  * @since 1.0
  */
-public class RegisterNamespaceTransaction extends Transaction {
+public class NamespaceRegistrationTransaction extends Transaction {
   private final String namespaceName;
   private final NamespaceId namespaceId;
   private final Optional<BigInteger> duration;
   private final Optional<NamespaceId> parentId;
   private final NamespaceType namespaceType;
 
-  public RegisterNamespaceTransaction(
+  public NamespaceRegistrationTransaction(
       final NetworkType networkType,
       final Short version,
       final Deadline deadline,
@@ -69,7 +69,7 @@ public class RegisterNamespaceTransaction extends Transaction {
         Optional.of(transactionInfo));
   }
 
-  private RegisterNamespaceTransaction(
+  private NamespaceRegistrationTransaction(
       final NetworkType networkType,
       final Short version,
       final Deadline deadline,
@@ -94,7 +94,7 @@ public class RegisterNamespaceTransaction extends Transaction {
         Optional.empty());
   }
 
-  private RegisterNamespaceTransaction(
+  private NamespaceRegistrationTransaction(
       final NetworkType networkType,
       final Short version,
       final Deadline deadline,
@@ -108,7 +108,7 @@ public class RegisterNamespaceTransaction extends Transaction {
       final Optional<PublicAccount> signer,
       final Optional<TransactionInfo> transactionInfo) {
     super(
-        TransactionType.REGISTER_NAMESPACE,
+        TransactionType.NAMESPACE_REGISTRATION,
         networkType,
         version,
         deadline,
@@ -141,7 +141,7 @@ public class RegisterNamespaceTransaction extends Transaction {
    * @param networkType Network type.
    * @return Register namespace transaction.
    */
-  public static RegisterNamespaceTransaction createRootNamespace(
+  public static NamespaceRegistrationTransaction createRootNamespace(
       final Deadline deadline,
       final BigInteger maxFee,
       final String namespaceName,
@@ -149,7 +149,7 @@ public class RegisterNamespaceTransaction extends Transaction {
       final NetworkType networkType) {
     Validate.notNull(namespaceName, "NamespaceName must not be null");
     NamespaceId namespaceId = new NamespaceId(IdGenerator.generateNamespaceId(namespaceName));
-    return new RegisterNamespaceTransaction(
+    return new NamespaceRegistrationTransaction(
         networkType,
         TransactionVersion.REGISTER_NAMESPACE.getValue(),
         deadline,
@@ -171,7 +171,7 @@ public class RegisterNamespaceTransaction extends Transaction {
    * @param networkType Network type.
    * @return instance of RegisterNamespaceTransaction
    */
-  public static RegisterNamespaceTransaction createSubNamespace(
+  public static NamespaceRegistrationTransaction createSubNamespace(
       final Deadline deadline,
       final BigInteger maxFee,
       final String namespaceName,
@@ -180,7 +180,7 @@ public class RegisterNamespaceTransaction extends Transaction {
     Validate.notNull(namespaceName, "NamespaceName must not be null");
     Validate.notNull(parentNamespaceName, "ParentNamespaceName must not be null");
     NamespaceId parentId = new NamespaceId(parentNamespaceName);
-    return RegisterNamespaceTransaction.createSubNamespace(
+    return NamespaceRegistrationTransaction.createSubNamespace(
         deadline, maxFee, namespaceName, parentId, networkType);
   }
 
@@ -194,7 +194,7 @@ public class RegisterNamespaceTransaction extends Transaction {
    * @param networkType Network type.
    * @return instance of RegisterNamespaceTransaction
    */
-  public static RegisterNamespaceTransaction createSubNamespace(
+  public static NamespaceRegistrationTransaction createSubNamespace(
       final Deadline deadline,
       final BigInteger maxFee,
       final String namespaceName,
@@ -204,7 +204,7 @@ public class RegisterNamespaceTransaction extends Transaction {
     Validate.notNull(parentId, "ParentId must not be null");
     NamespaceId namespaceId =
         new NamespaceId(IdGenerator.generateNamespaceId(namespaceName, parentId.getId()));
-    return new RegisterNamespaceTransaction(
+    return new NamespaceRegistrationTransaction(
         networkType,
         TransactionVersion.REGISTER_NAMESPACE.getValue(),
         deadline,

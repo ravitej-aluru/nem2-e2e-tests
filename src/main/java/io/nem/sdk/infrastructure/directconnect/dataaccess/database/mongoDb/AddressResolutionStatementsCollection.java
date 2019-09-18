@@ -21,14 +21,17 @@
 package io.nem.sdk.infrastructure.directconnect.dataaccess.database.mongoDb;
 
 import io.nem.sdk.infrastructure.common.CatapultContext;
-import io.nem.sdk.infrastructure.directconnect.dataaccess.mappers.ChainStatisticInfoMapper;
-import io.nem.sdk.model.blockchain.ChainStatisticInfo;
+import io.nem.sdk.infrastructure.directconnect.dataaccess.mappers.AddressResolutionStatementsMapper;
+import io.nem.sdk.model.account.Address;
+import io.nem.sdk.model.receipt.ResolutionStatement;
 
-public class ChainStatisticCollection {
+import java.util.List;
+
+public class AddressResolutionStatementsCollection {
 	/**
 	 * Catapult collection
 	 */
-	private final CatapultCollection<ChainStatisticInfo, ChainStatisticInfoMapper> catapultCollection;
+	private final CatapultCollection<ResolutionStatement<Address>, AddressResolutionStatementsMapper> catapultCollection;
 	/* Catapult context. */
 	private final CatapultContext context;
 
@@ -37,19 +40,24 @@ public class ChainStatisticCollection {
 	 *
 	 * @param context Catapult context.
 	 */
-	public ChainStatisticCollection(final CatapultContext context) {
+	public AddressResolutionStatementsCollection(final CatapultContext context) {
+		this.context = context;
 		catapultCollection =
 				new CatapultCollection<>(
-						context.getCatapultMongoDbClient(), "chainStatistic", ChainStatisticInfoMapper::new);
-		this.context = context;
+						context.getCatapultMongoDbClient(),
+						"addressResolutionStatements",
+						AddressResolutionStatementsMapper::new);
 	}
 
 	/**
-	 * Gets chain info.
+	 * Gets resolution statement for an unresolved address.
 	 *
-	 * @return Chain info.
+	 * @param height Block height.
+	 * @return Resolution statement.
 	 */
-	public ChainStatisticInfo get() {
-		return catapultCollection.findAll().get(0);
+	public List<ResolutionStatement<Address>> findByHeight(final long height) {
+		final String keyName = "statement.height";
+		final int timeoutInSeconds = 0;
+		return catapultCollection.find(keyName, height, timeoutInSeconds);
 	}
 }

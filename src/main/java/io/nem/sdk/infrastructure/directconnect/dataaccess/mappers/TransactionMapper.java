@@ -92,7 +92,7 @@ public class TransactionMapper implements Function<JsonObject, Transaction> {
     extractCommonProperties(jsonObject);
     if (type == TransactionType.TRANSFER) {
       return new TransferTransactionMapper().apply(jsonObject);
-    } else if (type == TransactionType.REGISTER_NAMESPACE) {
+    } else if (type == TransactionType.NAMESPACE_REGISTRATION) {
       return new RegisterNamespaceTransactionMapper().apply(jsonObject);
     } else if (type == TransactionType.MOSAIC_DEFINITION) {
       return new MosaicDefinitionTransactionMapper().apply(jsonObject);
@@ -246,12 +246,12 @@ class RegisterNamespaceTransactionMapper extends TransactionMapper {
    * @return Register namespace transaction.
    */
   @Override
-  public RegisterNamespaceTransaction apply(final JsonObject jsonObject) {
+  public NamespaceRegistrationTransaction apply(final JsonObject jsonObject) {
     extractCommonProperties(jsonObject);
     final NamespaceType namespaceType =
         NamespaceType.rawValueOf(transaction.getInteger("registrationType"));
 
-    return new RegisterNamespaceTransaction(
+    return new NamespaceRegistrationTransaction(
         networkType,
         version,
         deadline,

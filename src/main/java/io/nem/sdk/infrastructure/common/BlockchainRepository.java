@@ -21,6 +21,7 @@
 package io.nem.sdk.infrastructure.common;
 
 import io.nem.sdk.model.blockchain.BlockInfo;
+import io.nem.sdk.model.receipt.Statement;
 import io.nem.sdk.model.transaction.Transaction;
 import io.reactivex.Observable;
 
@@ -59,4 +60,11 @@ public interface BlockchainRepository {
    * @return Observable of BigInteger
    */
   Observable<BigInteger> getBlockchainScore();
+
+  /**
+   * Get receipts from a block
+   *
+   * @return Observable<Statement>
+   */
+  public Observable<Statement> getBlockReceipts(BigInteger height);
 }
