@@ -4,30 +4,41 @@ import cucumber.api.PendingException;
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.When;
+import io.nem.automation.asset.AssetRegistration;
 import io.nem.automation.common.BaseTest;
 import io.nem.automationHelpers.common.TestContext;
+import io.nem.automationHelpers.helper.MosaicHelper;
 
-public class RestrictionAccount extends BaseTest {
+import java.util.List;
+
+public class AccountRestriction extends BaseTest {
+    private final MosaicHelper mosaicHelper;
 
     /**
      * Constructor.
      *
      * @param testContext Test context.
      */
-    public RestrictionAccount(final TestContext testContext) {
+    public AccountRestriction(final TestContext testContext) {
         super(testContext);
+        mosaicHelper = new MosaicHelper(testContext);
     }
 
-    @Given("^the following assets are registered and active:$")
-    public void theFollowingAssetsAreRegisteredAndActive() {
+    @Given("^^(\\w+) has the following assets registered and active:$")
+    public void theFollowingAssetsAreRegisteredAndActive(final String userName, final List<String> assets) {
+//        final Account signerAccount = getUser(userName);
+        final AssetRegistration assetRegistration = new AssetRegistration(getTestContext());
+        assets.forEach(asset -> {
+            assetRegistration.registerAsset(userName, asset);
+        });
     }
 
     @And("^an account can only define up to (\\d+) mosaic filters$")
-    public void anAccountCanOnlyDefineUpToMosaicFilters(int arg0) {
+    public void anAccountCanOnlyDefineUpToMosaicFilters(final Integer noOfMosaicFilters) {
     }
 
     @When("^(\\w+) blocks receiving transactions containing the following assets:$")
-    public void aliceBlocksReceivingTransactionsContainingTheFollowingAssets() {
+    public void blocksReceivingTransactionsContainingTheFollowingAssets(final String userName) {
     }
 
     @And("^receiving the stated assets should be blocked$")
@@ -35,7 +46,7 @@ public class RestrictionAccount extends BaseTest {
     }
 
     @When("^(\\w+) only allows receiving transactions containing type:$")
-    public void aliceOnlyAllowsReceivingTransactionsContainingType() {
+    public void onlyAllowsReceivingTransactionsContainingType(final String userName) {
     }
 
     @And("^receiving the stated assets should be allowed$")
@@ -43,17 +54,17 @@ public class RestrictionAccount extends BaseTest {
     }
 
     @Given("^(\\w+) blocked receiving transactions containing the following assets:$")
-    public void aliceBlockedReceivingTransactionsContainingTheFollowingAssets() {
+    public void blockedReceivingTransactionsContainingTheFollowingAssets(final String userName) {
     }
 
     @When("^(\\w+) unblocks \"([^\"]*)\"$")
-    public void aliceUnblocks(String arg0) throws Throwable {
+    public void unblocksGivenAsset(final String userName, final String assetType) throws Throwable {
         // Write code here that turns the phrase above into concrete actions
         throw new PendingException();
     }
 
     @And("^receiving \"([^\"]*)\" assets should remain blocked$")
-    public void receivingAssetsShouldRemainBlocked(String arg0) throws Throwable {
+    public void receivingAssetsShouldRemainBlocked(final String assetType) throws Throwable {
         // Write code here that turns the phrase above into concrete actions
         throw new PendingException();
     }
