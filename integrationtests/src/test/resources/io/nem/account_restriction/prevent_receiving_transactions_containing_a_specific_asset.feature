@@ -5,7 +5,7 @@ Feature: Prevent receiving transactions containing a specific asset
   So that I can ensure I don't own assets unrelated with my activity
 
   Background:
-    Given the following assets are registered and active:
+    Given Alice has the following assets registered and active:
       | asset            |
       | ticket           |
       | voucher          |
