@@ -7,12 +7,21 @@ import cucumber.api.java.en.When;
 import io.nem.automation.asset.AssetRegistration;
 import io.nem.automation.common.BaseTest;
 import io.nem.automationHelpers.common.TestContext;
+import io.nem.automationHelpers.helper.AccountRestrictionHelper;
 import io.nem.automationHelpers.helper.MosaicHelper;
+import io.nem.sdk.model.account.Account;
+import io.nem.sdk.model.mosaic.MosaicId;
+import io.nem.sdk.model.mosaic.MosaicInfo;
+import io.nem.sdk.model.transaction.AccountRestrictionModification;
+import io.nem.sdk.model.transaction.AccountRestrictionModificationType;
+import io.nem.sdk.model.transaction.AccountRestrictionType;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class AccountRestriction extends BaseTest {
     private final MosaicHelper mosaicHelper;
+    private final AccountRestrictionHelper accountRestrictionHelper;
 
     /**
      * Constructor.
@@ -22,14 +31,14 @@ public class AccountRestriction extends BaseTest {
     public AccountRestriction(final TestContext testContext) {
         super(testContext);
         mosaicHelper = new MosaicHelper(testContext);
+        accountRestrictionHelper = new AccountRestrictionHelper(testContext);
     }
 
-    @Given("^^(\\w+) has the following assets registered and active:$")
+    @Given("^(\\w+) has the following assets registered and active:$")
     public void theFollowingAssetsAreRegisteredAndActive(final String userName, final List<String> assets) {
-//        final Account signerAccount = getUser(userName);
         final AssetRegistration assetRegistration = new AssetRegistration(getTestContext());
         assets.forEach(asset -> {
-            assetRegistration.registerAsset(userName, asset);
+                assetRegistration.registerAsset(userName, asset);
         });
     }
 
@@ -38,11 +47,23 @@ public class AccountRestriction extends BaseTest {
     }
 
     @When("^(\\w+) blocks receiving transactions containing the following assets:$")
-    public void blocksReceivingTransactionsContainingTheFollowingAssets(final String userName) {
+    public void blocksReceivingTransactionsContainingTheFollowingAssets(final String userName, final List<String> assets) {
+        final Account signerAccount = getUser(userName);
+        final AssetRegistration assetRegistration = new AssetRegistration(getTestContext());
+        List<AccountRestrictionModification<MosaicId>> modifications = new ArrayList<>();
+        assets.forEach(asset -> {
+            {
+                assetRegistration.registerAsset(userName, asset);
+                MosaicInfo mosaicInfo = getTestContext().getScenarioContext().getContext(asset);
+                modifications.add(accountRestrictionHelper.createMosaicRestriction(AccountRestrictionModificationType.ADD, mosaicInfo.getMosaicId()));
+            }
+        });
+        accountRestrictionHelper.createAccountMosaicRestrictionTransactionAndWait(signerAccount, AccountRestrictionType.BLOCK_MOSAIC_ID, modifications);
     }
 
     @And("^receiving the stated assets should be blocked$")
     public void receivingTheStatedAssetsShouldBeBlocked() {
+        //validate Alice's account hasn't changed. there is
     }
 
     @When("^(\\w+) only allows receiving transactions containing type:$")

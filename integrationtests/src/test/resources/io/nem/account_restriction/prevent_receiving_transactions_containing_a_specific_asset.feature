@@ -10,15 +10,20 @@ Feature: Prevent receiving transactions containing a specific asset
       | ticket           |
       | voucher          |
       | cat.currency     |
-    And an account can only define up to 512 mosaic filters
+      And Bob has the following assets registered and active:
+        | asset         |
+        | ticket        |
+        | voucher       |
+#    And an account can only define up to 512 mosaic filters
 
   Scenario: An account blocks receiving transactions containing a specific asset
-    When Alice blocks receiving transactions containing the following assets:
+    Given Alice blocks receiving transactions containing the following assets:
       | asset   |
       | ticket  |
       | voucher |
-    Then she should receive a confirmation message
-    And receiving the stated assets should be blocked
+    When Bob tries to send 1 asset "ticket" to Alice
+    Then Alice should receive a confirmation message
+      And receiving the stated assets should be blocked
 
   Scenario: An account allows only receiving transactions containing a specific asset
     When Alice only allows receiving transactions containing type:
