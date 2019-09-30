@@ -55,12 +55,37 @@ public class AccountRestrictionHelper {
 		return AccountRestrictionModification.createForMosaic(accountRestrictionModificationType, mosaicId);
 	}
 
+	/**
+	 * Create an account address restriction
+	 * @param accountRestrictionModificationType type of the modification
+	 * @param address address of the account to restrict
+	 * @return AccountRestrictionModification object
+	 */
 	public AccountRestrictionModification createAddressRestriction(
 			final AccountRestrictionModificationType accountRestrictionModificationType,
 			final Address address) {
 		return AccountRestrictionModification.createForAddress(accountRestrictionModificationType, address);
 	}
 
+	/**
+	 *
+	 * @param accountRestrictionModificationType
+	 * @param transactionType
+	 * @return
+	 */
+	public AccountRestrictionModification createTransactionTypeRestriction(
+			final AccountRestrictionModificationType accountRestrictionModificationType,
+			final TransactionType transactionType) {
+		return AccountRestrictionModification.createForEntityType(accountRestrictionModificationType, transactionType);
+	}
+
+	/**
+	 *
+	 * @param account
+	 * @param restrictionType
+	 * @param modifications
+	 * @return
+	 */
 	public AccountMosaicRestrictionModificationTransaction createAccountMosaicRestrictionTransactionAndWait(
 			Account account,
 			AccountRestrictionType restrictionType,
@@ -72,19 +97,131 @@ public class AccountRestrictionHelper {
 				() -> createAccountMosaicRestrictionTransaction(restrictionType, modifications));
 	}
 
-	public SignedTransaction createAccountMosaicRestrictionTransactionAndAnnounce(
+	/**
+	 *
+	 * @param account
+	 * @param restrictionType
+	 * @param modifications
+	 * @return
+	 */
+	public AccountAddressRestrictionModificationTransaction createAccountAddressRestrictionTransactionAndWait(
 			Account account,
 			AccountRestrictionType restrictionType,
-			List<AccountRestrictionModification<MosaicId>> modifications) {
+			List<AccountRestrictionModification<Address>> modifications) {
 
+		final TransactionHelper transactionHelper = new TransactionHelper(testContext);
+		return transactionHelper.signAndAnnounceTransactionAndWait(
+				account,
+				() -> createAccountAddressRestrictionTransaction(restrictionType, modifications));
+	}
+
+	/**
+	 *
+	 * @param account
+	 * @param restrictionType
+	 * @param modifications
+	 * @return
+	 */
+	public AccountOperationRestrictionModificationTransaction createAccountTransactionTypeRestrictionTransactionAndWait(
+			Account account,
+			AccountRestrictionType restrictionType,
+			List<AccountRestrictionModification<TransactionType>> modifications) {
+
+		final TransactionHelper transactionHelper = new TransactionHelper(testContext);
+		return transactionHelper.signAndAnnounceTransactionAndWait(
+				account,
+				() -> createAccountTransactionTypeRestrictionTransaction(restrictionType, modifications));
+	}
+
+	/**
+	 *
+	 * @param account
+	 * @param restrictionType
+	 * @param modifications
+	 * @return
+	 */
+	public SignedTransaction createAccountMosaicRestrictionTransactionAndAnnounce(
+			Account account, AccountRestrictionType restrictionType,
+			List<AccountRestrictionModification<MosaicId>> modifications) {
 		final TransactionHelper transactionHelper = new TransactionHelper(testContext);
 		return transactionHelper.signAndAnnounceTransaction(
 				account,
 				() -> createAccountMosaicRestrictionTransaction(restrictionType, modifications));
 	}
 
-	private AccountMosaicRestrictionModificationTransaction createAccountMosaicRestrictionTransaction(AccountRestrictionType restrictionType, List<AccountRestrictionModification<MosaicId>> modifications) {
+	/**
+	 *
+	 * @param account
+	 * @param restrictionType
+	 * @param modifications
+	 * @return
+	 */
+	public SignedTransaction createAccountAddressRestrictionTransactionAndAnnounce(
+			Account account, AccountRestrictionType restrictionType,
+			List<AccountRestrictionModification<Address>> modifications) {
+		final TransactionHelper transactionHelper = new TransactionHelper(testContext);
+		return transactionHelper.signAndAnnounceTransaction(
+				account,
+				() -> createAccountAddressRestrictionTransaction(restrictionType, modifications));
+	}
+
+	/**
+	 *
+	 * @param account
+	 * @param restrictionType
+	 * @param modifications
+	 * @return
+	 */
+	public SignedTransaction createAccountTransactionTypeRestrictionTransactionAndAnnounce(
+			Account account, AccountRestrictionType restrictionType,
+			List<AccountRestrictionModification<TransactionType>> modifications) {
+		final TransactionHelper transactionHelper = new TransactionHelper(testContext);
+		return transactionHelper.signAndAnnounceTransaction(
+				account,
+				() -> createAccountTransactionTypeRestrictionTransaction(restrictionType, modifications));
+	}
+
+	/**
+	 *
+	 * @param restrictionType
+	 * @param modifications
+	 * @return
+	 */
+	private AccountMosaicRestrictionModificationTransaction createAccountMosaicRestrictionTransaction(
+			AccountRestrictionType restrictionType, List<AccountRestrictionModification<MosaicId>> modifications) {
 		return AccountMosaicRestrictionModificationTransaction.create(
+				TransactionHelper.getDefaultDeadline(),
+				restrictionType,
+				modifications,
+				testContext.getNetworkType()
+		);
+	}
+
+	/**
+	 *
+	 * @param restrictionType
+	 * @param modifications
+	 * @return
+	 */
+	private AccountAddressRestrictionModificationTransaction createAccountAddressRestrictionTransaction(
+			AccountRestrictionType restrictionType, List<AccountRestrictionModification<Address>> modifications) {
+		return AccountAddressRestrictionModificationTransaction.create(
+				TransactionHelper.getDefaultDeadline(),
+				restrictionType,
+				modifications,
+				testContext.getNetworkType()
+		);
+	}
+
+	/**
+	 *
+	 * @param restrictionType
+	 * @param modifications
+	 * @return
+	 */
+	private AccountOperationRestrictionModificationTransaction createAccountTransactionTypeRestrictionTransaction(
+			AccountRestrictionType restrictionType, List<AccountRestrictionModification<TransactionType>> modifications) {
+		return AccountOperationRestrictionModificationTransaction.create(
 				TransactionHelper.getDefaultDeadline(),
 				restrictionType,
 				modifications,
