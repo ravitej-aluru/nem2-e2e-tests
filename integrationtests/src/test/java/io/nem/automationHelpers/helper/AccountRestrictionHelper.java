@@ -24,8 +24,10 @@ import io.nem.automationHelpers.common.TestContext;
 import io.nem.sdk.model.account.Account;
 import io.nem.sdk.model.account.Address;
 import io.nem.sdk.model.mosaic.MosaicId;
+import io.nem.sdk.model.mosaic.MosaicInfo;
 import io.nem.sdk.model.transaction.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -42,6 +44,81 @@ public class AccountRestrictionHelper {
 	public AccountRestrictionHelper(final TestContext testContext) {
 		this.testContext = testContext;
 	}
+
+    /**
+     * Generates the AccountRestrictionType enum value from given restriction operation (allow/block)
+     * and a given restricted item type (asset/address/transaction type)
+     *
+     * @param restrictionOperation restriction operation - allow or block
+     * @param restrictedItem       restricted item type - asset or address or transaction type
+     * @return AccountRestrictionType object
+     */
+    public AccountRestrictionType getAccountRestrictionType(String restrictionOperation, String restrictedItem) {
+        AccountRestrictionType accountRestrictionType;
+        String accountRestrictionTypeString = "";
+        switch (restrictionOperation.toUpperCase()) {
+            case "ALLOWS":
+                break;
+            case "BLOCKS":
+                accountRestrictionTypeString = "BLOCK";
+                break;
+        }
+
+        switch (restrictedItem.toUpperCase()) {
+
+            case "ADDRESS":
+            case "ADDRESSES":
+                accountRestrictionTypeString += "ADDRESS";
+                break;
+            case "ASSET":
+            case "ASSETS":
+                accountRestrictionTypeString += "MOSAIC_ID";
+                break;
+            case "TRANSACTION TYPE":
+            case "TRANSACTION TYPES":
+                accountRestrictionTypeString += "TRANSACTION_TYPE";
+                break;
+        }
+        return AccountRestrictionType.valueOf(accountRestrictionTypeString);
+    }
+
+    public void createAppropriateModificationTransactionAndWait(String restrictedItem, List<String> restrictedItems, Account signerAccount, AccountRestrictionType accountRestrictionType) {
+        switch (restrictedItem.toUpperCase()) {
+            case "ASSET":
+            case "ASSETS":
+                List<AccountRestrictionModification<MosaicId>> assetModifications = new ArrayList<>();
+                restrictedItems.forEach(asset -> {
+                    MosaicInfo mosaicInfo = testContext.getScenarioContext().getContext(asset);
+                    assetModifications.add(createMosaicRestriction(
+                            AccountRestrictionModificationType.ADD, mosaicInfo.getMosaicId()));
+                });
+                createAccountMosaicRestrictionTransactionAndWait(
+                        signerAccount, accountRestrictionType, assetModifications);
+                break;
+            case "ADDRESS":
+            case "ADDRESSES":
+                List<AccountRestrictionModification<Address>> addressModifications = new ArrayList<>();
+                restrictedItems.forEach(address -> {
+                    Address addressInfo = testContext.getScenarioContext().getContext(address);
+                    addressModifications.add(createAddressRestriction(
+                            AccountRestrictionModificationType.ADD, addressInfo));
+                });
+                createAccountAddressRestrictionTransactionAndWait(
+                        signerAccount, accountRestrictionType, addressModifications);
+                break;
+            case "TRANSACTION TYPE":
+            case "TRANSACTION TYPES":
+                List<AccountRestrictionModification<TransactionType>> operationModifications = new ArrayList<>();
+                restrictedItems.forEach(transactionType -> {
+                    TransactionType transactionTypeInfo = testContext.getScenarioContext().getContext(transactionType);
+                    operationModifications.add(createTransactionTypeRestriction(
+                            AccountRestrictionModificationType.ADD, transactionTypeInfo));
+                });
+                createAccountTransactionTypeRestrictionTransactionAndWait(
+                        signerAccount, accountRestrictionType, operationModifications);
+                break;
+        }
+    }
 
 	/**
 	 * Create an account mosaic restriction
@@ -228,4 +305,5 @@ public class AccountRestrictionHelper {
 				testContext.getNetworkType()
 		);
 	}
+
 }
