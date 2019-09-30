@@ -1,6 +1,6 @@
 @not-implemented
 Feature: Prevent receiving transactions containing a specific asset
-  As Alice,
+  As Bob,
   I only want to receive "cat.currency" assets
   So that I can ensure I don't own assets unrelated with my activity
 
@@ -10,27 +10,31 @@ Feature: Prevent receiving transactions containing a specific asset
       | ticket           |
       | voucher          |
       | cat.currency     |
-      And Bob has the following assets registered and active:
-        | asset         |
-        | ticket        |
-        | voucher       |
 #    And an account can only define up to 512 mosaic filters
 
   Scenario: An account blocks receiving transactions containing a specific asset
-    Given Alice blocks receiving transactions containing the following assets:
+    Given Bob blocks receiving transactions containing the following assets:
       | asset   |
       | ticket  |
       | voucher |
-    When Bob tries to send 1 asset "ticket" to Alice
-    Then Alice should receive a confirmation message
+    When Alice tries to send 1 asset "ticket" to Bob
+    Then Bob should receive a confirmation message
       And receiving the stated assets should be blocked
+    And Bob balance should remain intact
+    And Alice balance should remain intact
 
-  Scenario: An account allows only receiving transactions containing a specific asset
-    When Alice only allows receiving transactions containing type:
+  Scenario Outline: An account allows only receiving transactions containing a specific asset
+    When Bob allows receiving transactions containing the following assets:
       | asset          |
-      | cat.currency   |
-    Then she should receive a confirmation message
-    And  receiving the stated assets should be allowed
+      | <asset> |
+    Then Alice should receive a confirmation message
+    And receiving the stated assets should be allowed
+    And Alice should receive <amount> of asset "<asset>"
+    And Bob "<asset>" balance should decrease in <amount> units
+
+    Examples:
+      | asset        | amount |
+      | cat.currency | 1      |
 
   Scenario: An account unblocks an asset
     Given Alice blocked receiving transactions containing the following assets:
