@@ -37,6 +37,7 @@ public class AccountRestriction extends BaseTest {
     @Given("^(\\w+) has the following assets registered and active:$")
     public void theFollowingAssetsAreRegisteredAndActive(final String userName, final List<String> assets) {
         final AssetRegistration assetRegistration = new AssetRegistration(getTestContext());
+        // Alice already has cat.currency registered to her. What happens if we try to register again?
         assets.forEach(asset -> {
                 assetRegistration.registerAsset(userName, asset);
         });
@@ -46,28 +47,37 @@ public class AccountRestriction extends BaseTest {
     public void anAccountCanOnlyDefineUpToMosaicFilters(final Integer noOfMosaicFilters) {
     }
 
-    @When("^(\\w+) blocks receiving transactions containing the following assets:$")
-    public void blocksReceivingTransactionsContainingTheFollowingAssets(final String userName, final List<String> assets) {
+    /**
+     * Gets the Account from userName and adds the specified restriction to the account
+     *
+     * @param userName
+     * @param restrictionOperation
+     * @param restrictedItem
+     * @param restrictedItems
+     */
+    @When("^(\\w+) (allows|blocks) receiving transactions containing the following " +
+            "(asset(s)|address(es)|transaction type(s)):$")
+    public void allowsOrBlocksReceivingTransactionsContainingTheFollowingItems(
+            final String userName, final String restrictionOperation, final String restrictedItem,
+            final List<String> restrictedItems) {
         final Account signerAccount = getUser(userName);
-        final AssetRegistration assetRegistration = new AssetRegistration(getTestContext());
-        List<AccountRestrictionModification<MosaicId>> modifications = new ArrayList<>();
-        assets.forEach(asset -> {
-            {
-                assetRegistration.registerAsset(userName, asset);
-                MosaicInfo mosaicInfo = getTestContext().getScenarioContext().getContext(asset);
-                modifications.add(accountRestrictionHelper.createMosaicRestriction(AccountRestrictionModificationType.ADD, mosaicInfo.getMosaicId()));
-            }
-        });
-        accountRestrictionHelper.createAccountMosaicRestrictionTransactionAndWait(signerAccount, AccountRestrictionType.BLOCK_MOSAIC_ID, modifications);
+        final AccountRestrictionType accountRestrictionType = accountRestrictionHelper.getAccountRestrictionType(
+                restrictionOperation, restrictedItem);
+        accountRestrictionHelper.createAppropriateModificationTransactionAndWait(restrictedItem, restrictedItems, signerAccount, accountRestrictionType);
     }
 
     @And("^receiving the stated assets should be blocked$")
     public void receivingTheStatedAssetsShouldBeBlocked() {
-        //validate Alice's account hasn't changed. there is
+        //Validate that the appropriate error code is returned.
+        // And potentially validate Alice's account hasn't changed for completeness?
     }
 
     @When("^(\\w+) only allows receiving transactions containing type:$")
-    public void onlyAllowsReceivingTransactionsContainingType(final String userName) {
+    public void onlyAllowsReceivingTransactionsContainingType(final String userName, final List<String> assets) {
+        final Account signerAccount = getUser(userName);
+        // get a list of all account restrictions for the given account and confirm that
+        // passed in assets do not exist in that list. That means passed in assets are allowed
+        // How do we check those are the only assets allowed?
     }
 
     @And("^receiving the stated assets should be allowed$")
@@ -80,8 +90,11 @@ public class AccountRestriction extends BaseTest {
 
     @When("^(\\w+) unblocks \"([^\"]*)\"$")
     public void unblocksGivenAsset(final String userName, final String assetType) throws Throwable {
-        // Write code here that turns the phrase above into concrete actions
-        throw new PendingException();
+        final Account signerAccount = getUser(userName);
+        List<AccountRestrictionModification<MosaicId>> modifications = new ArrayList<>();
+        MosaicInfo mosaicInfo = getTestContext().getScenarioContext().getContext(assetType);
+        modifications.add(accountRestrictionHelper.createMosaicRestriction(AccountRestrictionModificationType.REMOVE, mosaicInfo.getMosaicId()));
+        accountRestrictionHelper.createAccountMosaicRestrictionTransactionAndWait(signerAccount, AccountRestrictionType.BLOCK_MOSAIC_ID, modifications);
     }
 
     @And("^receiving \"([^\"]*)\" assets should remain blocked$")
@@ -91,13 +104,13 @@ public class AccountRestriction extends BaseTest {
     }
 
     @Given("^(\\w+) only allowed receiving \"([^\"]*)\" assets$")
-    public void aliceOnlyAllowedReceivingAssets(String arg0) throws Throwable {
+    public void onlyAllowedReceivingAssets(String userName) throws Throwable {
         // Write code here that turns the phrase above into concrete actions
         throw new PendingException();
     }
 
     @When("^(\\w+) removes \"([^\"]*)\" from the allowed assets$")
-    public void aliceRemovesFromTheAllowedAssets(String arg0) throws Throwable {
+    public void removesFromTheAllowedAssets(String userName) throws Throwable {
         // Write code here that turns the phrase above into concrete actions
         throw new PendingException();
     }
@@ -127,7 +140,7 @@ public class AccountRestriction extends BaseTest {
     }
 
     @Given("^(\\w+) blocked receiving (\\d+) different assets$")
-    public void aliceBlockedReceivingDifferentAssets(int arg0) {
+    public void aliceBlockedReceivingDifferentAssets(String userName, int amount) {
     }
 
     @Given("^(\\w+) only allowed receiving (\\d+) different assets$")
