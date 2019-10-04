@@ -56,7 +56,7 @@ public class AccountRestriction extends BaseTest {
      * @param restrictedItems
      */
     @When("^(\\w+) (allows|blocks) receiving transactions containing the following " +
-            "(asset(s)|address(es)|transaction type(s)):$")
+            "(assets?|addresses|transaction types?):$")
     public void allowsOrBlocksReceivingTransactionsContainingTheFollowingItems(
             final String userName, final String restrictionOperation, final String restrictedItem,
             final List<String> restrictedItems) {
