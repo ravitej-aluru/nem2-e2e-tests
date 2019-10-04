@@ -1,4 +1,3 @@
-@not-implemented
 Feature: Prevent receiving transactions containing a specific asset
   As Bob,
   I only want to receive "cat.currency" assets
@@ -14,7 +13,6 @@ Feature: Prevent receiving transactions containing a specific asset
 
   Scenario: An account blocks receiving transactions containing a specific asset
     Given Bob blocks receiving transactions containing the following assets:
-      | asset   |
       | ticket  |
       | voucher |
     When Alice tries to send 1 asset "ticket" to Bob
@@ -25,7 +23,6 @@ Feature: Prevent receiving transactions containing a specific asset
 
   Scenario Outline: An account allows only receiving transactions containing a specific asset
     When Bob allows receiving transactions containing the following assets:
-      | asset          |
       | <asset> |
     Then Alice should receive a confirmation message
     And receiving the stated assets should be allowed
