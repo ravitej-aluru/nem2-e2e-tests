@@ -60,7 +60,7 @@ public class AccountRestrictionHelper {
             case "ALLOWS":
                 break;
             case "BLOCKS":
-                accountRestrictionTypeString = "BLOCK";
+                accountRestrictionTypeString = "BLOCK_";
                 break;
         }
 
@@ -82,7 +82,9 @@ public class AccountRestrictionHelper {
         return AccountRestrictionType.valueOf(accountRestrictionTypeString);
     }
 
-    public void createAppropriateModificationTransactionAndWait(String restrictedItem, List<String> restrictedItems, Account signerAccount, AccountRestrictionType accountRestrictionType) {
+    public void createAppropriateModificationTransactionAndWait(String restrictedItem, List<String> restrictedItems,
+                                                                Account signerAccount,
+                                                                AccountRestrictionType accountRestrictionType) {
         switch (restrictedItem.toUpperCase()) {
             case "ASSET":
             case "ASSETS":
