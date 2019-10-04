@@ -113,8 +113,13 @@ public class TransactionMapper implements Function<JsonObject, Transaction> {
       return new MosaicAliasTransactionMapper().apply(jsonObject);
     } else if (type == TransactionType.ADDRESS_ALIAS) {
       return new AddressAliasTransactionMapper().apply(jsonObject);
+    } else if (type == TransactionType.ACCOUNT_PROPERTIES_MOSAIC) {
+      return new AccountMosaicRestrictionModificationTransactionMapper().apply(jsonObject);
+    } else if (type == TransactionType.ACCOUNT_PROPERTIES_ADDRESS) {
+      return new AccountAddressRestrictionModificationTransactionMapper().apply(jsonObject);
+    } else if (type == TransactionType.ACCOUNT_PROPERTIES_ENTITY_TYPE) {
+      return new AccountOperationRestrictionModificationTransactionMapper().apply(jsonObject);
     }
-
     throw new UnsupportedOperationException("Unimplemented Transaction type");
   }
 
@@ -520,15 +525,114 @@ class AddressAliasTransactionMapper extends TransactionMapper {
   public AddressAliasTransaction apply(final JsonObject jsonObject) {
     extractCommonProperties(jsonObject);
     return new AddressAliasTransaction(
-        networkType,
-        version,
-        deadline,
-        maxFee,
-        AliasAction.rawValueOf(transaction.getInteger("aliasAction").byteValue()),
-        new NamespaceId(extractBigInteger(transaction, "namespaceId")),
-        Address.createFromEncoded(transaction.getString("address")),
-        signature,
-        signer,
-        transactionInfo);
+            networkType,
+            version,
+            deadline,
+            maxFee,
+            AliasAction.rawValueOf(transaction.getInteger("aliasAction").byteValue()),
+            new NamespaceId(extractBigInteger(transaction, "namespaceId")),
+            Address.createFromEncoded(transaction.getString("address")),
+            signature,
+            signer,
+            transactionInfo);
   }
 }
+
+  /** Account mosaic restriction modification alias transaction mapper. */
+  class AccountMosaicRestrictionModificationTransactionMapper extends TransactionMapper {
+    /**
+     * Converts from json to Account mosaic restriction modification alias transaction.
+     *
+     * @param jsonObject Json object.
+     * @return Address alias transaction.
+     */
+    @Override
+    public AccountMosaicRestrictionModificationTransaction apply(final JsonObject jsonObject) {
+      extractCommonProperties(jsonObject);
+      List<AccountRestrictionModification<MosaicId>> modifications = transaction.getJsonArray("modifications").stream()
+              .map(item -> (JsonObject) item)
+              .map(modification ->
+                      AccountRestrictionModification.createForMosaic(
+                              AccountRestrictionModificationType.rawValueOf(
+                                      modification.getInteger("modificationAction").byteValue()),
+                              new MosaicId(extractBigInteger(modification, "value"))
+                      ))
+              .collect(Collectors.toList());
+      return new AccountMosaicRestrictionModificationTransaction(
+              networkType,
+              version,
+              deadline,
+              maxFee,
+              AccountRestrictionType.rawValueOf(transaction.getInteger("restrictionType").byteValue()),
+              modifications,
+              signature,
+              signer,
+              transactionInfo);
+    }
+  }
+
+  /** Account address restriction modification alias transaction mapper. */
+  class AccountAddressRestrictionModificationTransactionMapper extends TransactionMapper {
+  /**
+   * Converts from json to Account address restriction modification alias transaction.
+   *
+   * @param jsonObject Json object.
+   * @return Address alias transaction.
+   */
+  @Override
+  public AccountAddressRestrictionModificationTransaction apply(final JsonObject jsonObject) {
+    extractCommonProperties(jsonObject);
+    List<AccountRestrictionModification<Address>> modifications = transaction.getJsonArray("modifications").stream()
+            .map(item -> (JsonObject) item)
+            .map(modification ->
+                    AccountRestrictionModification.createForAddress(
+                            AccountRestrictionModificationType.rawValueOf(
+                                    modification.getInteger("modificationAction").byteValue()),
+                            new Address(modification.getString("value"), networkType))
+                    )
+            .collect(Collectors.toList());
+    return new AccountAddressRestrictionModificationTransaction(
+            networkType,
+            version,
+            deadline,
+            maxFee,
+            AccountRestrictionType.rawValueOf(transaction.getInteger("restrictionType").byteValue()),
+            modifications,
+            signature,
+            signer,
+            transactionInfo);
+    }
+  }
+
+  /** Account transaction type restriction modification alias transaction mapper. */
+  class AccountOperationRestrictionModificationTransactionMapper extends TransactionMapper {
+    /**
+     * Converts from json to Account transaction type restriction modification alias transaction.
+     *
+     * @param jsonObject Json object.
+     * @return Address alias transaction.
+     */
+    @Override
+    public AccountOperationRestrictionModificationTransaction apply(final JsonObject jsonObject) {
+      extractCommonProperties(jsonObject);
+      List<AccountRestrictionModification<TransactionType>> modifications = transaction.getJsonArray("modifications").stream()
+              .map(item -> (JsonObject) item)
+              .map(modification ->
+                      AccountRestrictionModification.createForEntityType(
+                              AccountRestrictionModificationType.rawValueOf(
+                                      modification.getInteger("modificationAction").byteValue()),
+                              TransactionType.rawValueOf(modification.getInteger("value").shortValue())
+              ))
+              .collect(Collectors.toList());
+      return new AccountOperationRestrictionModificationTransaction(
+              networkType,
+              version,
+              deadline,
+              maxFee,
+              AccountRestrictionType.rawValueOf(transaction.getInteger("restrictionType").byteValue()),
+              modifications,
+              signature,
+              signer,
+              transactionInfo);
+    }
+  }

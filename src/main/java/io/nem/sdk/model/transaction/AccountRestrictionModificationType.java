@@ -18,10 +18,10 @@ package io.nem.sdk.model.transaction;
 /** Enum containing account restriction modification type constants. */
 public enum AccountRestrictionModificationType {
   /** Add account restriction value. */
-  ADD((byte) 0),
+  ADD((byte) 1),
 
   /** Remove account restriction value */
-  REMOVE((byte) 1);
+  REMOVE((byte) 0);
 
   private byte value;
 

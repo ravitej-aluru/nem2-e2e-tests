@@ -36,7 +36,7 @@ public class AccountRestrictionModification<T> {
   }
 
   /** @return AccountRestrictionModification<MosaicId> */
-  public static AccountRestrictionModification<Address> createForMosaic(
+  public static AccountRestrictionModification<MosaicId> createForMosaic(
       AccountRestrictionModificationType modificationType, MosaicId mosaicId) {
     return new AccountRestrictionModification(modificationType, mosaicId);
   }
