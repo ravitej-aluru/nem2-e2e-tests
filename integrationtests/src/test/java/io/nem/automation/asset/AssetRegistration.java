@@ -37,7 +37,6 @@ import io.nem.sdk.model.transaction.TransactionType;
 
 import java.math.BigInteger;
 import java.util.Random;
-import java.util.function.Supplier;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -154,8 +153,9 @@ public class AssetRegistration extends BaseTest {
 		verifyAsset(userAccount, duration);
 	}
 
-	@And("(\\w+) \"cat.currency\" balance should decrease in (\\d+) units")
-	public void verifyAccountBalance(final String username, final int change) {
+	@And("(\\w+) \"(.*)\" balance should decrease in (\\d+) units")
+	public void verifyAccountBalance(final String username, final String asset, final int change) {
+		final Account a = getUser(username);
 		final AccountInfo accountInfoBefore =
 				getTestContext().getScenarioContext().getContext(ACCOUNT_INFO_KEY);
 		verifyAccountBalance(accountInfoBefore, change);

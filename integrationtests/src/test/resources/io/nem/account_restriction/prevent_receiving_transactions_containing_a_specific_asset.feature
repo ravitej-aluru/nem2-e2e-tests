@@ -17,21 +17,22 @@ Feature: Prevent receiving transactions containing a specific asset
       | voucher |
     When Alice tries to send 1 asset "ticket" to Bob
     Then Bob should receive a confirmation message
-      And receiving the stated assets should be blocked
-    And Bob balance should remain intact
-    And Alice balance should remain intact
+    And Alice should receive the error "Failure_RestrictionAccount_Mosaic_Transfer_Prohibited"
+#    And Bob balance should remain intact
+#    And Alice balance should remain intact
 
-  Scenario Outline: An account allows only receiving transactions containing a specific asset
+  Scenario Outline: An account allows receiving transactions containing a specific asset
     When Bob allows receiving transactions containing the following assets:
       | <asset> |
-    Then Alice should receive a confirmation message
+    And Alice sends <amount> asset "<asset>" to Bob
+    Then Bob should receive a confirmation message
     And receiving the stated assets should be allowed
-    And Alice should receive <amount> of asset "<asset>"
-    And Bob "<asset>" balance should decrease in <amount> units
+    And Bob should receive <amount> of asset "<asset>"
+    And Alice "<asset>" balance should decrease in <amount> units
 
     Examples:
-      | asset        | amount |
-      | cat.currency | 1      |
+      | amount | asset        |
+      | 1      | cat.currency |
 
   Scenario: An account unblocks an asset
     Given Alice blocked receiving transactions containing the following assets:
