@@ -555,7 +555,7 @@ class AddressAliasTransactionMapper extends TransactionMapper {
                       AccountRestrictionModification.createForMosaic(
                               AccountRestrictionModificationType.rawValueOf(
                                       modification.getInteger("modificationAction").byteValue()),
-                              new MosaicId(extractBigInteger(modification, "value"))
+                              new MosaicId(modification.getString("value"))
                       ))
               .collect(Collectors.toList());
       return new AccountMosaicRestrictionModificationTransaction(
