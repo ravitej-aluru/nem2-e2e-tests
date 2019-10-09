@@ -35,27 +35,30 @@ Feature: Prevent receiving transactions containing a specific asset
       | 1      | cat.currency |
 
   Scenario: An account unblocks an asset
-    Given Alice blocked receiving transactions containing the following assets:
-      | asset   |
+    Given Bob blocks receiving transactions containing the following assets:
       | ticket  |
       | voucher |
-    When Alice unblocks "ticket"
-    Then she should receive a confirmation message
+    When Bob unblocks "ticket"
+      # And Alice tries to send 1 asset "voucher" to Bob
+    Then Bob should receive a confirmation message
     And receiving "voucher" assets should remain blocked
+      # This can be confirmed when Alice receives below error when she tries send a "voucher" asset to Bob.
+      # And Alice should receive the error "Failure_RestrictionAccount_Mosaic_Transfer_Prohibited"
 
-  Scenario: An account removes an asset from the allowed assets
-    Given Alice only allowed receiving "ticket" assets
-      | asset   |
-      | ticket  |
-      | voucher |
-    When Alice removes "ticket" from the allowed assets
-    Then she should receive a confirmation message
-    And only receiving "voucher" assets should remain allowed
+### Is this scenario actually valid? By default, all assets are allowed. Adding a "BLOCK_XXXX" modification
+#   actually blocks the asset.
+#  Scenario: An account removes an asset from the allowed assets
+#    Given Alice only allowed receiving "ticket" assets
+#      | ticket  |
+#      | voucher |
+#    When Alice removes "ticket" from the allowed assets
+#    Then Alice should receive a confirmation message
+#    And only receiving "voucher" assets should remain allowed
 
   Scenario: An account unblocks a not blocked asset
     Given Alice blocked receiving "ticket" assets
     When Alice unblocks "voucher"
-    Then she should receive the error "Failure_RestrictionAccount_Modification_Not_Allowed"
+    Then Alice should receive the error "Failure_RestrictionAccount_Modification_Not_Allowed"
 
   Scenario: An account removes an asset that does not exist in the allowed assets
     Given Alice blocked receiving "ticket" assets

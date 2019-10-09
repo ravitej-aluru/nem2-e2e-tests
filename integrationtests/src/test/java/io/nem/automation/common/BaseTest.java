@@ -214,7 +214,11 @@ public abstract class BaseTest {
 		final Address recipientAddress = resolveRecipientAddress(recipient);
 		final AccountHelper accountHelper = new AccountHelper(getTestContext());
 		final AccountInfo senderAccountInfo = accountHelper.getAccountInfo(senderAccount.getAddress());
+        final AccountInfo recipientAccountInfo = accountHelper.getAccountInfo(recipientAddress);
+        getTestContext().getScenarioContext().setContext("sender", sender);
+        getTestContext().getScenarioContext().setContext("recipient", recipient);
 		getTestContext().getScenarioContext().setContext(sender, senderAccountInfo);
+        getTestContext().getScenarioContext().setContext(recipient, recipientAccountInfo);
 		final TransferHelper transferHelper = new TransferHelper(getTestContext());
 		transferHelper.createTransferAndAnnounce(senderAccount, recipientAddress, mosaics, message);
 	}
@@ -237,6 +241,8 @@ public abstract class BaseTest {
 		final AccountHelper accountHelper = new AccountHelper(getTestContext());
 		final AccountInfo senderAccountInfo = accountHelper.getAccountInfo(senderAccount.getAddress());
 		final AccountInfo recipientAccountInfo = accountHelper.getAccountInfo(recipientAddress);
+        getTestContext().getScenarioContext().setContext("sender", sender);
+        getTestContext().getScenarioContext().setContext("recipient", recipient);
 		getTestContext().getScenarioContext().setContext(sender, senderAccountInfo);
 		getTestContext().getScenarioContext().setContext(recipient, recipientAccountInfo);
 		final TransferHelper transferHelper = new TransferHelper(getTestContext());

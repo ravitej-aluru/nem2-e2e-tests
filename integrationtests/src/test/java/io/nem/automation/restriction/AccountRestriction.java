@@ -6,6 +6,8 @@ import cucumber.api.java.en.Given;
 import cucumber.api.java.en.When;
 import io.nem.automation.asset.AssetRegistration;
 import io.nem.automation.common.BaseTest;
+import io.nem.automation.transaction.SendTransaction;
+import io.nem.automation.transfer.SendAsset;
 import io.nem.automationHelpers.common.TestContext;
 import io.nem.automationHelpers.helper.AccountRestrictionHelper;
 import io.nem.automationHelpers.helper.MosaicHelper;
@@ -16,6 +18,7 @@ import io.nem.sdk.model.transaction.AccountRestrictionModification;
 import io.nem.sdk.model.transaction.AccountRestrictionModificationType;
 import io.nem.sdk.model.transaction.AccountRestrictionType;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,25 +53,27 @@ public class AccountRestriction extends BaseTest {
     /**
      * Gets the Account from userName and adds the specified restriction to the account
      *
-     * @param userName
+     * @param username
      * @param restrictionOperation
-     * @param restrictedItem
+     * @param restrictedItemType
      * @param restrictedItems
      */
     @When("^(\\w+) (allows|blocks) receiving transactions containing the following " +
             "(assets?|addresses|transaction types?):$")
     public void allowsOrBlocksReceivingTransactionsContainingTheFollowingItems(
-            final String userName, final String restrictionOperation, final String restrictedItem,
+            final String username, final String restrictionOperation, final String restrictedItemType,
             final List<String> restrictedItems) {
-        final Account signerAccount = getUser(userName);
+        final Account signerAccount = getUser(username);
         final AccountRestrictionType accountRestrictionType = accountRestrictionHelper.getAccountRestrictionType(
-                restrictionOperation, restrictedItem);
-        accountRestrictionHelper.createAppropriateModificationTransactionAndWait(restrictedItem, restrictedItems, signerAccount, accountRestrictionType);
+                restrictionOperation, restrictedItemType);
+        accountRestrictionHelper.createAppropriateModificationTransactionAndWait(restrictedItemType, restrictedItems, signerAccount, accountRestrictionType);
+        // setting recipient since one who blocks/allows will most probably be the recipient when testing
+        getTestContext().getScenarioContext().setContext("recipient", username);
     }
 
     @And("^receiving the stated assets should be blocked$")
     public void receivingTheStatedAssetsShouldBeBlocked() {
-        //Validate that the appropriate error code is returned.
+        // Validate that the appropriate error code is returned.
         // And potentially validate Alice's account hasn't changed for completeness?
     }
 
@@ -93,18 +98,25 @@ public class AccountRestriction extends BaseTest {
         final Account signerAccount = getUser(userName);
         List<AccountRestrictionModification<MosaicId>> modifications = new ArrayList<>();
         MosaicInfo mosaicInfo = getTestContext().getScenarioContext().getContext(assetType);
-        modifications.add(accountRestrictionHelper.createMosaicRestriction(AccountRestrictionModificationType.REMOVE, mosaicInfo.getMosaicId()));
-        accountRestrictionHelper.createAccountMosaicRestrictionTransactionAndWait(signerAccount, AccountRestrictionType.BLOCK_MOSAIC_ID, modifications);
+        modifications.add(accountRestrictionHelper.createMosaicRestriction(AccountRestrictionModificationType.ADD, mosaicInfo.getMosaicId()));
+        accountRestrictionHelper.createAccountMosaicRestrictionTransactionAndWait(signerAccount, AccountRestrictionType.MOSAIC_ID, modifications);
     }
 
     @And("^receiving \"([^\"]*)\" assets should remain blocked$")
     public void receivingAssetsShouldRemainBlocked(final String assetType) throws Throwable {
-        // Write code here that turns the phrase above into concrete actions
-        throw new PendingException();
+        // This step is basically calling the two below steps
+        //    When Alice tries to send 1 asset "ticket" to Bob
+        //    And Alice should receive the error "Failure_RestrictionAccount_Mosaic_Transfer_Prohibited"
+        final SendAsset sendAsset = new SendAsset(getTestContext());
+        final String recipient = getTestContext().getScenarioContext().getContext("recipient");
+        sendAsset.triesToTransferAsset(BaseTest.AUTOMATION_USER_ALICE, BigInteger.ONE, assetType, recipient);
+        final SendTransaction sendTransaction = new SendTransaction(getTestContext());
+        sendTransaction.verifyTransactionError(BaseTest.AUTOMATION_USER_ALICE,
+                "Failure_RestrictionAccount_Mosaic_Transfer_Prohibited");
     }
 
     @Given("^(\\w+) only allowed receiving \"([^\"]*)\" assets$")
-    public void onlyAllowedReceivingAssets(String userName) throws Throwable {
+    public void onlyAllowedReceivingAssets(String username, final String asset) throws Throwable {
         // Write code here that turns the phrase above into concrete actions
         throw new PendingException();
     }
@@ -122,9 +134,12 @@ public class AccountRestriction extends BaseTest {
     }
 
     @Given("^(\\w+) blocked receiving \"([^\"]*)\" assets$")
-    public void aliceBlockedReceivingAssets(String arg0) throws Throwable {
-        // Write code here that turns the phrase above into concrete actions
-        throw new PendingException();
+    public void blockedReceivingAssets(final String username, final String asset) throws Throwable {
+        List<String> assetsToBlock = new ArrayList<String>();
+        assetsToBlock.add(asset);
+        // calling another step in this class to allow multiple step grammar possibilities with minimum code duplication
+        this.allowsOrBlocksReceivingTransactionsContainingTheFollowingItems(username, "blocks",
+                "asset", assetsToBlock);
     }
 
     @When("^(\\w+) only allows receiving \"([^\"]*)\" assets$")
