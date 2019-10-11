@@ -53,11 +53,12 @@ public class AccountRestrictionHelper {
      * @param restrictedItem       restricted item type - asset or address or transaction type
      * @return AccountRestrictionType object
      */
-    public AccountRestrictionType getAccountRestrictionType(String restrictionOperation, String restrictedItem) {
-        AccountRestrictionType accountRestrictionType;
+    public AccountRestrictionType getAccountRestrictionType(final String restrictionOperation,
+                                                            final String restrictedItem) {
         String accountRestrictionTypeString = "";
         switch (restrictionOperation.toUpperCase()) {
             case "ALLOWS":
+                accountRestrictionTypeString = "";
                 break;
             case "BLOCKS":
                 accountRestrictionTypeString = "BLOCK_";
@@ -82,9 +83,42 @@ public class AccountRestrictionHelper {
         return AccountRestrictionType.valueOf(accountRestrictionTypeString);
     }
 
-    public void createAppropriateModificationTransactionAndWait(String restrictedItem, List<String> restrictedItems,
-                                                                Account signerAccount,
-                                                                AccountRestrictionType accountRestrictionType) {
+    public void removeAppropriateModificationTransactionAndWait(final String restrictedItem,
+                                                                final List<String> restrictedItems,
+                                                                final Account signerAccount,
+                                                                final AccountRestrictionType accountRestrictionType) {
+        abcdefg(restrictedItem, restrictedItems, signerAccount, accountRestrictionType,
+                AccountRestrictionModificationType.REMOVE, true);
+    }
+
+    public void addAppropriateModificationTransactionAndWait(final String restrictedItem,
+                                                             final List<String> restrictedItems,
+                                                             final Account signerAccount,
+                                                             final AccountRestrictionType accountRestrictionType) {
+        abcdefg(restrictedItem, restrictedItems, signerAccount, accountRestrictionType,
+                AccountRestrictionModificationType.ADD, true);
+    }
+
+    public void removeAppropriateModificationTransactionAndAnnounce(final String restrictedItem,
+                                                                    final List<String> restrictedItems,
+                                                                    final Account signerAccount,
+                                                                    final AccountRestrictionType accountRestrictionType) {
+        abcdefg(restrictedItem, restrictedItems, signerAccount, accountRestrictionType,
+                AccountRestrictionModificationType.REMOVE, false);
+    }
+
+    public void addAppropriateModificationTransactionAndAnnounce(final String restrictedItem,
+                                                                 final List<String> restrictedItems,
+                                                                 final Account signerAccount,
+                                                                 final AccountRestrictionType accountRestrictionType) {
+        abcdefg(restrictedItem, restrictedItems, signerAccount, accountRestrictionType,
+                AccountRestrictionModificationType.ADD, false);
+    }
+
+    private void abcdefg(final String restrictedItem, final List<String> restrictedItems, final Account signerAccount,
+                         final AccountRestrictionType accountRestrictionType,
+                         final AccountRestrictionModificationType accountRestrictionModificationType,
+                         final Boolean waitForTransaction) {
         switch (restrictedItem.toUpperCase()) {
             case "ASSET":
             case "ASSETS":
@@ -92,10 +126,16 @@ public class AccountRestrictionHelper {
                 restrictedItems.forEach(asset -> {
                     MosaicInfo mosaicInfo = testContext.getScenarioContext().getContext(asset);
                     assetModifications.add(createMosaicRestriction(
-                            AccountRestrictionModificationType.ADD, mosaicInfo.getMosaicId()));
+                            accountRestrictionModificationType, mosaicInfo.getMosaicId()));
                 });
-                createAccountMosaicRestrictionTransactionAndWait(
-                        signerAccount, accountRestrictionType, assetModifications);
+                if (waitForTransaction) {
+                    createAccountMosaicRestrictionTransactionAndWait(
+                            signerAccount, accountRestrictionType, assetModifications);
+                } else {
+                    createAccountMosaicRestrictionTransactionAndAnnounce(
+                            signerAccount, accountRestrictionType, assetModifications);
+                }
+
                 break;
             case "ADDRESS":
             case "ADDRESSES":
@@ -103,10 +143,15 @@ public class AccountRestrictionHelper {
                 restrictedItems.forEach(address -> {
                     Address addressInfo = testContext.getScenarioContext().getContext(address);
                     addressModifications.add(createAddressRestriction(
-                            AccountRestrictionModificationType.ADD, addressInfo));
+                            accountRestrictionModificationType, addressInfo));
                 });
-                createAccountAddressRestrictionTransactionAndWait(
-                        signerAccount, accountRestrictionType, addressModifications);
+                if (waitForTransaction) {
+                    createAccountAddressRestrictionTransactionAndWait(
+                            signerAccount, accountRestrictionType, addressModifications);
+                } else {
+                    createAccountAddressRestrictionTransactionAndAnnounce(
+                            signerAccount, accountRestrictionType, addressModifications);
+                }
                 break;
             case "TRANSACTION TYPE":
             case "TRANSACTION TYPES":
@@ -114,10 +159,15 @@ public class AccountRestrictionHelper {
                 restrictedItems.forEach(transactionType -> {
                     TransactionType transactionTypeInfo = testContext.getScenarioContext().getContext(transactionType);
                     operationModifications.add(createTransactionTypeRestriction(
-                            AccountRestrictionModificationType.ADD, transactionTypeInfo));
+                            accountRestrictionModificationType, transactionTypeInfo));
                 });
-                createAccountTransactionTypeRestrictionTransactionAndWait(
-                        signerAccount, accountRestrictionType, operationModifications);
+                if (waitForTransaction) {
+                    createAccountTransactionTypeRestrictionTransactionAndWait(
+                            signerAccount, accountRestrictionType, operationModifications);
+                } else {
+                    createAccountTransactionTypeRestrictionTransactionAndAnnounce(
+                            signerAccount, accountRestrictionType, operationModifications);
+                }
                 break;
         }
     }
@@ -307,5 +357,4 @@ public class AccountRestrictionHelper {
 				testContext.getNetworkType()
 		);
 	}
-
 }
