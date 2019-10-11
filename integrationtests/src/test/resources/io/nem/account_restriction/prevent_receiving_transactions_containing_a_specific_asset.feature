@@ -39,66 +39,69 @@ Feature: Prevent receiving transactions containing a specific asset
       | ticket  |
       | voucher |
     When Bob unblocks "ticket"
-      # And Alice tries to send 1 asset "voucher" to Bob
+    And Alice tries to send 1 asset "voucher" to Bob
     Then Bob should receive a confirmation message
-    And receiving "voucher" assets should remain blocked
+#     And receiving "voucher" assets should remain blocked
       # This can be confirmed when Alice receives below error when she tries send a "voucher" asset to Bob.
-      # And Alice should receive the error "Failure_RestrictionAccount_Mosaic_Transfer_Prohibited"
+    And Alice should receive the error "Failure_RestrictionAccount_Mosaic_Transfer_Prohibited"
 
 ### Is this scenario actually valid? By default, all assets are allowed. Adding a "BLOCK_XXXX" modification
 #   actually blocks the asset.
-#  Scenario: An account removes an asset from the allowed assets
-#    Given Alice only allowed receiving "ticket" assets
-#      | ticket  |
-#      | voucher |
-#    When Alice removes "ticket" from the allowed assets
-#    Then Alice should receive a confirmation message
-#    And only receiving "voucher" assets should remain allowed
+  Scenario: An account removes an asset from the allowed assets
+    Given Bob has only allowed receiving the following assets
+      | ticket  |
+      | voucher |
+    When Bob removes "ticket" from the allowed assets
+    And Alice sends 1 asset "voucher" to Bob
+    Then Bob should receive a confirmation message
+#      And only receiving "voucher" assets should remain allowed
+      # This can be confirmed when Alice successfully sends a "voucher" asset to Bob.
+    And Bob should receive 1 of asset "voucher"
 
   Scenario: An account unblocks a not blocked asset
-    Given Alice blocked receiving "ticket" assets
-    When Alice unblocks "voucher"
-    Then Alice should receive the error "Failure_RestrictionAccount_Modification_Not_Allowed"
+    Given Bob has blocked receiving "ticket" assets
+    When Bob tries to unblock receiving "voucher" assets
+    Then Bob should receive the error "Failure_RestrictionAccount_Invalid_Modification"
 
   Scenario: An account removes an asset that does not exist in the allowed assets
-    Given Alice blocked receiving "ticket" assets
-    When Alice removes "voucher" from the allowed assets
-    Then she should receive the error "Failure_RestrictionAccount_Modification_Not_Allowed"
+    Given Bob has blocked receiving "ticket" assets
+    When Bob tries to remove "voucher" from allowed assets
+    Then Bob should receive the error "Failure_RestrictionAccount_Invalid_Modification"
 
   Scenario: An account tries only to allow receiving transactions containing specific assets when it has blocked assets
-    Given Alice blocked receiving "ticket" assets
-    When Alice only allows receiving "voucher" assets
-    Then she should receive the error "Failure_RestrictionAccount_Modification_Not_Allowed"
+    Given Bob has blocked receiving "ticket" assets
+    When Bob tries to only allow receiving "voucher" assets
+    Then Bob should receive the error "Failure_RestrictionAccount_Invalid_Modification"
 
   Scenario: An account tries to block receiving transactions containing specific assets when it has allowed assets
-    Given Alice only allowed receiving "ticket" assets
-    When Alice blocks receiving "voucher" assets
-    Then she should receive the error "Failure_RestrictionAccount_Modification_Not_Allowed"
+    Given Bob has only allowed receiving "ticket" assets
+    When Bob tries to block receiving "voucher" assets
+    Then Bob should receive the error "Failure_RestrictionAccount_Invalid_Modification"
 
   Scenario: An account tries to block an asset twice
-    Given Alice blocked receiving "ticket" assets
-    When Alice blocks receiving "ticket" assets
-    Then she should receive the error "Failure_RestrictionAccount_Modification_Redundant"
+    Given Bob has blocked receiving "ticket" assets
+    When Bob tries to block receiving "ticket" assets
+    Then Bob should receive the error "Failure_RestrictionAccount_Invalid_Modification"
 
   Scenario: An account tries to allow an asset twice
-    Given Alice only allowed receiving "ticket" assets
-    When Alice only allows receiving "ticket" assets
-    Then she should receive the error "Failure_RestrictionAccount_Modification_Redundant"
+    Given Bob has only allowed receiving "ticket" assets
+    When Bob tries to only allow receiving "ticket" assets
+    Then Bob should receive the error "Failure_RestrictionAccount_Invalid_Modification"
 
   Scenario: An account tries to block too many mosaics
-    Given Alice blocked receiving 512 different assets
-    When Alice blocks receiving "ticket" assets
-    Then she should receive the error "Failure_RestrictionAccount_Values_Count_Exceeded"
+    Given Bob has blocked receiving 512 different assets
+    When Bob tries to block receiving "ticket" assets
+    Then Bob should receive the error "Failure_RestrictionAccount_Values_Count_Exceeded"
 
   Scenario: An account tries to only allow too many mosaics
-    Given Alice only allowed receiving 512 different assets
-    When Alice only allows receiving "ticket" assets
-    Then she should receive the error "Failure_RestrictionAccount_Values_Count_Exceeded"
+    Given Bob has only allowed receiving 512 different assets
+    When Bob only allows receiving "ticket" assets
+    Then Bob should receive the error "Failure_RestrictionAccount_Values_Count_Exceeded"
 
   Scenario: An account tries to block too many mosaics in a single transaction
-    When Alice blocks receiving 513 different assets
-    Then she should receive the error "Failure_RestrictionAccount_Modification_Count_Exceeded"
+    When Bob blocks receiving 513 different assets
+    Then Bob should receive the error "Failure_RestrictionAccount_Modification_Count_Exceeded"
 
   Scenario: An account tries to only allow too many mosaics in a single transaction
-    When Alice only allows receiving 513 different assets
-    Then she should receive the error "Failure_RestrictionAccount_Modification_Count_Exceeded"
+    When Bob only allows receiving 513 different assets
+    Then Bob should receive the error "Failure_RestrictionAccount_Modification_Count_Exceeded"

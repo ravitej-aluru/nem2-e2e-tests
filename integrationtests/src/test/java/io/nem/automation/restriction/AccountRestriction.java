@@ -1,6 +1,5 @@
 package io.nem.automation.restriction;
 
-import cucumber.api.PendingException;
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.When;
@@ -20,6 +19,7 @@ import io.nem.sdk.model.transaction.AccountRestrictionType;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class AccountRestriction extends BaseTest {
@@ -46,9 +46,9 @@ public class AccountRestriction extends BaseTest {
         });
     }
 
-    @And("^an account can only define up to (\\d+) mosaic filters$")
-    public void anAccountCanOnlyDefineUpToMosaicFilters(final Integer noOfMosaicFilters) {
-    }
+//    @And("^an account can only define up to (\\d+) mosaic filters$")
+//    public void anAccountCanOnlyDefineUpToMosaicFilters(final Integer noOfMosaicFilters) {
+//    }
 
     /**
      * Gets the Account from userName and adds the specified restriction to the account
@@ -66,40 +66,53 @@ public class AccountRestriction extends BaseTest {
         final Account signerAccount = getUser(username);
         final AccountRestrictionType accountRestrictionType = accountRestrictionHelper.getAccountRestrictionType(
                 restrictionOperation, restrictedItemType);
-        accountRestrictionHelper.createAppropriateModificationTransactionAndWait(restrictedItemType, restrictedItems, signerAccount, accountRestrictionType);
+        accountRestrictionHelper.addAppropriateModificationTransactionAndWait(restrictedItemType, restrictedItems, signerAccount, accountRestrictionType);
         // setting recipient since one who blocks/allows will most probably be the recipient when testing
         getTestContext().getScenarioContext().setContext("recipient", username);
     }
 
-    @And("^receiving the stated assets should be blocked$")
-    public void receivingTheStatedAssetsShouldBeBlocked() {
-        // Validate that the appropriate error code is returned.
-        // And potentially validate Alice's account hasn't changed for completeness?
+    @When("^(\\w+) removes (allowed|blocked) receiving the following " +
+            "(assets?|addresses|transaction types?):$")
+    public void removesAllowedOrBlockedReceivingTransactionsContainingTheFollowingItems(
+            final String username, final String restrictionOperation, final String restrictedItemType,
+            final List<String> restrictedItems) {
+        final Account signerAccount = getUser(username);
+        final AccountRestrictionType accountRestrictionType = accountRestrictionHelper.getAccountRestrictionType(
+                restrictionOperation, restrictedItemType);
+        accountRestrictionHelper.removeAppropriateModificationTransactionAndWait(restrictedItemType, restrictedItems, signerAccount, accountRestrictionType);
+        // setting recipient since one who blocks/allows will most probably be the recipient when testing
+        getTestContext().getScenarioContext().setContext("recipient", username);
     }
 
-    @When("^(\\w+) only allows receiving transactions containing type:$")
-    public void onlyAllowsReceivingTransactionsContainingType(final String userName, final List<String> assets) {
-        final Account signerAccount = getUser(userName);
-        // get a list of all account restrictions for the given account and confirm that
-        // passed in assets do not exist in that list. That means passed in assets are allowed
-        // How do we check those are the only assets allowed?
-    }
+//    @And("^receiving the stated assets should be blocked$")
+//    public void receivingTheStatedAssetsShouldBeBlocked() {
+//        // Validate that the appropriate error code is returned.
+//        // And potentially validate Alice's account hasn't changed for completeness?
+//    }
 
+    //    @When("^(\\w+) only allows receiving transactions containing type:$")
+//    public void onlyAllowsReceivingTransactionsContainingType(final String userName, final List<String> assets) {
+//        final Account signerAccount = getUser(userName);
+//        // get a list of all account restrictions for the given account and confirm that
+//        // passed in assets do not exist in that list. That means passed in assets are allowed
+//        // How do we check those are the only assets allowed?
+//    }
+//
     @And("^receiving the stated assets should be allowed$")
     public void receivingTheStatedAssetsShouldBeAllowed() {
     }
-
-    @Given("^(\\w+) blocked receiving transactions containing the following assets:$")
-    public void blockedReceivingTransactionsContainingTheFollowingAssets(final String userName) {
-    }
+//
+//    @Given("^(\\w+) blocked receiving transactions containing the following assets:$")
+//    public void blockedReceivingTransactionsContainingTheFollowingAssets(final String userName) {
+//    }
 
     @When("^(\\w+) unblocks \"([^\"]*)\"$")
     public void unblocksGivenAsset(final String userName, final String assetType) throws Throwable {
         final Account signerAccount = getUser(userName);
         List<AccountRestrictionModification<MosaicId>> modifications = new ArrayList<>();
         MosaicInfo mosaicInfo = getTestContext().getScenarioContext().getContext(assetType);
-        modifications.add(accountRestrictionHelper.createMosaicRestriction(AccountRestrictionModificationType.ADD, mosaicInfo.getMosaicId()));
-        accountRestrictionHelper.createAccountMosaicRestrictionTransactionAndWait(signerAccount, AccountRestrictionType.MOSAIC_ID, modifications);
+        modifications.add(accountRestrictionHelper.createMosaicRestriction(AccountRestrictionModificationType.REMOVE, mosaicInfo.getMosaicId()));
+        accountRestrictionHelper.createAccountMosaicRestrictionTransactionAndWait(signerAccount, AccountRestrictionType.BLOCK_MOSAIC_ID, modifications);
     }
 
     @And("^receiving \"([^\"]*)\" assets should remain blocked$")
@@ -115,58 +128,61 @@ public class AccountRestriction extends BaseTest {
                 "Failure_RestrictionAccount_Mosaic_Transfer_Prohibited");
     }
 
-    @Given("^(\\w+) only allowed receiving \"([^\"]*)\" assets$")
-    public void onlyAllowedReceivingAssets(String username, final String asset) throws Throwable {
-        // Write code here that turns the phrase above into concrete actions
-        throw new PendingException();
+    @Given("^(\\w+) has only allowed receiving the following assets$")
+    public void onlyAllowedReceivingAssets(final String username, final List<String> assets) {
+        this.allowsOrBlocksReceivingTransactionsContainingTheFollowingItems(username, "allows", "assets", assets);
     }
 
     @When("^(\\w+) removes \"([^\"]*)\" from the allowed assets$")
-    public void removesFromTheAllowedAssets(String userName) throws Throwable {
-        // Write code here that turns the phrase above into concrete actions
-        throw new PendingException();
+    public void removesFromTheAllowedAssets(final String username, final String asset) {
+        this.removesAllowedOrBlockedReceivingTransactionsContainingTheFollowingItems(username,
+                "allowed", "assets", new ArrayList<>(Arrays.asList(asset)));
     }
 
-    @And("^only receiving \"([^\"]*)\" assets should remain allowed$")
-    public void onlyReceivingAssetsShouldRemainAllowed(String arg0) throws Throwable {
-        // Write code here that turns the phrase above into concrete actions
-        throw new PendingException();
-    }
+//    @And("^only receiving \"([^\"]*)\" assets should remain allowed$")
+//    public void onlyReceivingAssetsShouldRemainAllowed(final String arg0) throws Throwable {
+//        // Write code here that turns the phrase above into concrete actions
+//        throw new PendingException();
+//    }
 
-    @Given("^(\\w+) blocked receiving \"([^\"]*)\" assets$")
-    public void blockedReceivingAssets(final String username, final String asset) throws Throwable {
-        List<String> assetsToBlock = new ArrayList<String>();
-        assetsToBlock.add(asset);
+    @Given("^(\\w+) has blocked receiving \"([^\"]*)\" assets$")
+    public void hasBlockedReceivingAssets(final String username, final String asset) throws Throwable {
         // calling another step in this class to allow multiple step grammar possibilities with minimum code duplication
         this.allowsOrBlocksReceivingTransactionsContainingTheFollowingItems(username, "blocks",
-                "asset", assetsToBlock);
+                "assets", new ArrayList<String>(Arrays.asList(asset)));
     }
 
-    @When("^(\\w+) only allows receiving \"([^\"]*)\" assets$")
-    public void aliceOnlyAllowsReceivingAssets(String arg0) throws Throwable {
-        // Write code here that turns the phrase above into concrete actions
-        throw new PendingException();
+    @When("^(\\w+) tries to unblock receiving \"([^\"]*)\" assets$")
+    public void triesToUnblockReceivingAssets(final String username, final String asset) throws Throwable {
+        final Account signerAccount = getUser(username);
+        List<AccountRestrictionModification<MosaicId>> modifications = new ArrayList<>();
+        MosaicInfo mosaicInfo = getTestContext().getScenarioContext().getContext(asset);
+        modifications.add(accountRestrictionHelper.createMosaicRestriction(AccountRestrictionModificationType.REMOVE, mosaicInfo.getMosaicId()));
+        accountRestrictionHelper.createAccountMosaicRestrictionTransactionAndAnnounce(signerAccount, AccountRestrictionType.BLOCK_MOSAIC_ID, modifications);
     }
 
-    @When("^(\\w+) blocks receiving \"([^\"]*)\" assets$")
-    public void aliceBlocksReceivingAssets(String arg0) throws Throwable {
-        // Write code here that turns the phrase above into concrete actions
-        throw new PendingException();
+    @When("^(\\w+) tries to block receiving \"([^\"]*)\" assets$")
+    public void triesToBlockReceivingAssets(final String username, final String asset) throws Throwable {
+        // calling another step in this class to allow multiple step grammar possibilities with minimum code duplication
+        this.allowsOrBlocksReceivingTransactionsContainingTheFollowingItems(username, "blocks",
+                "assets", new ArrayList<String>(Arrays.asList(asset)));
     }
 
-    @Given("^(\\w+) blocked receiving (\\d+) different assets$")
-    public void aliceBlockedReceivingDifferentAssets(String userName, int amount) {
+    @When("^(\\w+) tries to only allow receiving \"([^\"]*)\" assets$")
+    public void triesToOnlyAllowReceivingAssets(final String username, final String asset) throws Throwable {
+        final Account signerAccount = getUser(username);
+        List<AccountRestrictionModification<MosaicId>> modifications = new ArrayList<>();
+        MosaicInfo mosaicInfo = getTestContext().getScenarioContext().getContext(asset);
+        modifications.add(accountRestrictionHelper.createMosaicRestriction(AccountRestrictionModificationType.ADD, mosaicInfo.getMosaicId()));
+        accountRestrictionHelper.createAccountMosaicRestrictionTransactionAndAnnounce(signerAccount, AccountRestrictionType.MOSAIC_ID, modifications);
     }
 
-    @Given("^(\\w+) only allowed receiving (\\d+) different assets$")
-    public void aliceOnlyAllowedReceivingDifferentAssets(int arg0) {
-    }
-
-    @When("^(\\w+) blocks receiving (\\d+) different assets$")
-    public void aliceBlocksReceivingDifferentAssets(int arg0) {
-    }
-
-    @When("^(\\w+) only allows receiving (\\d+) different assets$")
-    public void aliceOnlyAllowsReceivingDifferentAssets(int arg0) {
+    @When("^(\\w+) tries to remove \"([^\"]*)\" from allowed assets$")
+    public void triesToRemoveFromAllowedAssets(final String username, final String asset) throws Throwable {
+        final Account signerAccount = getUser(username);
+        List<AccountRestrictionModification<MosaicId>> modifications = new ArrayList<>();
+        MosaicInfo mosaicInfo = getTestContext().getScenarioContext().getContext(asset);
+        modifications.add(accountRestrictionHelper.createMosaicRestriction(AccountRestrictionModificationType.REMOVE, mosaicInfo.getMosaicId()));
+        accountRestrictionHelper.createAccountMosaicRestrictionTransactionAndAnnounce(signerAccount, AccountRestrictionType.MOSAIC_ID, modifications);
     }
 }
