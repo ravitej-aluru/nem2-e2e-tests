@@ -84,7 +84,7 @@ public class AccountRestrictionHelper {
     }
 
     public void removeAppropriateModificationTransactionAndWait(final String restrictedItem,
-                                                                final List<String> restrictedItems,
+                                                                final List<Object> restrictedItems,
                                                                 final Account signerAccount,
                                                                 final AccountRestrictionType accountRestrictionType) {
         abcdefg(restrictedItem, restrictedItems, signerAccount, accountRestrictionType,
@@ -92,7 +92,7 @@ public class AccountRestrictionHelper {
     }
 
     public void addAppropriateModificationTransactionAndWait(final String restrictedItem,
-                                                             final List<String> restrictedItems,
+                                                             final List<Object> restrictedItems,
                                                              final Account signerAccount,
                                                              final AccountRestrictionType accountRestrictionType) {
         abcdefg(restrictedItem, restrictedItems, signerAccount, accountRestrictionType,
@@ -100,7 +100,7 @@ public class AccountRestrictionHelper {
     }
 
     public void removeAppropriateModificationTransactionAndAnnounce(final String restrictedItem,
-                                                                    final List<String> restrictedItems,
+                                                                    final List<Object> restrictedItems,
                                                                     final Account signerAccount,
                                                                     final AccountRestrictionType accountRestrictionType) {
         abcdefg(restrictedItem, restrictedItems, signerAccount, accountRestrictionType,
@@ -108,14 +108,14 @@ public class AccountRestrictionHelper {
     }
 
     public void addAppropriateModificationTransactionAndAnnounce(final String restrictedItem,
-                                                                 final List<String> restrictedItems,
+                                                                 final List<Object> restrictedItems,
                                                                  final Account signerAccount,
                                                                  final AccountRestrictionType accountRestrictionType) {
         abcdefg(restrictedItem, restrictedItems, signerAccount, accountRestrictionType,
                 AccountRestrictionModificationType.ADD, false);
     }
 
-    private void abcdefg(final String restrictedItem, final List<String> restrictedItems, final Account signerAccount,
+    private void abcdefg(final String restrictedItem, final List<Object> restrictedItems, final Account signerAccount,
                          final AccountRestrictionType accountRestrictionType,
                          final AccountRestrictionModificationType accountRestrictionModificationType,
                          final Boolean waitForTransaction) {
@@ -124,7 +124,7 @@ public class AccountRestrictionHelper {
             case "ASSETS":
                 List<AccountRestrictionModification<MosaicId>> assetModifications = new ArrayList<>();
                 restrictedItems.forEach(asset -> {
-                    MosaicInfo mosaicInfo = testContext.getScenarioContext().getContext(asset);
+                    MosaicInfo mosaicInfo = testContext.getScenarioContext().getContext(asset.toString());
                     assetModifications.add(createMosaicRestriction(
                             accountRestrictionModificationType, mosaicInfo.getMosaicId()));
                 });
@@ -141,9 +141,8 @@ public class AccountRestrictionHelper {
             case "ADDRESSES":
                 List<AccountRestrictionModification<Address>> addressModifications = new ArrayList<>();
                 restrictedItems.forEach(address -> {
-                    Address addressInfo = testContext.getScenarioContext().getContext(address);
                     addressModifications.add(createAddressRestriction(
-                            accountRestrictionModificationType, addressInfo));
+                            accountRestrictionModificationType, ((Address)address)));
                 });
                 if (waitForTransaction) {
                     createAccountAddressRestrictionTransactionAndWait(
@@ -157,7 +156,8 @@ public class AccountRestrictionHelper {
             case "TRANSACTION TYPES":
                 List<AccountRestrictionModification<TransactionType>> operationModifications = new ArrayList<>();
                 restrictedItems.forEach(transactionType -> {
-                    TransactionType transactionTypeInfo = testContext.getScenarioContext().getContext(transactionType);
+                    TransactionType transactionTypeInfo = testContext.getScenarioContext().getContext(
+                    		transactionType.toString());
                     operationModifications.add(createTransactionTypeRestriction(
                             accountRestrictionModificationType, transactionTypeInfo));
                 });
