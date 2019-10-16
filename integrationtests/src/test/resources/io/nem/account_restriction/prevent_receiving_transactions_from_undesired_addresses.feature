@@ -18,7 +18,7 @@ Feature: Prevent receiving transactions from undesired addresses
       And Alex tries to send 1 asset "cat.currency" to Bobby
     Then Bobby should receive a confirmation message
 #    And receiving transactions from the stated addresses should be blocked
-    And Alex should receive the error "Failure_RestrictionAccount_Mosaic_Transfer_Prohibited"
+    And Alex should receive the error "Failure_RestrictionAccount_Address_Interaction_Prohibited"
 
   Scenario: An account allows only receiving transactions from a set of addresses
     When Alex only allows receiving transactions from:
