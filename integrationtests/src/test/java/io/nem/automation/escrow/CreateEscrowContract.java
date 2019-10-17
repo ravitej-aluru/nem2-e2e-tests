@@ -34,10 +34,7 @@ import io.nem.sdk.model.account.Address;
 import io.nem.sdk.model.account.PublicAccount;
 import io.nem.sdk.model.mosaic.Mosaic;
 import io.nem.sdk.model.mosaic.MosaicId;
-import io.nem.sdk.model.mosaic.NetworkCurrencyMosaic;
-import io.nem.sdk.model.mosaic.NetworkHarvestMosaic;
 import io.nem.sdk.model.namespace.NamespaceId;
-import io.nem.sdk.model.namespace.NamespaceInfo;
 import io.nem.sdk.model.transaction.*;
 
 import java.math.BigInteger;
@@ -67,13 +64,11 @@ public class CreateEscrowContract extends BaseTest {
 				final Account recipientAccount = getUserWithCurrency(recipientName);
 				final String[] mosaicData = dataMap.get(TRANSACTION_DATA_HEADER).split(" ");
 				final BigInteger amount = BigInteger.valueOf(Long.valueOf(mosaicData[0]));
-				final NamespaceId namespaceId = new NamespaceId(mosaicData[1]);
+				final NamespaceId namespaceId = getNamespaceIdFromName(mosaicData[1]);
 				final TransferHelper transferHelper = new TransferHelper(getTestContext());
 				final List<Mosaic> mosaics = Arrays.asList(new Mosaic(namespaceId, amount));
-				final AccountHelper accountHelper = new AccountHelper(getTestContext());
-				final AccountInfo accountInfo = accountHelper.getAccountInfo(recipientAccount.getAddress());
-				getTestContext().getScenarioContext().setContext(recipientName, accountInfo);
-				getTestContext().getScenarioContext().setContext(accountInfo.getAddress().pretty(), accountInfo);
+				storeUserInfoInContext(recipientName);
+				getTestContext().getScenarioContext().setContext(recipientAccount.getAddress().plain(), recipientName);
 				return transferHelper.createTransferTransaction(
 						recipientAccount.getAddress(), mosaics, PlainMessage.Empty);
 			};
@@ -86,8 +81,8 @@ public class CreateEscrowContract extends BaseTest {
 	final Function<Map<String, String>, Transaction> createMultiSigAccount =
 			(final Map<String, String> dataMap) -> {
 				final String namespaceName = dataMap.get(TRANSACTION_DATA_HEADER);
-				return new MultisigAccountHelper(getTestContext()).createModifyMultisigAccountTransaction((byte) 1, (byte) 1,
-						Arrays.asList(new MultisigCosignatoryModification(MultisigCosignatoryModificationType.ADD,
+				return new MultisigAccountHelper(getTestContext()).createMultisigAccountModificationTransaction((byte) 1, (byte) 1,
+						Arrays.asList(new MultisigCosignatoryModification(CosignatoryModificationActionType.ADD,
 								getUser("Bob").getPublicAccount())));
 			};
 	final Map<String, Function<Map<String, String>, Transaction>> transactionFunctionMap =
@@ -118,7 +113,6 @@ public class CreateEscrowContract extends BaseTest {
 		final List<Map<String, String>> data = dataTable.asMaps(String.class, String.class);
 		final List<Account> senders = new ArrayList<>(data.size());
 		final List<Transaction> transactions = new ArrayList<>(data.size());
-		final AccountHelper accountHelper = new AccountHelper(getTestContext());
 		for (int i = 0; i < data.size(); i++) {
 			final Map<String, String> transactionInfo = data.get(i);
 			final String transactionType = transactionInfo.get(TRANSACTION_TYPE_HEADER);
@@ -128,9 +122,8 @@ public class CreateEscrowContract extends BaseTest {
 			final Account senderAccount = getUser(senderName);
 			transactions.add(transaction.toAggregate(senderAccount.getPublicAccount()));
 			senders.add(senderAccount);
-			final AccountInfo accountInfo = accountHelper.getAccountInfo(senderAccount.getAddress());
-			getTestContext().getScenarioContext().setContext(senderName, accountInfo);
-			getTestContext().getScenarioContext().setContext(accountInfo.getAddress().pretty(), accountInfo);
+			storeUserInfoInContext(senderName);
+			getTestContext().getScenarioContext().setContext(senderAccount.getAddress().plain(), senderName);
 		}
 		return transactions;
 	}
@@ -141,8 +134,8 @@ public class CreateEscrowContract extends BaseTest {
 		new AggregateHelper(getTestContext()).signTransactionWithCosigners(aggregateTransaction, account, cosigners);
 		getTestContext().addTransaction(aggregateTransaction);
 		getTestContext().getScenarioContext().setContext(INITIATOR_ACCOUNT, account);
-		final AccountInfo accountInfoBefore = new AccountHelper(getTestContext()).getAccountInfo(account.getAddress());
-		getTestContext().getScenarioContext().setContext(ACCOUNT_INFO_KEY, accountInfoBefore);
+		storeUserInfoInContext(userName);
+		getTestContext().getScenarioContext().setContext(account.getAddress().plain(), userName);
 	}
 
 	private void definedEscrowContract(
@@ -157,10 +150,10 @@ public class CreateEscrowContract extends BaseTest {
 
 	private void verifyTransfer(final TransferTransaction transferTransaction) {
 		final PublicAccount sender = transferTransaction.getSigner().get();
-		final AccountInfo senderAccountInfo = getTestContext().getScenarioContext().getContext(sender.getAddress().pretty());
+		final AccountInfo senderAccountInfo = getAccountInfoFromContext(sender.getAddress());
 		verifySenderAsset(senderAccountInfo, transferTransaction.getMosaics());
 		final Address recipientAddress = transferTransaction.getRecipient().get();
-		final AccountInfo recipientAccountInfo = getTestContext().getScenarioContext().getContext(recipientAddress.pretty());
+		final AccountInfo recipientAccountInfo = getAccountInfoFromContext(recipientAddress);
 		verifyRecipientAsset(recipientAccountInfo, transferTransaction.getMosaics());
 	}
 
@@ -198,12 +191,6 @@ public class CreateEscrowContract extends BaseTest {
 					mosaic.getAmount().longValue(),
 					initialMosaic.getAmount().longValue() - mosaicAfter.getAmount().longValue());
 		}
-	}
-
-	private Mosaic getMosaicFromNamespace(final NamespaceId namespaceId, final BigInteger amount) {
-		return  NetworkCurrencyMosaic.NAMESPACEID.getId().equals(namespaceId.getId()) ?
-				NetworkCurrencyMosaic.createRelative(amount) :
-				new Mosaic(namespaceId, amount);
 	}
 
 	@And("^(\\w+) defined the following escrow contract:$")
@@ -309,8 +296,8 @@ public class CreateEscrowContract extends BaseTest {
 	public void triesToLockFunds(final String userName, final BigInteger amount, final String currency, final BigInteger duration) {
 		final AggregateHelper aggregateHelper = new AggregateHelper(getTestContext());
 		final Account account = getUser(userName);
-		final NamespaceId namespaceId = new NamespaceId(currency);
-		final Mosaic mosaic = getMosaicFromNamespace(namespaceId, amount);
+		final NamespaceId namespaceId = getNamespaceIdFromName(currency);
+		final Mosaic mosaic = new MosaicHelper(getTestContext()).getMosaicFromNamespace(namespaceId, amount);
 		final SignedTransaction signedTransaction = getTestContext().getSignedTransaction();
 		aggregateHelper.createLockFundsAndAnnounce(account, mosaic, duration, signedTransaction);
 	}
@@ -319,10 +306,10 @@ public class CreateEscrowContract extends BaseTest {
 	public void locksFund(final String userName, final BigInteger amount, final String currency, final BigInteger duration) {
 		final AggregateHelper aggregateHelper = new AggregateHelper(getTestContext());
 		final Account account = getUser(userName);
-		final NamespaceId namespaceId = new NamespaceId(currency);
-		final Mosaic mosaic = getMosaicFromNamespace(namespaceId, amount);
+		final NamespaceId namespaceId = getNamespaceIdFromName(currency);
+		final Mosaic mosaic = new MosaicHelper(getTestContext()).getMosaicFromNamespace(namespaceId, amount);
 		final SignedTransaction signedTransaction = getTestContext().getSignedTransaction();
-		aggregateHelper.submitLockFundsTransactionAndWait(account, mosaic, duration, signedTransaction);
+		aggregateHelper.submitHashLockTransactionAndWait(account, mosaic, duration, signedTransaction);
 		getTestContext().setSignedTransaction(signedTransaction);
 	}
 

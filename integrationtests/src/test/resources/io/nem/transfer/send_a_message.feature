@@ -30,5 +30,5 @@ Feature: Send a message
 
   Scenario: An account tries to send a message to another account but the message is too large
 
-    When Alice tries to send a 1025 character message to Bob
+    When Alice tries to send a 1024 character message to Bob
     Then she should receive the error "Failure_Transfer_Message_Too_Large"

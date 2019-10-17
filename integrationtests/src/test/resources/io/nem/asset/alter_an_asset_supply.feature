@@ -46,5 +46,6 @@ Feature: Alter an asset supply
 
   Scenario: An account tries to alter the supply of an expired asset
     Given Alice has registered expiring asset for 6 block
+    And the asset is now expired
     When Alice tries to increase the asset supply in 2 units
     Then she should receive the error "Failure_Mosaic_Expired"

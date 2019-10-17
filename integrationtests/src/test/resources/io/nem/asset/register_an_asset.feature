@@ -1,4 +1,5 @@
-Feature: Register an asset
+  @Testing
+  Feature: Register an asset
   As Alice
   I want to register an asset
   So that I can send one unit to Bob.
@@ -15,7 +16,7 @@ Feature: Register an asset
   Scenario Outline: An account registers an expiring asset with valid properties with divisibility
     When Alice registers <transferability>, supply <supply-mutability> with divisibility <divisibility> asset for <duration> in blocks
     Then Alice should become the owner of the new asset for at least <duration> blocks
-    And Alice "cat.currency" balance should decrease in 500 units
+    And Alice pays fee in 500 units
 
     Examples:
       | duration | transferability    | supply-mutability | divisibility |
@@ -28,7 +29,7 @@ Feature: Register an asset
   Scenario: An account registers a non-expiring asset
     When Alice registers a non-expiring asset
     And Alice should become the owner of the new asset
-    And Alice "cat.currency" balance should decrease in 500 units
+    And Alice pays fee in 500 units
 
   Scenario Outline: An account tries to register an asset with invalid values
     When Alice registers an asset for <duration> in blocks with <divisibility> divisibility
@@ -37,7 +38,7 @@ Feature: Register an asset
 
     Examples:
       | duration | divisibility | error                                |
-      | 0        | 0            | Failure_Mosaic_Invalid_Duration      |
+      | -1       | 0            | Failure_Mosaic_Invalid_Duration      |
       | 1        | -1           | Failure_Mosaic_Invalid_Divisibility  |
       | 22000000 | 0            | Failure_Mosaic_Invalid_Duration      |
       | 60       | 7            | Failure_Mosaic_Invalid_Divisibility  |

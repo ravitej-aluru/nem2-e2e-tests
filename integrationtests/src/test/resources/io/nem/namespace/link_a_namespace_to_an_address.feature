@@ -42,7 +42,7 @@ Feature: Link a namespace to an address
     Given Alice registered the namespace "tom"
     And Alice registered the asset "T"
     When Alice tries to link the namespace "tom" to the address of Tom
-    Then she should receive the error "Failure_Namespace_Alias_Invalid_Address"
+    Then she should receive the error "Failure_Namespace_Alias_Unlink_Data_Inconsistency"
 
   Scenario: An account tries to link a namespace already linked
     Given Alice registered the namespace "sue"

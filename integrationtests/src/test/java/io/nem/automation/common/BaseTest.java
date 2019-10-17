@@ -22,8 +22,10 @@ package io.nem.automation.common;
 
 import io.nem.automationHelpers.common.TestContext;
 import io.nem.automationHelpers.helper.*;
+import io.nem.core.utils.ExceptionUtils;
 import io.nem.sdk.model.account.Account;
 import io.nem.sdk.model.account.AccountInfo;
+import io.nem.sdk.model.account.AccountType;
 import io.nem.sdk.model.account.Address;
 import io.nem.sdk.model.mosaic.*;
 import io.nem.sdk.model.namespace.NamespaceId;
@@ -34,10 +36,7 @@ import io.nem.sdk.model.transaction.Transaction;
 import io.nem.sdk.model.transaction.UInt64Id;
 
 import java.math.BigInteger;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Base for all the test suit.
@@ -49,14 +48,18 @@ public abstract class BaseTest {
 	protected static final String AUTOMATION_USER_BOB = "Bob";
 	/* User Sue has no network currency */
 	protected static final String AUTOMATION_USER_SUE = "Sue";
+	/* User Sue has no network currency */
+	protected static final String AUTOMATION_USER_HARVESTER = "harvester";
 	protected static final Map<String, Account> CORE_USER_ACCOUNTS = new HashMap();
-	protected static final String ACCOUNT_INFO_KEY = "accountInfo";
 	protected static final String MOSAIC_INFO_KEY = "mosaicInfo";
 	protected static final String NAMESPACE_INFO_KEY = "namespaceInfo";
 	protected static final String MOSAIC_EUROS_KEY = "euros";
 	private static boolean initialized = false;
 	protected final String COSIGNATORIES_LIST = "cosignatories";
 	protected final String MULTISIG_ACCOUNT_INFO = "multisigAccount";
+	protected final String SECRET_HASH = "secretHash";
+	protected final String SECRET_PROOF = "secretProof";
+	protected final String SECRET_HASH_TYPE = "hashType";
 	protected final int BLOCK_CREATION_TIME_IN_SECONDS = 15;
 	private TestContext testContext;
 
@@ -68,10 +71,6 @@ public abstract class BaseTest {
 	protected BaseTest(final TestContext testContext) {
 		this.testContext = testContext;
 		initialized(testContext);
-	}
-
-	private void storeUserinContext(final String name, final Account account) {
-		testContext.getScenarioContext().setContext(account.getAddress().plain(), account);
 	}
 
 	/**
@@ -89,28 +88,80 @@ public abstract class BaseTest {
 							NetworkCurrencyMosaic.createRelative(BigInteger.valueOf(100)));
 			CORE_USER_ACCOUNTS.put(AUTOMATION_USER_BOB, accountBob);
 			final NamespaceHelper namespaceHelper = new NamespaceHelper(testContext);
-			final NamespaceId eurosNamespaceId = new NamespaceId(MOSAIC_EUROS_KEY);
+			final NamespaceId eurosNamespaceId = getNamespaceIdFromName(MOSAIC_EUROS_KEY);
 			final Optional<NamespaceInfo> optionalNamespaceInfo = namespaceHelper.getNamespaceInfoNoThrow(eurosNamespaceId);
 			MosaicId mosaicId;
 			if (optionalNamespaceInfo.isPresent()) {
-				mosaicId = namespaceHelper.getLinkedMosaicId(eurosNamespaceId);
-				namespaceHelper.submitUnlinkMosaicAliasAndWait(aliceAccount, eurosNamespaceId, mosaicId);
+				try {
+					mosaicId = namespaceHelper.getLinkedMosaicId(eurosNamespaceId);
+					namespaceHelper.submitUnlinkMosaicAliasAndWait(aliceAccount, eurosNamespaceId, mosaicId);
+				}
+				catch (final Exception e) {
+
+				}
+			} else {
+				namespaceHelper.createRootNamespaceAndWait(aliceAccount, MOSAIC_EUROS_KEY, BigInteger.valueOf(1000));
 			}
-			namespaceHelper.createRootNamespaceAndWait(aliceAccount, MOSAIC_EUROS_KEY, BigInteger.valueOf(1000));
 			final MosaicInfo mosaicInfo = new MosaicHelper(testContext)
 					.createMosaic(
 							testContext.getDefaultSignerAccount(),
-							true,
-							true,
+							MosaicFlags.create(true, true),
 							0,
 							BigInteger.valueOf(1000));
 			mosaicId = mosaicInfo.getMosaicId();
 			namespaceHelper.submitLinkMosaicAliasAndWait(aliceAccount, eurosNamespaceId, mosaicId);
 			final Account accountSue =
-					accountHelper.createAccountWithAsset(mosaicId, BigInteger.valueOf(100));
+					accountHelper.createAccountWithAsset(mosaicId, BigInteger.valueOf(200));
 			CORE_USER_ACCOUNTS.put(AUTOMATION_USER_SUE, accountSue);
 			initialized = true;
 		}
+	}
+
+	public static void saveInitialAccountInfo(final TestContext testContext) {
+		CORE_USER_ACCOUNTS.entrySet().parallelStream().forEach(nameAccount -> storeUserInfoInContext(nameAccount.getKey(),
+				nameAccount.getValue().getAddress(), testContext));
+	}
+
+	protected static void storeUserInfoInContext(final String name, final Address address, final TestContext testContext) {
+		final AccountHelper accountHelper = new AccountHelper(testContext);
+		Optional<AccountInfo> accountInfo = accountHelper.getAccountInfoNoThrow(address);
+		if (!accountInfo.isPresent()) {
+			testContext.getLogger().LogInfo("User " + name + "(" + address.pretty() + ") was not found on the server.");
+			final Account account = getUserAccount(name, testContext);
+			accountInfo = Optional.of(new AccountInfo(address, BigInteger.ZERO, account.getPublicKey(),
+					BigInteger.ZERO, BigInteger.ZERO, BigInteger.ZERO, new ArrayList<>(), AccountType.UNLINKED));
+		}
+		testContext.getScenarioContext().setContext(name, accountInfo.get());
+	}
+
+	private static Account getUserAccount(final String username, final TestContext testContext) {
+		return CommonHelper.getAccount(username, testContext.getNetworkType());
+	}
+
+	protected static NamespaceId getNamespaceIdFromName(final String namespaceName) {
+		return NamespaceId.createFromName(namespaceName.toLowerCase());
+	}
+
+	private void storeUserAccountInContext(final Account account) {
+		testContext.getScenarioContext().setContext(account.getAddress().pretty(), account);
+	}
+
+	protected Account getUserAccountFromContext(final Address address) {
+		return testContext.getScenarioContext().getContext(address.pretty());
+	}
+
+	protected void storeUserInfoInContext(final String name) {
+		final Account account = getUser(name);
+		storeUserInfoInContext(name, account.getAddress(), getTestContext());
+	}
+
+	protected AccountInfo getAccountInfoFromContext(final Address address) {
+		final String userName = getTestContext().getScenarioContext().getContext(address.plain());
+		return getTestContext().getScenarioContext().getContext(userName);
+	}
+
+	protected AccountInfo getAccountInfoFromContext(final String userName) {
+		return getTestContext().getScenarioContext().getContext(userName);
 	}
 
 	/**
@@ -129,9 +180,8 @@ public abstract class BaseTest {
 	 * @return Account.
 	 */
 	protected Account getUser(final String username) {
-		final Account account = CommonHelper.getAccount(
-				username, getTestContext().getConfigFileReader().getNetworkType());
-		storeUserinContext(username, account);
+		final Account account = getUserAccount(username, getTestContext());
+		storeUserAccountInContext(account);
 		return account;
 	}
 
@@ -144,12 +194,12 @@ public abstract class BaseTest {
 	protected Account getUserWithCurrency(final String username) {
 		if (CommonHelper.accountExist(username)) {
 			return CommonHelper.getAccount(
-					username, getTestContext().getConfigFileReader().getNetworkType());
+					username, getTestContext().getNetworkType());
 		}
 		final Mosaic mosaic = NetworkCurrencyMosaic.createRelative(BigInteger.valueOf(100));
 		final Account account = new AccountHelper(testContext).createAccountWithAsset(mosaic);
 		addUser(username, account);
-		storeUserinContext(username, account);
+		storeUserAccountInContext(account);
 		return account;
 	}
 
@@ -171,11 +221,22 @@ public abstract class BaseTest {
 	 */
 	protected MosaicId resolveMosaicId(final String assetName) {
 		final MosaicInfo mosaicInfo = getTestContext().getScenarioContext().getContext(assetName);
-		return mosaicInfo == null
-				? MosaicId.createFromNonce(
+		if (mosaicInfo != null) {
+			return mosaicInfo.getMosaicId();
+		}
+		final NamespaceId namespaceId = getNamespaceIdFromName(assetName);
+		Optional<MosaicId> optionalMosaicId = new NamespaceHelper(getTestContext()).getLinkedMosaicIdNoThrow(namespaceId);
+		if (optionalMosaicId.isPresent()) {
+			return optionalMosaicId.get();
+		}
+		return MosaicId.createFromNonce(
 				MosaicNonce.createRandom(),
-				getTestContext().getDefaultSignerAccount().getPublicAccount())
-				: mosaicInfo.getMosaicId();
+				getTestContext().getDefaultSignerAccount().getPublicAccount());
+	}
+
+	protected BigInteger getActualMosaicQuantity(final NamespaceId namespaceId, final BigInteger amount) {
+		return NetworkCurrencyMosaic.NAMESPACEID.getIdAsLong() == namespaceId.getIdAsLong() ?
+				NetworkCurrencyMosaic.createRelative(amount).getAmount() : amount;
 	}
 
 	/**
@@ -205,9 +266,7 @@ public abstract class BaseTest {
 			final Message message) {
 		final Account senderAccount = getUser(sender);
 		final Address recipientAddress = resolveRecipientAddress(recipient);
-		final AccountHelper accountHelper = new AccountHelper(getTestContext());
-		final AccountInfo senderAccountInfo = accountHelper.getAccountInfo(senderAccount.getAddress());
-		getTestContext().getScenarioContext().setContext(sender, senderAccountInfo);
+		storeUserInfoInContext(sender);
 		final TransferHelper transferHelper = new TransferHelper(getTestContext());
 		transferHelper.createTransferAndAnnounce(senderAccount, recipientAddress, mosaics, message);
 	}
@@ -227,11 +286,8 @@ public abstract class BaseTest {
 			final Message message) {
 		final Account senderAccount = getUser(sender);
 		final Address recipientAddress = resolveRecipientAddress(recipient);
-		final AccountHelper accountHelper = new AccountHelper(getTestContext());
-		final AccountInfo senderAccountInfo = accountHelper.getAccountInfo(senderAccount.getAddress());
-		final AccountInfo recipientAccountInfo = accountHelper.getAccountInfo(recipientAddress);
-		getTestContext().getScenarioContext().setContext(sender, senderAccountInfo);
-		getTestContext().getScenarioContext().setContext(recipient, recipientAccountInfo);
+		storeUserInfoInContext(sender);
+		storeUserInfoInContext(recipient, recipientAddress, getTestContext());
 		final TransferHelper transferHelper = new TransferHelper(getTestContext());
 		transferHelper.submitTransferAndWait(senderAccount, recipientAddress, mosaics, message);
 	}
@@ -254,7 +310,7 @@ public abstract class BaseTest {
 	 * @return Namespace id.
 	 */
 	protected NamespaceId resolveNamespaceIdFromName(final String name) {
-		return new NamespaceId(resolveNamespaceName(name));
+		return getNamespaceIdFromName(resolveNamespaceName(name));
 	}
 
 	/**
@@ -297,5 +353,16 @@ public abstract class BaseTest {
 		final SignedTransaction signedTransaction = getTestContext().getSignedTransaction();
 		final TransactionHelper transactionHelper = new TransactionHelper(getTestContext());
 		return transactionHelper.waitForTransactionToComplete(signedTransaction);
+	}
+
+	protected void waitForBlockChainHeight(final long height) {
+		final BlockChainHelper blockChainDao = new BlockChainHelper(getTestContext());
+		while (blockChainDao.getBlockchainHeight().longValue() <= height) {
+			ExceptionUtils.propagateVoid(() -> Thread.sleep(1000));
+		}
+	}
+
+	protected BigInteger getCalculatedDynamicFee(final long exceptedCost) {
+		return BigInteger.valueOf(getTestContext().getConfigFileReader().getDefaultDynamicFeeMultiplier() * exceptedCost);
 	}
 }

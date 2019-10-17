@@ -123,7 +123,7 @@ public class SendTransaction extends BaseTest {
 				transactionHelper.signTransaction(
 						transferTransaction,
 						signingAccount,
-						getTestContext().getConfigFileReader().getGenerationHash().replace('0', '1'));
+						getTestContext().getGenerationHash().replace('0', '1'));
 		transactionHelper.announceTransaction(signedInvalidTransaction);
 		final SignedTransaction signedTransaction =
 				transactionHelper.signTransaction(transferTransaction, signingAccount);
@@ -149,7 +149,7 @@ public class SendTransaction extends BaseTest {
 	@Then("^(.*) should receive the error \"(\\w+)\"$")
 	public void verifyTransactionError(final String userName, final String error) {
 		final SignedTransaction signedTransaction = getTestContext().getSignedTransaction();
-		final int maxTries = 15;
+		final int maxTries = 20;
 		final int waitTimeInMilliseconds = 1000;
 		final TransactionStatus status =
 				new RetryCommand<TransactionStatus>(maxTries, waitTimeInMilliseconds, Optional.empty())

@@ -55,6 +55,7 @@ public class Hooks {
 		logger.scenarioStart(scenarioName);
 
 		BaseTest.initialized(testContext);
+		BaseTest.saveInitialAccountInfo(testContext);
 		// Clear the test users
 		CommonHelper.clearUsers();
 		CommonHelper.addAllUser(CORE_USER_ACCOUNTS);
@@ -73,6 +74,6 @@ public class Hooks {
 		if (scenario.isFailed()) {
 			ScenarioImpl impl = (ScenarioImpl) scenario;
 			logger.LogException(impl.getError());
-		}
+		};
 	}
 }
