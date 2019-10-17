@@ -20,130 +20,130 @@ import io.nem.sdk.model.account.Address;
 import io.nem.sdk.model.account.PublicAccount;
 import io.nem.sdk.model.mosaic.MosaicId;
 import io.nem.sdk.model.namespace.AddressAlias;
-
 import java.math.BigInteger;
 import java.util.Optional;
 
 public class BalanceTransferReceipt<T> extends Receipt {
-  private final PublicAccount sender;
-  private final T recipient;
-  private final MosaicId mosaicId;
-  private final BigInteger amount;
 
-  /**
-   * Constructor
-   *
-   * @param sender Sender's Public Account
-   * @param recipient Recipient (Address | AddressAlias)
-   * @param mosaicId Mosaic Id
-   * @param amount Amount
-   * @param type Receipt Type
-   * @param version Receipt Version
-   * @param size Receipt Size
-   */
-  public BalanceTransferReceipt(
-      PublicAccount sender,
-      T recipient,
-      MosaicId mosaicId,
-      BigInteger amount,
-      ReceiptType type,
-      ReceiptVersion version,
-      Optional<Integer> size) {
-    super(type, version, size);
-    this.sender = sender;
-    this.recipient = recipient;
-    this.amount = amount;
-    this.mosaicId = mosaicId;
-    this.validateRecipientType();
-    this.validateReceiptType(type);
-  }
+    private final PublicAccount sender;
+    private final T recipient;
+    private final MosaicId mosaicId;
+    private final BigInteger amount;
 
-  /**
-   * Constructor BalanceTransferReceipt
-   *
-   * @param sender Sender's Public Account
-   * @param recipient Recipient (Address | AddressAlias)
-   * @param mosaicId Mosaic Id
-   * @param amount Amount
-   * @param type Receipt Type
-   * @param version Receipt Version
-   */
-  public BalanceTransferReceipt(
-      PublicAccount sender,
-      T recipient,
-      MosaicId mosaicId,
-      BigInteger amount,
-      ReceiptType type,
-      ReceiptVersion version) {
-    super(type, version, null);
-    this.sender = sender;
-    this.recipient = recipient;
-    this.amount = amount;
-    this.mosaicId = mosaicId;
-    this.validateRecipientType();
-    this.validateReceiptType(type);
-  }
-
-  /**
-   * Returns sender's Public Account
-   *
-   * @return sender's Public Account
-   */
-  public PublicAccount getSender() {
-    return this.sender;
-  }
-
-  /**
-   * Returns recipient's address or addressAlias
-   *
-   * @return recipient's address or addressAlias
-   */
-  public T getRecipient() {
-    return this.recipient;
-  }
-
-  /**
-   * Returns mosaicId
-   *
-   * @return account
-   */
-  public MosaicId getMosaicId() {
-    return this.mosaicId;
-  }
-
-  /**
-   * Returns amount
-   *
-   * @return amount
-   */
-  public BigInteger getAmount() {
-    return this.amount;
-  }
-
-  /**
-   * Validate receipt type
-   *
-   * @return void
-   */
-  private void validateReceiptType(ReceiptType type) {
-    if (!ReceiptType.BalanceTransfer.contains(type)) {
-      throw new IllegalArgumentException("Receipt type: [" + type.name() + "] is not valid.");
+    /**
+     * Constructor
+     *
+     * @param sender Sender's Public Account
+     * @param recipient Recipient (Address | AddressAlias)
+     * @param mosaicId Mosaic Id
+     * @param amount Amount
+     * @param type Receipt Type
+     * @param version Receipt Version
+     * @param size Receipt Size
+     */
+    public BalanceTransferReceipt(
+        PublicAccount sender,
+        T recipient,
+        MosaicId mosaicId,
+        BigInteger amount,
+        ReceiptType type,
+        ReceiptVersion version,
+        Optional<Integer> size) {
+        super(type, version, size);
+        this.sender = sender;
+        this.recipient = recipient;
+        this.amount = amount;
+        this.mosaicId = mosaicId;
+        this.validateRecipientType();
+        this.validateReceiptType(type);
     }
-  }
 
-  /**
-   * Validate recipient type (MosaicId | NamespaceId)
-   *
-   * @return void
-   */
-  private void validateRecipientType() {
-    Class recipientClass = this.recipient.getClass();
-    if (!Address.class.isAssignableFrom(recipientClass)
-        && !AddressAlias.class.isAssignableFrom(recipientClass)) {
-      throw new IllegalArgumentException(
-          "Recipient type: ["
-              + recipientClass.getName()
-              + "] is not valid for BalanceTransferReceipt");
+    /**
+     * Constructor BalanceTransferReceipt
+     *
+     * @param sender Sender's Public Account
+     * @param recipient Recipient (Address | AddressAlias)
+     * @param mosaicId Mosaic Id
+     * @param amount Amount
+     * @param type Receipt Type
+     * @param version Receipt Version
+     */
+    public BalanceTransferReceipt(
+        PublicAccount sender,
+        T recipient,
+        MosaicId mosaicId,
+        BigInteger amount,
+        ReceiptType type,
+        ReceiptVersion version) {
+        super(type, version, null);
+        this.sender = sender;
+        this.recipient = recipient;
+        this.amount = amount;
+        this.mosaicId = mosaicId;
+        this.validateRecipientType();
+        this.validateReceiptType(type);
     }
-  }
+
+    /**
+     * Returns sender's Public Account
+     *
+     * @return sender's Public Account
+     */
+    public PublicAccount getSender() {
+        return this.sender;
+    }
+
+    /**
+     * Returns recipient's address or addressAlias
+     *
+     * @return recipient's address or addressAlias
+     */
+    public T getRecipient() {
+        return this.recipient;
+    }
+
+    /**
+     * Returns mosaicId
+     *
+     * @return account
+     */
+    public MosaicId getMosaicId() {
+        return this.mosaicId;
+    }
+
+    /**
+     * Returns amount
+     *
+     * @return amount
+     */
+    public BigInteger getAmount() {
+        return this.amount;
+    }
+
+    /**
+     * Validate receipt type
+     *
+     * @return void
+     */
+    private void validateReceiptType(ReceiptType type) {
+        if (!ReceiptType.BALANCE_TRANSFER.contains(type)) {
+            throw new IllegalArgumentException("Receipt type: [" + type.name() + "] is not valid.");
+        }
+    }
+
+    /**
+     * Validate recipient type (MosaicId | NamespaceId)
+     *
+     * @return void
+     */
+    private void validateRecipientType() {
+        Class recipientClass = this.recipient.getClass();
+        if (!Address.class.isAssignableFrom(recipientClass)
+            && !AddressAlias.class.isAssignableFrom(recipientClass)) {
+            throw new IllegalArgumentException(
+                "Recipient type: ["
+                    + recipientClass.getName()
+                    + "] is not valid for BalanceTransferReceipt");
+        }
+    }
 }

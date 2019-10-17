@@ -62,7 +62,7 @@ public class BlockchainDao implements BlockchainRepository {
 	@Override
 	public Observable<BlockInfo> getBlockByHeight(final BigInteger height) {
 		return Observable.fromCallable(
-				() -> new BlocksCollection(catapultContext).find(height.longValue()).get());
+				() -> new BlocksCollection(catapultContext.getDataAccessContext()).find(height.longValue()).get());
 	}
 
 	/**
@@ -74,7 +74,7 @@ public class BlockchainDao implements BlockchainRepository {
 	@Override
 	public Observable<List<Transaction>> getBlockTransactions(final BigInteger height) {
 		return Observable.fromCallable(
-				() -> new TransactionsCollection(catapultContext).findByBlockHeight(height.longValue()));
+				() -> new TransactionsCollection(catapultContext.getDataAccessContext()).findByBlockHeight(height.longValue()));
 	}
 
 	/**
@@ -85,7 +85,7 @@ public class BlockchainDao implements BlockchainRepository {
 	@Override
 	public Observable<BigInteger> getBlockchainHeight() {
 		return Observable.fromCallable(
-				() -> new ChainStatisticCollection(catapultContext).get().getNumBlocks());
+				() -> new ChainStatisticCollection(catapultContext.getDataAccessContext()).get().getNumBlocks());
 	}
 
 	/**
@@ -97,7 +97,7 @@ public class BlockchainDao implements BlockchainRepository {
 		return Observable.fromCallable(
 				() -> {
 					final ChainStatisticInfo chainStatisticInfo =
-							new ChainStatisticCollection(catapultContext).get();
+							new ChainStatisticCollection(catapultContext.getDataAccessContext()).get();
 					return chainStatisticInfo
 							.getScoreHigh()
 							.shiftLeft(64 /*sizeof(long)*/)
@@ -112,11 +112,11 @@ public class BlockchainDao implements BlockchainRepository {
 
 	private Statement createStatement(final BigInteger height) {
 		Observable<List<TransactionStatement>> transactionStatementsObservable =
-				Observable.fromCallable(() -> new TransactionStatementsCollection(catapultContext).findByHeight(height.longValue()));
+				Observable.fromCallable(() -> new TransactionStatementsCollection(catapultContext.getDataAccessContext()).findByHeight(height.longValue()));
 		Observable<List<ResolutionStatement<Address>>> addressResolutionStatementsObservable =
-				Observable.fromCallable(() -> new AddressResolutionStatementsCollection(catapultContext).findByHeight(height.longValue()));
+				Observable.fromCallable(() -> new AddressResolutionStatementsCollection(catapultContext.getDataAccessContext()).findByHeight(height.longValue()));
 		Observable<List<ResolutionStatement<MosaicId>>> mosaicResolutionStatementsObservable =
-				Observable.fromCallable(() -> new MosaicResolutionStatementsCollection(catapultContext).findByHeight(height.longValue()));
+				Observable.fromCallable(() -> new MosaicResolutionStatementsCollection(catapultContext.getDataAccessContext()).findByHeight(height.longValue()));
 		return ExceptionUtils.propagate(() -> new Statement(
 				transactionStatementsObservable.toFuture().get(), addressResolutionStatementsObservable.toFuture().get(),
 				mosaicResolutionStatementsObservable.toFuture().get()));

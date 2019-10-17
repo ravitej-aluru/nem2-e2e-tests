@@ -61,7 +61,7 @@ public class AccountsDao implements AccountRepository {
   public Observable<AccountInfo> getAccountInfo(final Address address) {
     return Observable.fromCallable(
         () ->
-            new AccountsCollection(catapultContext)
+            new AccountsCollection(catapultContext.getDataAccessContext())
                 .findByAddress(address.getByteBuffer().array())
                 .get());
   }
@@ -76,7 +76,7 @@ public class AccountsDao implements AccountRepository {
   public Observable<MultisigAccountInfo> getMultisigAccountInfo(final Address address) {
     return Observable.fromCallable(
         () ->
-            new MultisigsCollection(catapultContext)
+            new MultisigsCollection(catapultContext.getDataAccessContext())
                 .findByAddress(address.getByteBuffer().array())
                 .get());
   }
@@ -94,7 +94,7 @@ public class AccountsDao implements AccountRepository {
       PublicAccount publicAccount) {
     return Observable.fromCallable(
         () ->
-            new PartialTransactionsCollection(catapultContext)
+            new PartialTransactionsCollection(catapultContext.getDataAccessContext())
                 .findBySigner(publicAccount.getPublicKey().getBytes()).stream()
                     .map(tx -> (AggregateTransaction) tx)
                     .collect(Collectors.toList()));
@@ -113,7 +113,7 @@ public class AccountsDao implements AccountRepository {
   public Observable<List<Transaction>> unconfirmedTransactions(PublicAccount publicAccount) {
     return Observable.fromCallable(
         () ->
-            new UnconfirmedTransactionsCollection(catapultContext)
+            new UnconfirmedTransactionsCollection(catapultContext.getDataAccessContext())
                 .findBySigner(publicAccount.getPublicKey().getBytes()));
   }
 }

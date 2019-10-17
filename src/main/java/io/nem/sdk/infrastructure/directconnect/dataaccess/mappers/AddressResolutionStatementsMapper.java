@@ -24,6 +24,6 @@ public class AddressResolutionStatementsMapper implements Function<JsonObject, R
 		return MapperUtils.<Address>createResolutionStatement(receiptJsonObject,
 				(final JsonObject jsonObject) -> Address.createFromEncoded(jsonObject.getString("unresolved")),
 				(final JsonObject jsonObject) -> Address.createFromEncoded(jsonObject.getString("resolved")),
-				ReceiptType.Address_Alias_Resolution);
+				ReceiptType.ADDRESS_ALIAS_RESOLUTION);
 	}
 }

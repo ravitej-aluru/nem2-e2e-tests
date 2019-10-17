@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 NEM
+ * Copyright 2019 NEM
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,25 +24,27 @@ package io.nem.sdk.model.transaction;
  */
 public class PlainMessage extends Message {
 
-  /** Plain message containing an empty string. */
-  public static PlainMessage Empty = new PlainMessage("");
+    /**
+     * Plain message containing an empty string.
+     */
+    public static final PlainMessage Empty = new PlainMessage("");
 
-  /**
-   * Constructor
-   *
-   * @param payload plain message payload
-   */
-  public PlainMessage(String payload) {
-    super(0, payload);
-  }
+    /**
+     * Constructor
+     *
+     * @param payload plain message payload
+     */
+    public PlainMessage(String payload) {
+        super(0, payload);
+    }
 
-  /**
-   * Create a plain message object.
-   *
-   * @param payload plain message payload
-   * @return instance of PlainMessage
-   */
-  public static PlainMessage create(String payload) {
-    return new PlainMessage(payload);
-  }
+    /**
+     * Create a plain message object.
+     *
+     * @param payload plain message payload
+     * @return instance of PlainMessage
+     */
+    public static PlainMessage create(String payload) {
+        return new PlainMessage(payload);
+    }
 }

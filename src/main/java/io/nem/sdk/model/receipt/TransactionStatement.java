@@ -20,47 +20,49 @@ import java.math.BigInteger;
 import java.util.List;
 
 public class TransactionStatement {
-  private final BigInteger height;
-  private final ReceiptSource receiptSource;
-  private final List<Receipt> receipts;
-  /**
-   * Constructor
-   *
-   * @param height Block height
-   * @param receiptSource The receipt source.
-   * @param receipts Array of receipts.
-   */
-  public TransactionStatement(
-      BigInteger height, ReceiptSource receiptSource, List<Receipt> receipts) {
-    this.height = height;
-    this.receiptSource = receiptSource;
-    this.receipts = receipts;
-  }
 
-  /**
-   * Returns receipt source
-   *
-   * @return receipt source
-   */
-  public ReceiptSource getReceiptSource() {
-    return this.receiptSource;
-  }
+    private final BigInteger height;
+    private final ReceiptSource receiptSource;
+    private final List<Receipt> receipts;
 
-  /**
-   * Returns block height
-   *
-   * @return block height
-   */
-  public BigInteger getHeight() {
-    return this.height;
-  }
+    /**
+     * Constructor
+     *
+     * @param height Block height
+     * @param receiptSource The receipt source.
+     * @param receipts Array of receipts.
+     */
+    public TransactionStatement(
+        BigInteger height, ReceiptSource receiptSource, List<Receipt> receipts) {
+        this.height = height;
+        this.receiptSource = receiptSource;
+        this.receipts = receipts;
+    }
 
-  /**
-   * Returns Array of receipts.
-   *
-   * @return Array of receipts.
-   */
-  public List<Receipt> getReceipts() {
-    return this.receipts;
-  }
+    /**
+     * Returns receipt source
+     *
+     * @return receipt source
+     */
+    public ReceiptSource getReceiptSource() {
+        return this.receiptSource;
+    }
+
+    /**
+     * Returns block height
+     *
+     * @return block height
+     */
+    public BigInteger getHeight() {
+        return this.height;
+    }
+
+    /**
+     * Returns Array of receipts.
+     *
+     * @return Array of receipts.
+     */
+    public List<Receipt> getReceipts() {
+        return this.receipts;
+    }
 }

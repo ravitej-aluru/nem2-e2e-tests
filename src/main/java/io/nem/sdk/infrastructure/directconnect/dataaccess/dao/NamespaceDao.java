@@ -50,7 +50,7 @@ public class NamespaceDao implements NamespaceRepository {
   public Observable<NamespaceInfo> getNamespace(NamespaceId namespaceId) {
     return Observable.fromCallable(
         () ->
-            new NamespacesCollection(catapultContext)
+            new NamespacesCollection(catapultContext.getDataAccessContext())
                 .findById(namespaceId.getId().longValue())
                 .get());
   }
@@ -59,7 +59,7 @@ public class NamespaceDao implements NamespaceRepository {
   public Observable<List<NamespaceInfo>> getNamespacesFromAccount(Address address) {
     return Observable.fromCallable(
         () ->
-            new NamespacesCollection(catapultContext)
+            new NamespacesCollection(catapultContext.getDataAccessContext())
                 .findByAddress(address.getByteBuffer().array()));
   }
 
@@ -75,7 +75,7 @@ public class NamespaceDao implements NamespaceRepository {
         .map(namespaceInfo -> namespaceInfo.getAlias())
         .map(
             alias -> {
-              if (AliasType.Mosaic == alias.getType()) {
+              if (AliasType.MOSAIC == alias.getType()) {
                 return (MosaicId) alias.getAliasValue();
               }
               throw new IllegalArgumentException(
@@ -95,7 +95,7 @@ public class NamespaceDao implements NamespaceRepository {
         .map(namespaceInfo -> namespaceInfo.getAlias())
         .map(
             alias -> {
-              if (AliasType.Address == alias.getType()) {
+              if (AliasType.ADDRESS == alias.getType()) {
                 return (Address) alias.getAliasValue();
               }
               throw new IllegalArgumentException(

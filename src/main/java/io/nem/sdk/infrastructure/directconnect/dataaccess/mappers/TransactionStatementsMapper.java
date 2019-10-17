@@ -51,23 +51,23 @@ public class TransactionStatementsMapper implements Function<JsonObject, Transac
 	public Receipt createReceipt(final JsonObject receiptJsonObject, NetworkType networkType) {
 		ReceiptType type = ReceiptType.rawValueOf(receiptJsonObject.getInteger("type"));
 		switch (type) {
-			case Harvest_Fee:
-			case LockHash_Created:
-			case LockHash_Completed:
-			case LockHash_Expired:
-			case LockSecret_Created:
-			case LockSecret_Completed:
-			case LockSecret_Expired:
+			case HARVEST_FEE:
+			case LOCK_HASH_CREATED:
+			case LOCK_HASH_COMPLETED:
+			case LOCK_HASH_EXPIRED:
+			case LOCK_SECRET_COMPLETED:
+			case LOCK_SECRET_CREATED:
+			case LOCK_SECRET_EXPIRED:
 				return createBalanceChangeReceipt(receiptJsonObject, type, networkType);
-			case Mosaic_Rental_Fee:
-			case Namespace_Rental_Fee:
+			case MOSAIC_RENTAL_FEE:
+			case NAMESPACE_RENTAL_FEE:
 				return createBalanceTransferRecipient(receiptJsonObject, type, networkType);
-			case Mosaic_Expired:
+			case MOSAIC_EXPIRED:
 				return createArtifactExpiryReceipt(receiptJsonObject, type, (final BigInteger id) -> new MosaicId(id));
-			case Namespace_Deleted:
-			case Namespace_Expired:
-				return createArtifactExpiryReceipt(receiptJsonObject, type, (final BigInteger id) -> new NamespaceId(id));
-			case Inflation:
+			case NAMESPACE_DELETED:
+			case NAMESPACE_EXPIRED:
+				return createArtifactExpiryReceipt(receiptJsonObject, type, (final BigInteger id) -> NamespaceId.createFromId(id));
+			case INFLATION:
 				return createInflationReceipt(receiptJsonObject, type);
 			default:
 				throw new IllegalArgumentException("Receipt type: " + type.name() + " not valid");

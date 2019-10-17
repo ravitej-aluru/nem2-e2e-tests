@@ -16,38 +16,40 @@
 
 package io.nem.sdk.model.receipt;
 
-/** The Receipt Source class */
+/**
+ * The Receipt Source class
+ */
 public class ReceiptSource {
 
-  private final int primaryId;
-  private final int secondaryId;
+    private final int primaryId;
+    private final int secondaryId;
 
-  /**
-   * Constructor
-   *
-   * @param primaryId Receipt source primary id
-   * @param secondaryId Receipt source secondary id
-   */
-  public ReceiptSource(int primaryId, int secondaryId) {
-    this.primaryId = primaryId;
-    this.secondaryId = secondaryId;
-  }
+    /**
+     * Constructor
+     *
+     * @param primaryId Receipt source primary id
+     * @param secondaryId Receipt source secondary id
+     */
+    public ReceiptSource(int primaryId, int secondaryId) {
+        this.primaryId = primaryId;
+        this.secondaryId = secondaryId;
+    }
 
-  /**
-   * Returns Receipt source primary id
-   *
-   * @return Receipt source primary id
-   */
-  public int getPrimaryId() {
-    return this.primaryId;
-  }
+    /**
+     * Returns Receipt source primary id
+     *
+     * @return Receipt source primary id
+     */
+    public int getPrimaryId() {
+        return this.primaryId;
+    }
 
-  /**
-   * Returns Receipt source secondary id
-   *
-   * @return Receipt source secondary id
-   */
-  public int getSecondaryId() {
-    return this.secondaryId;
-  }
+    /**
+     * Returns Receipt source secondary id
+     *
+     * @return Receipt source secondary id
+     */
+    public int getSecondaryId() {
+        return this.secondaryId;
+    }
 }

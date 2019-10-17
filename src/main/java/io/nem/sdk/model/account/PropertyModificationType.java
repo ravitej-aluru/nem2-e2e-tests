@@ -16,34 +16,38 @@
 
 package io.nem.sdk.model.account;
 
-/** Account property modification type */
+import java.util.Arrays;
+
+/**
+ * Account property modification type
+ */
 public enum PropertyModificationType {
-  Add(0x00),
-  Remove(0x01);
+    ADD(0x01),
+    REMOVE(0x00);
 
-  private Integer value;
+    private Integer value;
 
-  PropertyModificationType(int value) {
-    this.value = value;
-  }
-
-  public static PropertyModificationType rawValueOf(String value) {
-    switch (value) {
-      case "0x00":
-        return PropertyModificationType.Add;
-      case "0x01":
-        return PropertyModificationType.Remove;
-      default:
-        throw new IllegalArgumentException(value + " is not a valid value");
+    PropertyModificationType(int value) {
+        this.value = value;
     }
-  }
 
-  /**
-   * Returns enum value.
-   *
-   * @return enum value
-   */
-  public Integer getValue() {
-    return this.value;
-  }
+    public static PropertyModificationType rawValueOf(String stringValue) {
+        try {
+            int value = Integer.decode(stringValue);
+            return Arrays.stream(values()).filter(e -> e.value == value).findFirst()
+                .orElseThrow(
+                    () -> new IllegalArgumentException(stringValue + " is not a valid value"));
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException(stringValue + " is not a valid value");
+        }
+    }
+
+    /**
+     * Returns enum value.
+     *
+     * @return enum value
+     */
+    public Integer getValue() {
+        return this.value;
+    }
 }
