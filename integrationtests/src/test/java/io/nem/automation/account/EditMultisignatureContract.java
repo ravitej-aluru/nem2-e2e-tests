@@ -67,32 +67,32 @@ public class EditMultisignatureContract extends BaseTest {
 			final Map<String, String> operationList) {
 		final Account signerAccount = getUser(userName);
 		final Account multiSigAccount = getTestContext().getScenarioContext().getContext(MULTISIG_ACCOUNT_INFO);
-		final ModifyMultisigAccountTransaction originalModifyMultisigAccountTransaction =
-				getTestContext().<ModifyMultisigAccountTransaction>findTransaction(TransactionType.MODIFY_MULTISIG_ACCOUNT).get();
+		final MultisigAccountModificationTransaction originalMultisigAccountModificationTransaction =
+				getTestContext().<MultisigAccountModificationTransaction>findTransaction(TransactionType.MODIFY_MULTISIG_ACCOUNT).get();
 		final List<MultisigCosignatoryModification> multisigCosignatoryModificationsUpdate =
-				originalModifyMultisigAccountTransaction.getModifications();
+				originalMultisigAccountModificationTransaction.getModifications();
 		getTestContext().clearTransaction();
-		boolean requireBondedTransaction = originalModifyMultisigAccountTransaction.getMinApprovalDelta() > 1;
+		boolean requireBondedTransaction = originalMultisigAccountModificationTransaction.getMinApprovalDelta() > 1;
 		final List<MultisigCosignatoryModification> multisigCosignatoryModifications =
 				new ArrayList<>();
 		for (Map.Entry<String, String> entry : operationList.entrySet()) {
 			final Account account = getUser(entry.getKey());
-			final MultisigCosignatoryModificationType modificationType =
-					MultisigCosignatoryModificationType.valueOf(entry.getValue().toUpperCase());
+			final CosignatoryModificationActionType modificationType =
+					CosignatoryModificationActionType.valueOf(entry.getValue().toUpperCase());
 			final MultisigCosignatoryModification multisigCosignatoryModification =
 					new MultisigCosignatoryModification(modificationType, account.getPublicAccount());
 			multisigCosignatoryModifications.add(multisigCosignatoryModification);
-			if (modificationType == MultisigCosignatoryModificationType.ADD) {
+			if (modificationType == CosignatoryModificationActionType.ADD) {
 				multisigCosignatoryModificationsUpdate.add(multisigCosignatoryModification);
 				requireBondedTransaction = true;
-			} else if (modificationType == MultisigCosignatoryModificationType.REMOVE) {
+			} else if (modificationType == CosignatoryModificationActionType.REMOVE) {
 				multisigCosignatoryModificationsUpdate.removeIf(
 						m -> m.getCosignatoryPublicAccount().equals(multisigCosignatoryModification.getCosignatoryPublicAccount()));
 			}
 		}
 
-		final ModifyMultisigAccountTransaction modifyMultisigAccountTransaction =
-				multisigAccountHelper.createModifyMultisigAccountTransaction(
+		final MultisigAccountModificationTransaction modifyMultisigAccountTransaction =
+				multisigAccountHelper.createMultisigAccountModificationTransaction(
 						minimumApproval, minimumRemoval, multisigCosignatoryModifications);
 		final List<Transaction> innerTransactions = Arrays.asList(
 				modifyMultisigAccountTransaction.toAggregate(
@@ -100,12 +100,12 @@ public class EditMultisignatureContract extends BaseTest {
 		final AggregateTransaction aggregateTransaction = createAggregateTransaction(requireBondedTransaction, innerTransactions);
 		final TransactionHelper transactionHelper = new TransactionHelper(getTestContext());
 		transactionHelper.signTransaction(aggregateTransaction, signerAccount);
-		final byte newApproval = (byte) (originalModifyMultisigAccountTransaction.getMinApprovalDelta() + minimumApproval);
-		final byte newRemoval = (byte) (originalModifyMultisigAccountTransaction.getMinRemovalDelta() + minimumRemoval);
-		final ModifyMultisigAccountTransaction newModifyMultisigAccountTransaction =
-				multisigAccountHelper.createModifyMultisigAccountTransaction(newApproval, newRemoval,
+		final byte newApproval = (byte) (originalMultisigAccountModificationTransaction.getMinApprovalDelta() + minimumApproval);
+		final byte newRemoval = (byte) (originalMultisigAccountModificationTransaction.getMinRemovalDelta() + minimumRemoval);
+		final MultisigAccountModificationTransaction newMultisigAccountModificationTransaction =
+				multisigAccountHelper.createMultisigAccountModificationTransaction(newApproval, newRemoval,
 						multisigCosignatoryModificationsUpdate);
-		getTestContext().addTransaction(newModifyMultisigAccountTransaction);
+		getTestContext().addTransaction(newMultisigAccountModificationTransaction);
 	}
 
 	@And("^\"(\\w+)\" update the cosignatories of the multisignature:$")

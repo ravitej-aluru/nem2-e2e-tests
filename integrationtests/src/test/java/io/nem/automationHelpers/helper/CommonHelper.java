@@ -28,7 +28,11 @@ import io.nem.sdk.model.account.AccountInfo;
 import io.nem.sdk.model.blockchain.NetworkType;
 import io.nem.sdk.model.mosaic.Mosaic;
 import io.nem.sdk.model.mosaic.MosaicId;
+import io.nem.sdk.model.transaction.Deadline;
+import io.nem.sdk.model.transaction.Transaction;
+import io.nem.sdk.model.transaction.TransactionFactory;
 
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -211,5 +215,18 @@ public class CommonHelper {
 			es.execute(runnable);
 		}
 		ExceptionUtils.propagateVoid(() -> es.awaitTermination(timeoutInSeconds, TimeUnit.SECONDS));
+	}
+
+	/**
+	 * Gets the common properties for all transactions.
+	 *
+	 * @param factory  Transaction factory.
+	 * @param deadline Transaction deadline.
+	 * @param maxFee   Transaction max fee.
+	 * @return Transaction.
+	 */
+	protected static <T extends Transaction> T appendCommonPropertiesAndBuildTransaction(final TransactionFactory<T> factory,
+																				  final Deadline deadline, final BigInteger maxFee) {
+		return factory.deadline(deadline).maxFee(maxFee).build();
 	}
 }

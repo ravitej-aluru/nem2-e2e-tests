@@ -21,20 +21,6 @@ Feature: Edit a multisignature contract
     Then Alice should receive a confirmation message
     And the multisignature contract should be updated
 
-  Scenario: A cosignatory adds another cosignatory to the multisignature contract
-    Given Alice created a 1 of 2 multisignature contract called "tom" with 1 required for removal with cosignatories:
-      | cosignatory |
-      | computer    |
-      | phone       |
-    And "Alice" update the cosignatories of the multisignature:
-      | cosignatory | operation |
-      | tablet      | add       |
-    And Alice published the bonded contract
-    And "tablet" accepted the transaction
-    When "computer" accepts the transaction
-    Then Alice should receive a confirmation message
-    And the multisignature contract should be updated
-
   @bvt
   Scenario: A cosignatory remove cosignatory to the multisignature contract
     Given Alice created a 1 of 2 multisignature contract called "tom" with 1 required for removal with cosignatories:

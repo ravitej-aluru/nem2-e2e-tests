@@ -23,6 +23,9 @@ package io.nem.automationHelpers.helper;
 import io.nem.automationHelpers.common.TestContext;
 import io.nem.core.utils.ExceptionUtils;
 import io.nem.sdk.infrastructure.directconnect.dataaccess.dao.BlockchainDao;
+import io.nem.sdk.model.blockchain.BlockInfo;
+import io.nem.sdk.model.receipt.Statement;
+import io.reactivex.Observable;
 
 import java.math.BigInteger;
 
@@ -51,6 +54,34 @@ public class BlockChainHelper {
 				() ->
 						new BlockchainDao(testContext.getCatapultContext())
 								.getBlockchainHeight()
+								.toFuture()
+								.get());
+	}
+
+	/**
+	 * Gets the block at height.
+	 *
+	 * @return Block for a given height.
+	 */
+	public BlockInfo getBlockByHeight(final BigInteger height) {
+		return ExceptionUtils.propagate(
+				() ->
+						new BlockchainDao(testContext.getCatapultContext())
+								.getBlockByHeight(height)
+								.toFuture()
+								.get());
+	}
+
+	/**
+	 *
+	 * @param height
+	 * @return
+	 */
+	public Statement getBlockReceipts(final BigInteger height) {
+		return ExceptionUtils.propagate(
+				() ->
+						new BlockchainDao(testContext.getCatapultContext())
+								.getBlockReceipts(height)
 								.toFuture()
 								.get());
 	}

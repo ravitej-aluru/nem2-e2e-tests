@@ -22,10 +22,7 @@ package io.nem.automationHelpers.helper;
 
 import io.nem.automationHelpers.common.TestContext;
 import io.nem.sdk.model.account.Account;
-import io.nem.sdk.model.transaction.Deadline;
-import io.nem.sdk.model.transaction.ModifyMultisigAccountTransaction;
-import io.nem.sdk.model.transaction.MultisigCosignatoryModification;
-import io.nem.sdk.model.transaction.SignedTransaction;
+import io.nem.sdk.model.transaction.*;
 
 import java.math.BigInteger;
 import java.util.List;
@@ -45,19 +42,19 @@ public class MultisigAccountHelper {
 		this.testContext = testContext;
 	}
 
-	private ModifyMultisigAccountTransaction createModifyMultisigAccountTransaction(
+	private MultisigAccountModificationTransaction createMultisigAccountModificationTransaction(
 			final Deadline deadline,
 			final BigInteger maxFee,
 			final byte minApprovalDelta,
 			final byte minRemovalDelta,
 			final List<MultisigCosignatoryModification> modifications) {
-		return ModifyMultisigAccountTransaction.create(
-				deadline,
-				maxFee,
-				minApprovalDelta,
-				minRemovalDelta,
-				modifications,
-				new NetworkHelper(testContext).getNetworkType());
+		final MultisigAccountModificationTransactionFactory multisigAccountModificationTransactionFactory =
+				MultisigAccountModificationTransactionFactory.create(
+						testContext.getNetworkType(),
+						minApprovalDelta,
+						minRemovalDelta,
+						modifications);
+		return CommonHelper.appendCommonPropertiesAndBuildTransaction(multisigAccountModificationTransactionFactory, deadline, maxFee);
 	}
 
 	/**
@@ -68,11 +65,11 @@ public class MultisigAccountHelper {
 	 * @param modifications    List of modifications.
 	 * @return Signed transaction.
 	 */
-	public ModifyMultisigAccountTransaction createModifyMultisigAccountTransaction(
+	public MultisigAccountModificationTransaction createMultisigAccountModificationTransaction(
 			final byte minApprovalDelta,
 			final byte minRemovalDelta,
 			final List<MultisigCosignatoryModification> modifications) {
-		return createModifyMultisigAccountTransaction(
+		return createMultisigAccountModificationTransaction(
 				TransactionHelper.getDefaultDeadline(),
 				TransactionHelper.getDefaultMaxFee(),
 				minApprovalDelta,
@@ -98,7 +95,7 @@ public class MultisigAccountHelper {
 				.signAndAnnounceTransaction(
 						account,
 						() ->
-								createModifyMultisigAccountTransaction(
+								createMultisigAccountModificationTransaction(
 										minApprovalDelta, minRemovalDelta, modifications));
 	}
 
@@ -112,7 +109,7 @@ public class MultisigAccountHelper {
 	 * @param modifications    List of modifications.
 	 * @return Mosaic supply change transaction.
 	 */
-	public ModifyMultisigAccountTransaction submitModifyMultisigAccountAndWait(
+	public MultisigAccountModificationTransaction submitModifyMultisigAccountAndWait(
 			final Account account,
 			final byte minApprovalDelta,
 			final byte minRemovalDelta,
@@ -121,7 +118,7 @@ public class MultisigAccountHelper {
 				.signAndAnnounceTransactionAndWait(
 						account,
 						() ->
-								createModifyMultisigAccountTransaction(
+								createMultisigAccountModificationTransaction(
 										minApprovalDelta, minRemovalDelta, modifications));
 	}
 }

@@ -29,9 +29,8 @@ import io.nem.automationHelpers.common.TestContext;
 import io.nem.automationHelpers.helper.*;
 import io.nem.sdk.model.account.Account;
 import io.nem.sdk.model.account.AccountInfo;
-import io.nem.sdk.model.mosaic.Mosaic;
-import io.nem.sdk.model.mosaic.MosaicId;
-import io.nem.sdk.model.mosaic.MosaicInfo;
+import io.nem.sdk.model.mosaic.*;
+import io.nem.sdk.model.namespace.NamespaceId;
 import io.nem.sdk.model.transaction.PlainMessage;
 import io.nem.sdk.model.transaction.SignedTransaction;
 import io.nem.sdk.model.transaction.TransferTransaction;
@@ -87,44 +86,44 @@ public class SendAsset extends BaseTest {
 				PlainMessage.Empty);
 	}
 
-	@And("^(\\w+) should receive (\\d+) of asset \"(\\w+)\"$")
+	@And("^(\\w+) should receive (\\d+) of asset \"(.*)\"$")
 	public void verifyRecipientAsset(
 			final String recipient, final int amount, final String assetName) {
-		final AccountInfo recipientAccountInfo =
-				getTestContext().getScenarioContext().getContext(recipient);
-		final MosaicInfo mosaicInfo = getTestContext().getScenarioContext().getContext(assetName);
+		final AccountInfo recipientAccountInfo = getAccountInfoFromContext(recipient);
+		final MosaicId mosaicId = resolveMosaicId(assetName);
+		final long actualAmount = getActualMosaicQuantity(getNamespaceIdFromName(assetName), BigInteger.valueOf(amount)).longValue();
 		final Optional<Mosaic> initialMosaic =
-				getMosaic(recipientAccountInfo, mosaicInfo.getMosaicId());
+				getMosaic(recipientAccountInfo, mosaicId);
 		final long initialAmount =
 				initialMosaic.isPresent() ? initialMosaic.get().getAmount().longValue() : 0;
 		final AccountInfo recipientAccountInfoAfter =
 				new AccountHelper(getTestContext()).getAccountInfo(recipientAccountInfo.getAddress());
 		final Optional<Mosaic> mosaicAfter =
-				getMosaic(recipientAccountInfoAfter, mosaicInfo.getMosaicId());
+				getMosaic(recipientAccountInfoAfter, mosaicId);
 		final String errorMessage =
 				"Recipient("
 						+ recipientAccountInfoAfter.getAddress()
 						+ ") did not receive Asset mosaic id:"
-						+ mosaicInfo.getMosaicId();
+						+ mosaicId.getIdAsLong();
 		assertEquals(errorMessage, true, mosaicAfter.isPresent());
-		assertEquals(errorMessage, amount, mosaicAfter.get().getAmount().longValue() - initialAmount);
+		assertEquals(errorMessage, actualAmount, mosaicAfter.get().getAmount().longValue() - initialAmount);
 	}
 
 	@And("^(\\w+) \"(\\w+)\" balance should decrease in (\\d+) units?$")
 	public void verifySenderAsset(final String sender, final String assetName, final int amount) {
-		final AccountInfo senderAccountInfo = getTestContext().getScenarioContext().getContext(sender);
-		final MosaicInfo mosaicInfo = getTestContext().getScenarioContext().getContext(assetName);
-		final Mosaic initialMosaic = getMosaic(senderAccountInfo, mosaicInfo.getMosaicId()).get();
+		final AccountInfo senderAccountInfo = getAccountInfoFromContext(sender);
+		final MosaicId mosaicId = resolveMosaicId(assetName);
+		final Mosaic initialMosaic = getMosaic(senderAccountInfo, mosaicId).get();
 		final AccountInfo recipientAccountInfoAfter =
 				new AccountHelper(getTestContext()).getAccountInfo(senderAccountInfo.getAddress());
-		final Mosaic mosaicAfter = getMosaic(recipientAccountInfoAfter, mosaicInfo.getMosaicId()).get();
+		final Mosaic mosaicAfter = getMosaic(recipientAccountInfoAfter, mosaicId).get();
 		assertEquals(
 				amount, initialMosaic.getAmount().longValue() - mosaicAfter.getAmount().longValue());
 	}
 
 	@And("^(\\w+) balance should remain intact$")
 	public void VerifyAssetIntact(final String userName) {
-		final AccountInfo accountInfo = getTestContext().getScenarioContext().getContext(userName);
+		final AccountInfo accountInfo = getAccountInfoFromContext(userName);
 		final AccountInfo accountInfoAfter =
 				new AccountHelper(getTestContext()).getAccountInfo(accountInfo.getAddress());
 		assertEquals(accountInfo.getMosaics().size(), accountInfoAfter.getMosaics().size());
@@ -132,7 +131,8 @@ public class SendAsset extends BaseTest {
 			final Mosaic initial = accountInfo.getMosaics().get(i);
 			final Mosaic after = accountInfoAfter.getMosaics().get(i);
 			assertEquals(initial.getId().getIdAsLong(), after.getId().getIdAsLong());
-			assertEquals(initial.getAmount().longValue(), after.getAmount().longValue());
+			assertEquals("Quantity check for mosaic id: " + initial.getId().getIdAsLong() , initial.getAmount().longValue(),
+					after.getAmount().longValue());
 		}
 	}
 
@@ -174,9 +174,10 @@ public class SendAsset extends BaseTest {
 		final boolean transferable = false;
 		final int divisibility = CommonHelper.getRandomDivisibility();
 		final BigInteger initialSupply = BigInteger.valueOf(20);
+		final MosaicFlags mosaicFlags = MosaicFlags.create(supplyMutable, transferable);
 		final MosaicInfo mosaicInfo =
 				new MosaicHelper(getTestContext())
-						.createMosaic(senderAccount, supplyMutable, transferable, divisibility, initialSupply);
+						.createMosaic(senderAccount, mosaicFlags, divisibility, initialSupply);
 		final BigInteger transferAmount = BigInteger.valueOf(amount);
 		final TransferHelper transferHelper = new TransferHelper(getTestContext());
 		transferHelper.submitTransferAndWait(
@@ -210,12 +211,12 @@ public class SendAsset extends BaseTest {
 		final boolean transferable = true;
 		final int divisibility = CommonHelper.getRandomDivisibility();
 		final BigInteger initialSupply = BigInteger.valueOf(20);
+		final MosaicFlags mosaicFlags = MosaicFlags.create(supplyMutable, transferable);
 		final MosaicInfo mosaicInfo =
 				new MosaicHelper(getTestContext())
 						.createMosaic(
 								getTestContext().getDefaultSignerAccount(),
-								supplyMutable,
-								transferable,
+								mosaicFlags,
 								divisibility,
 								initialSupply);
 		final BigInteger transferAmount = BigInteger.valueOf(10);

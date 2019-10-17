@@ -15,7 +15,7 @@ Feature: Create a multisignature contract
     And Alice published the bonded contract
     When all the required cosignatories sign the transaction
     Then she should receive a confirmation message
-    And her account is convert to multisig
+    And Alice account is convert to multisig
 
     Examples:
       | minimumApproval | minimumRemoval |

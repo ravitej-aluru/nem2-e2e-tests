@@ -97,6 +97,15 @@ public class ConfigFileReader {
 	}
 
 	/**
+	 * Gets the automation private key.
+	 *
+	 * @return Automation private key.
+	 */
+	public String getAutomationPrivateKey() {
+		return getPropertyValue("automationPrivateKey").toUpperCase();
+	}
+
+	/**
 	 * Gets the test user private key.
 	 *
 	 * @return Test user private key.
@@ -176,6 +185,34 @@ public class ConfigFileReader {
 	public String getGenerationHash() {
 		return getPropertyValue("generationHash");
 	}
+
+	/**
+	 * Gets the namespace grace period in blocks.
+	 *
+	 * @return Namespace grace period in blocks.
+	 */
+	public int getNamespaceGracePeriodInBlocks() {
+		return Integer.parseInt(getPropertyValue("namespaceGracePeriodInBlocks"));
+	}
+
+	/**
+	 * Gets the harvester public key.
+	 *
+	 * @return Public key.
+	 */
+	public String getHarvesterPublicKey() {
+		return getPropertyValue("harvesterPublicKey");
+	}
+
+	/**
+	 * Gets the default dynamic fee multiplier.
+	 *
+	 * @return Default dynamic fee multiplier.
+	 */
+	public int getDefaultDynamicFeeMultiplier() {
+		return Integer.parseInt(getPropertyValue("defaultDynamicFeeMultiplier"));
+	}
+
 
 	/**
 	 * Gets a property value from the config file.

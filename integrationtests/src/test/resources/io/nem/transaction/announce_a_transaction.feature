@@ -11,7 +11,7 @@ Feature: Announce a transaction
     Given Alice announced a valid transaction of size 10 bytes willing to pay 25 cat.currency
     When a node with a fee multiplier of 2 processes the transaction
     Then the node accepts the transaction
-    And her "cat.currency" balance is deducted by 20 units
+    And Alice "cat.currency" balance is deducted by 20 units
 
   Scenario Outline: An account tries to announce a transaction with an invalid deadline
     When Alice tries to announces the transaction with a deadline of <deadline> hours
@@ -48,11 +48,11 @@ Feature: Announce a transaction
     Given Alice announced a valid transaction of size 10 bytes willing to pay 10 cat.currency
     When a node with a fee multiplier of 2 processes the transaction
     Then the node rejects the transaction
-    And her "cat.currency" balance remains intact
+    And Alice "cat.currency" balance remains intact
 
   Scenario: No node accepts the transaction because the max_fee value is too low
     Given Alice announced a valid transaction of size 10 bytes willing to pay 5 cat.currency
     And all the nodes have set the fee multiplier to 2
     When the transaction deadline is reached
     Then the transaction is rejected
-    And her "cat.currency" balance should remain intact
+    And Alice "cat.currency" balance should remain intact
