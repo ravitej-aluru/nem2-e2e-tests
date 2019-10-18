@@ -24,6 +24,10 @@ import io.nem.core.crypto.KeyPair;
 import io.nem.core.crypto.PublicKey;
 import io.nem.sdk.infrastructure.directconnect.auth.ConnectionSecurityMode;
 import io.nem.sdk.infrastructure.directconnect.auth.VerifyServer;
+import io.nem.sdk.model.blockchain.NetworkType;
+
+import java.net.Socket;
+import java.util.HashMap;
 
 /** Authenticated socket to the catapult server. */
 public class AuthenticatedSocket {
@@ -38,10 +42,10 @@ public class AuthenticatedSocket {
    * @param socket Client socket.
    * @param publicKey Server public key.
    */
-  public AuthenticatedSocket(final SocketClient socket, final PublicKey publicKey) {
-    keyPair = new KeyPair();
+  private AuthenticatedSocket(final SocketClient socket, final PublicKey publicKey, final KeyPair keyPair, final  NetworkType networkType) {
+    this.keyPair = keyPair;
     final VerifyServer verifyServer =
-        new VerifyServer(socket, keyPair, publicKey, ConnectionSecurityMode.NONE);
+        new VerifyServer(socket, keyPair, networkType, publicKey, ConnectionSecurityMode.NONE);
     verifyServer.verifyConnection();
     this.socketClient = socket;
   }
@@ -54,8 +58,8 @@ public class AuthenticatedSocket {
    * @return Authenticated socket
    */
   public static AuthenticatedSocket create(
-      final SocketClient socketClient, final PublicKey publicKey) {
-    return new AuthenticatedSocket(socketClient, publicKey);
+          final SocketClient socketClient, final PublicKey publicKey, final KeyPair clientKeyPair, final NetworkType networkType) {
+    return new AuthenticatedSocket(socketClient, publicKey, clientKeyPair, networkType);
   }
 
   /**

@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 NEM
+ * Copyright 2019 NEM
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,30 +26,36 @@ import io.nem.sdk.model.account.PublicAccount;
  * @since 1.0
  */
 public class MultisigCosignatoryModification {
-  private final MultisigCosignatoryModificationType type;
-  private final PublicAccount cosignatoryPublicAccount;
 
-  public MultisigCosignatoryModification(
-      MultisigCosignatoryModificationType type, PublicAccount cosignatoryPublicAccount) {
-    this.type = type;
-    this.cosignatoryPublicAccount = cosignatoryPublicAccount;
-  }
+    private final CosignatoryModificationActionType modificationAction;
+    private final PublicAccount cosignatoryPublicAccount;
 
-  /**
-   * Returns multisig modification type.
-   *
-   * @return {@link MultisigCosignatoryModificationType}
-   */
-  public MultisigCosignatoryModificationType getType() {
-    return type;
-  }
+    public MultisigCosignatoryModification(
+        CosignatoryModificationActionType modificationAction, PublicAccount cosignatoryPublicAccount) {
+        this.modificationAction = modificationAction;
+        this.cosignatoryPublicAccount = cosignatoryPublicAccount;
+    }
 
-  /**
-   * Returns cosignatory public account.
-   *
-   * @return {@link PublicAccount}
-   */
-  public PublicAccount getCosignatoryPublicAccount() {
-    return cosignatoryPublicAccount;
-  }
+    public static MultisigCosignatoryModification create(CosignatoryModificationActionType modificationAction,
+        PublicAccount cosignatoryPublicAccount) {
+        return new MultisigCosignatoryModification(modificationAction, cosignatoryPublicAccount);
+    }
+
+    /**
+     * Returns multisig modification type.
+     *
+     * @return {@link CosignatoryModificationActionType}
+     */
+    public CosignatoryModificationActionType getModificationAction() {
+        return modificationAction;
+    }
+
+    /**
+     * Returns cosignatory public account.
+     *
+     * @return {@link PublicAccount}
+     */
+    public PublicAccount getCosignatoryPublicAccount() {
+        return cosignatoryPublicAccount;
+    }
 }

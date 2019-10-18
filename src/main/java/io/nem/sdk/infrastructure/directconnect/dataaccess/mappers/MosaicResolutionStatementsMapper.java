@@ -29,6 +29,6 @@ public class MosaicResolutionStatementsMapper implements Function<JsonObject, Re
 		return MapperUtils.<MosaicId>createResolutionStatement(receiptJsonObject,
 				(final JsonObject jsonObject) -> new MosaicId(MapperUtils.extractBigInteger(jsonObject, "unresolved")),
 				(final JsonObject jsonObject) -> new MosaicId(MapperUtils.extractBigInteger(jsonObject, "resolved")),
-				ReceiptType.Mosaic_Alias_Resolution);
+				ReceiptType.MOSAIC_ALIAS_RESOLUTION);
 	}
 }

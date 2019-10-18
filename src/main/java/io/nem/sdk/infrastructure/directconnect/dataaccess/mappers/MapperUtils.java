@@ -20,6 +20,7 @@
 
 package io.nem.sdk.infrastructure.directconnect.dataaccess.mappers;
 
+import io.nem.sdk.model.mosaic.MosaicFlags;
 import io.nem.sdk.model.receipt.ReceiptSource;
 import io.nem.sdk.model.receipt.ReceiptType;
 import io.nem.sdk.model.receipt.ResolutionEntry;
@@ -45,6 +46,15 @@ final class MapperUtils {
 		return BigInteger.valueOf(jsonObject.getLong(name));
 	}
 
+	/**
+	 *
+	 * @param receiptJsonObject
+	 * @param getUnresolvedEntry
+	 * @param getResolvedEntry
+	 * @param receiptType
+	 * @param <T>
+	 * @return
+	 */
 	public static <T> ResolutionStatement<T> createResolutionStatement(final JsonObject receiptJsonObject,
 																	   final Function<JsonObject, T> getUnresolvedEntry,
 																	   final Function<JsonObject, T> getResolvedEntry,
