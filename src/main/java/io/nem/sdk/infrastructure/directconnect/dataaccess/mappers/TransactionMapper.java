@@ -588,7 +588,7 @@ class AddressAliasTransactionMapper extends TransactionMapper {
                     AccountRestrictionModification.createForAddress(
                             AccountRestrictionModificationType.rawValueOf(
                                     modification.getInteger("modificationAction").byteValue()),
-                            new Address(modification.getString("value"), networkType))
+                            Address.createFromEncoded(modification.getString("value")))
                     )
             .collect(Collectors.toList());
     return new AccountAddressRestrictionModificationTransaction(
