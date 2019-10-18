@@ -58,10 +58,11 @@ public class BalanceTransfers extends BaseTest {
 						final BalanceTransferReceipt<Address> balanceTransferReceipt = (BalanceTransferReceipt<Address>) receipt;
 						if (balanceTransferReceipt.getSender().equals(publicAccount)) {
 							return true;
-						};
+						}
+						;
 					}
 					return false;
-				}).findAny().map(f -> (BalanceTransferReceipt<Address>)f);
+				}).findAny().map(f -> (BalanceTransferReceipt<Address>) f);
 		assertTrue("Transaction statement was not found", receiptCost.isPresent());
 		return receiptCost.get().getAmount();
 	}
@@ -85,8 +86,9 @@ public class BalanceTransfers extends BaseTest {
 	public void verifyAssetCost(final String userName, final String assetName, final BigInteger cost) {
 		final Account account = getUser(userName);
 		final MosaicInfo mosaicInfo = getTestContext().getScenarioContext().getContext(assetName);
-		final BigInteger actualCost = getBalanceTransferCost(account.getPublicAccount(), mosaicInfo.getHeight(), ReceiptType.Mosaic_Rental_Fee);
-		final BigInteger exceptedCost = NetworkCurrencyMosaic.createRelative(cost).getAmount();
+		final BigInteger actualCost = getBalanceTransferCost(account.getPublicAccount(), mosaicInfo.getStartHeight(),
+				ReceiptType.MOSAIC_RENTAL_FEE);
+		final BigInteger exceptedCost = getCalculatedDynamicFee(cost.longValue());
 		assertEquals("Asset registration cost did not match for asset id:" + mosaicInfo.getMosaicId().getIdAsLong(),
 				exceptedCost.longValue(),
 				actualCost.longValue());
@@ -96,8 +98,9 @@ public class BalanceTransfers extends BaseTest {
 	public void verifyNamespaceRegisterCost(final String userName, final BigInteger cost) {
 		final Account account = getUser(userName);
 		final NamespaceInfo namespaceInfo = getTestContext().getScenarioContext().getContext(NAMESPACE_INFO_KEY);
-		final BigInteger actualCost = getBalanceTransferCost(account.getPublicAccount(), namespaceInfo.getStartHeight(), ReceiptType.Namespace_Rental_Fee);
-		final BigInteger exceptedCost = NetworkCurrencyMosaic.createRelative(cost).getAmount();
+		final BigInteger actualCost =
+				getBalanceTransferCost(account.getPublicAccount(), namespaceInfo.getStartHeight(), ReceiptType.NAMESPACE_RENTAL_FEE);
+		final BigInteger exceptedCost = getCalculatedDynamicFee(cost.longValue());
 		assertEquals("Namespace registration cost did not match for namespace id:" + namespaceInfo.getId().getIdAsLong(),
 				exceptedCost.longValue(),
 				actualCost.longValue());
@@ -107,12 +110,13 @@ public class BalanceTransfers extends BaseTest {
 	public void verifyNamespaceExtendCost(final String userName, final BigInteger cost) {
 		final Account account = getUser(userName);
 		final NamespaceRegistrationTransaction namespaceRegistrationTransaction =
-				getTestContext().<NamespaceRegistrationTransaction>findTransaction(TransactionType.NAMESPACE_REGISTRATION).get();
+				getTestContext().<NamespaceRegistrationTransaction>findTransaction(TransactionType.REGISTER_NAMESPACE).get();
 		final BigInteger actualCost =
 				getBalanceTransferCost(account.getPublicAccount(),
-						namespaceRegistrationTransaction.getTransactionInfo().get().getHeight(), ReceiptType.Namespace_Rental_Fee);
-		final BigInteger exceptedCost = NetworkCurrencyMosaic.createRelative(cost).getAmount();
-		assertEquals("Namespace extension cost did not match for namespace id:" + namespaceRegistrationTransaction.getNamespaceId().getIdAsLong(),
+						namespaceRegistrationTransaction.getTransactionInfo().get().getHeight(), ReceiptType.NAMESPACE_RENTAL_FEE);
+		final BigInteger exceptedCost = getCalculatedDynamicFee(cost.longValue());
+		assertEquals("Namespace extension cost did not match for namespace id:" +
+						namespaceRegistrationTransaction.getNamespaceId().getIdAsLong(),
 				exceptedCost.longValue(),
 				actualCost.longValue());
 	}

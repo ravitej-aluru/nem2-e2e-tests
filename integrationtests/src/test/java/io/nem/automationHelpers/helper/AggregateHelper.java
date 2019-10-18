@@ -46,34 +46,35 @@ public class AggregateHelper {
 
 	private AggregateTransaction createAggregateCompleteTransaction(
 			final Deadline deadline, final BigInteger maxFee, final List<Transaction> innerTransaction) {
-		return AggregateTransaction.createComplete(
-				deadline, maxFee, innerTransaction, testContext.getNetworkType());
+		final AggregateTransactionFactory aggregateTransactionFactory =
+				AggregateTransactionFactory.createComplete(testContext.getNetworkType(), innerTransaction);
+		return CommonHelper.appendCommonPropertiesAndBuildTransaction(aggregateTransactionFactory, deadline, maxFee);
 	}
 
 	private AggregateTransaction createAggregateBondedTransaction(
 			final Deadline deadline, final BigInteger maxFee, final List<Transaction> innerTransaction) {
-		return AggregateTransaction.createBonded(
-				deadline, maxFee, innerTransaction, testContext.getNetworkType());
+		final AggregateTransactionFactory aggregateTransactionFactory =
+				AggregateTransactionFactory.createBonded(testContext.getNetworkType(), innerTransaction);
+		return CommonHelper.appendCommonPropertiesAndBuildTransaction(aggregateTransactionFactory, deadline, maxFee);
 	}
 
-	private LockFundsTransaction createLockFundsTransaction(
+	private HashLockTransaction createHashLockTransaction(
 			final Deadline deadline,
 			final BigInteger maxFee,
 			final Mosaic mosaic,
 			final BigInteger duration,
 			final SignedTransaction signedTransaction) {
-		return LockFundsTransaction.create(
-				deadline,
-				maxFee,
+		final HashLockTransactionFactory hashLockTransactionFactory =  HashLockTransactionFactory.create(
+				testContext.getNetworkType(),
 				mosaic,
 				duration,
-				signedTransaction,
-				testContext.getNetworkType());
+				signedTransaction);
+		return CommonHelper.appendCommonPropertiesAndBuildTransaction(hashLockTransactionFactory, deadline, maxFee);
 	}
 
-	private LockFundsTransaction createLockFundsTransaction(
+	private HashLockTransaction createHashLockTransaction(
 			final Mosaic mosaic, final BigInteger duration, final SignedTransaction signedTransaction) {
-		return createLockFundsTransaction(
+		return createHashLockTransaction(
 				TransactionHelper.getDefaultDeadline(),
 				TransactionHelper.getDefaultMaxFee(),
 				mosaic,
@@ -123,7 +124,7 @@ public class AggregateHelper {
 			final SignedTransaction signedTransaction) {
 		return new TransactionHelper(testContext)
 				.signAndAnnounceTransaction(
-						account, () -> createLockFundsTransaction(mosaic, duration, signedTransaction));
+						account, () -> createHashLockTransaction(mosaic, duration, signedTransaction));
 	}
 
 	/**
@@ -135,14 +136,14 @@ public class AggregateHelper {
 	 * @param signedTransaction Signed transaction.
 	 * @return Lock funds transaction.
 	 */
-	public LockFundsTransaction submitLockFundsTransactionAndWait(
+	public HashLockTransaction submitHashLockTransactionAndWait(
 			final Account account,
 			final Mosaic mosaic,
 			final BigInteger duration,
 			final SignedTransaction signedTransaction) {
 		return new TransactionHelper(testContext)
 				.signAndAnnounceTransactionAndWait(
-						account, () -> createLockFundsTransaction(mosaic, duration, signedTransaction));
+						account, () -> createHashLockTransaction(mosaic, duration, signedTransaction));
 	}
 
 	/**
@@ -167,10 +168,10 @@ public class AggregateHelper {
 	 * @param duration          Duration for the lock funds.
 	 * @return Lock funds transaction.
 	 */
-	public LockFundsTransaction submitLockFundForBondedTransaction(final Account account, final SignedTransaction signedTransaction,
+	public HashLockTransaction submitLockFundForBondedTransaction(final Account account, final SignedTransaction signedTransaction,
 																   final BigInteger duration) {
 		final Mosaic mosaicToLock = NetworkCurrencyMosaic.createRelative(BigInteger.valueOf(10));
-		return submitLockFundsTransactionAndWait(account, mosaicToLock, duration, signedTransaction);
+		return submitHashLockTransactionAndWait(account, mosaicToLock, duration, signedTransaction);
 	}
 
 	/**

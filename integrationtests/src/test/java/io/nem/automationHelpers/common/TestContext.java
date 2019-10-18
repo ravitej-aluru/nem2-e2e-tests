@@ -21,18 +21,24 @@
 package io.nem.automationHelpers.common;
 
 import io.nem.automationHelpers.config.ConfigFileReader;
-import io.nem.automationHelpers.helper.BlockChainHelper;
+import io.nem.core.crypto.CryptoEngines;
+import io.nem.core.crypto.DsaSigner;
 import io.nem.core.crypto.PublicKey;
 import io.nem.core.utils.ExceptionUtils;
 import io.nem.sdk.infrastructure.common.CatapultContext;
+import io.nem.sdk.infrastructure.directconnect.dataaccess.common.DataAccessContext;
 import io.nem.sdk.infrastructure.directconnect.dataaccess.dao.BlockchainDao;
+import io.nem.sdk.infrastructure.directconnect.dataaccess.database.mongoDb.BlocksCollection;
+import io.nem.sdk.infrastructure.directconnect.network.CatapultNodeContext;
 import io.nem.sdk.model.account.Account;
+import io.nem.sdk.model.account.PublicAccount;
 import io.nem.sdk.model.blockchain.BlockInfo;
 import io.nem.sdk.model.blockchain.NetworkType;
 import io.nem.sdk.model.mosaic.NetworkCurrencyMosaic;
 import io.nem.sdk.model.transaction.SignedTransaction;
 import io.nem.sdk.model.transaction.Transaction;
 import io.nem.sdk.model.transaction.TransactionType;
+import net.sourceforge.pmd.lang.java.rule.errorprone.DataflowAnomalyAnalysisRule;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -49,6 +55,7 @@ public class TestContext {
 	final private Account defaultSignerAccount;
 	final private ScenarioContext scenarioContext;
 	final private List<Transaction> transactions;
+	final private PublicAccount harvesterPublicAccount;
 	private SignedTransaction signedTransaction;
 	private Log logger;
 
@@ -58,21 +65,29 @@ public class TestContext {
 	public TestContext() {
 		configFileReader = new ConfigFileReader();
 		scenarioContext = new ScenarioContext();
-		final PublicKey publicKey = PublicKey.fromHexString(configFileReader.getApiServerPublicKey());
-		catapultContext =
-				new CatapultContext(
-						publicKey,
-						configFileReader.getApiHost(),
-						configFileReader.getMongodbPort(),
-						configFileReader.getApiPort(),
-						configFileReader.getDatabaseQueryTimeoutInSeconds(),
-						configFileReader.getSocketTimeoutInMilliseconds());
-		transactions = new ArrayList<>();
+		final DataAccessContext dataAccessContext = new DataAccessContext(configFileReader.getMongodbHost(), configFileReader.getMongodbPort(),
+				configFileReader.getDatabaseQueryTimeoutInSeconds());
 
-		firstBlock = ExceptionUtils.propagate(() -> new BlockchainDao(catapultContext).getBlockByHeight(BigInteger.ONE).toFuture().get());
+		firstBlock = ExceptionUtils.propagate(() -> new BlocksCollection(dataAccessContext).find(1).get());
+		final PublicKey apiServerPublicKey = PublicKey.fromHexString(configFileReader.getApiServerPublicKey());
+		final String automationPrivateKey = configFileReader.getAutomationPrivateKey();
+		final Account account =
+				automationPrivateKey == null ? Account.generateNewAccount(getNetworkType()) :
+						Account.createFromPrivateKey(automationPrivateKey, getNetworkType());
+		this.getLogger().LogError("Connect using " + account.getPublicKey() + " Network: " + getNetworkType());
+		final CatapultNodeContext apiNodeContext = new CatapultNodeContext(apiServerPublicKey,
+				account.getKeyPair(),
+				getNetworkType(),
+				configFileReader.getApiHost(),
+				configFileReader.getApiPort(),
+				configFileReader.getSocketTimeoutInMilliseconds());
+		catapultContext =
+				new CatapultContext(apiNodeContext, dataAccessContext);
+		transactions = new ArrayList<>();
 		final String privateString = configFileReader.getUserPrivateKey();
 		defaultSignerAccount =
 				Account.createFromPrivateKey(privateString, getNetworkType());
+		harvesterPublicAccount = PublicAccount.createFromPublicKey(configFileReader.getHarvesterPublicKey(), getNetworkType());
 	}
 
 	/**
@@ -123,7 +138,7 @@ public class TestContext {
 	/**
 	 * Gets a transactation of a given type.
 	 *
-	 * @param transactionType Transactiion type.
+	 * @param transactionType Transaction type.
 	 * @return Transaction object if found.
 	 */
 	public <T extends Transaction> Optional<T> findTransaction(
@@ -191,15 +206,39 @@ public class TestContext {
 		return logger;
 	}
 
+	/**
+	 * Get the generation hash from the server.
+	 *
+	 * @return Generation hash.
+	 */
 	public String getGenerationHash() {
-		return 	firstBlock.getGenerationHash();
+		return firstBlock.getGenerationHash();
 	}
 
+	/**
+	 * Get the network type from the server.
+	 *
+	 * @return Network type.
+	 */
 	public NetworkType getNetworkType() {
 		return firstBlock.getNetworkType();
 	}
 
+	/**
+	 * Get the cat currency namespace id.
+	 *
+	 * @return Namespace id.
+	 */
 	public BigInteger getCatCurrencyId() {
 		return NetworkCurrencyMosaic.NAMESPACEID.getId();
+	}
+
+	/**
+	 * Gets harvester public account.
+	 *
+	 * @return Public account.
+	 */
+	public PublicAccount getHarvesterPublicAccount() {
+		return harvesterPublicAccount;
 	}
 }

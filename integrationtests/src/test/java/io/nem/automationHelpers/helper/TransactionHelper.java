@@ -326,7 +326,7 @@ public class TransactionHelper {
 	 */
 	public AggregateTransaction getBondedTransaction(final String hash) {
 		final Optional<Transaction> optionalTransaction =
-				new PartialTransactionsCollection(testContext.getCatapultContext()).findByHash(hash);
+				new PartialTransactionsCollection(testContext.getCatapultContext().getDataAccessContext()).findByHash(hash);
 		if (optionalTransaction.isPresent()) {
 			return (AggregateTransaction) optionalTransaction.get();
 		}

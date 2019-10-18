@@ -130,7 +130,7 @@ public class LinkAddressToNamespace extends BaseTest {
 			final String recipient) {
 		final Account senderAccount = getUser(sender);
 		final String realName = getTestContext().getScenarioContext().getContext(namespaceName);
-		final NamespaceId namespaceId = new NamespaceId(realName);
+		final NamespaceId namespaceId = getNamespaceIdFromName(realName);
 		final MosaicInfo mosaicInfo = getTestContext().getScenarioContext().getContext(assetName);
 		final int amount = 1;
 		final TransferHelper transferHelper = new TransferHelper(getTestContext());

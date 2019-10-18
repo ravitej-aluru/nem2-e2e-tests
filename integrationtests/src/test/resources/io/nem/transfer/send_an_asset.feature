@@ -1,4 +1,3 @@
-
 Feature: Send an asset
   As Alice
   I want to send 1 concert ticket to Bob

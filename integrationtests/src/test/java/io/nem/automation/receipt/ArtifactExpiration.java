@@ -58,12 +58,12 @@ public class ArtifactExpiration extends BaseTest {
 	@When("^(\\w+) checks if the previous namespace expired$")
 	public void checkNamespaceExpired(final String userName) {
 		final NamespaceRegistrationTransaction namespaceRegistrationTransaction =
-				getTestContext().<NamespaceRegistrationTransaction>findTransaction(TransactionType.NAMESPACE_REGISTRATION).get();
+				getTestContext().<NamespaceRegistrationTransaction>findTransaction(TransactionType.REGISTER_NAMESPACE).get();
 		final BigInteger expiredHeight =
 				namespaceRegistrationTransaction.getTransactionInfo().get().getHeight()
 						.add(namespaceRegistrationTransaction.getDuration().get());
 		getTestContext().getScenarioContext().setContext(CHECK_NAMESPACE_HEIGHT, expiredHeight);
-		getTestContext().getScenarioContext().setContext(CHECK_NAMESPACE_TYPE, ReceiptType.Namespace_Expired);
+		getTestContext().getScenarioContext().setContext(CHECK_NAMESPACE_TYPE, ReceiptType.NAMESPACE_EXPIRED);
 	}
 
 	@When("^(\\w+) checks if the previous namespace was deleted$")
@@ -71,18 +71,18 @@ public class ArtifactExpiration extends BaseTest {
 		final NamespaceInfo namespaceInfo =
 				getTestContext().getScenarioContext().getContext(NAMESPACE_INFO_KEY);
 		getTestContext().getScenarioContext().setContext(CHECK_NAMESPACE_HEIGHT, namespaceInfo.getEndHeight());
-		getTestContext().getScenarioContext().setContext(CHECK_NAMESPACE_TYPE, ReceiptType.Namespace_Deleted);
+		getTestContext().getScenarioContext().setContext(CHECK_NAMESPACE_TYPE, ReceiptType.NAMESPACE_DELETED);
 	}
 
 	@Then("^she should get an estimated time reference$")
 	public void verifyAssetExpiredReceipt() {
 		final MosaicInfo mosaicInfo =
 				getTestContext().getScenarioContext().getContext(MOSAIC_INFO_KEY);
-		final BigInteger endHeight = mosaicInfo.getHeight().add(mosaicInfo.getDuration());
+		final BigInteger endHeight = mosaicInfo.getStartHeight().add(mosaicInfo.getDuration());
 		final Statement statement = new BlockChainHelper(getTestContext()).getBlockReceipts(endHeight);
 		final boolean expiredReceiptFound =
 				statement.getTransactionStatements().stream().anyMatch(t -> t.getReceipts().stream().anyMatch(r -> {
-					if (r.getType() == ReceiptType.Mosaic_Expired && r.getVersion() == ReceiptVersion.ARTIFACT_EXPIRY) {
+					if (r.getType() == ReceiptType.MOSAIC_EXPIRED && r.getVersion() == ReceiptVersion.ARTIFACT_EXPIRY) {
 						final ArtifactExpiryReceipt<MosaicId> mosaicIdArtifactExpiryReceipt = (ArtifactExpiryReceipt<MosaicId>) r;
 						if (mosaicIdArtifactExpiryReceipt.getArtifactId().getIdAsLong() == mosaicInfo.getMosaicId().getIdAsLong()) {
 							return true;
@@ -117,6 +117,6 @@ public class ArtifactExpiration extends BaseTest {
 	public void waitForNamespaceExpire() {
 		final NamespaceInfo namespaceInfo =
 				getTestContext().getScenarioContext().getContext(NAMESPACE_INFO_KEY);
-		waitForBlockChainHeight(namespaceInfo.getEndHeight().longValue());
+		waitForBlockChainHeight(namespaceInfo.getEndHeight().longValue() + 1);
 	}
 }

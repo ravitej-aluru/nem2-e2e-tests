@@ -67,6 +67,17 @@ public class AccountHelper {
 	}
 
 	/**
+	 * Gets account info.
+	 *
+	 * @param address Account's address.
+	 * @return Account info.
+	 */
+	public Optional<AccountInfo> getAccountInfoNoThrow(final Address address) {
+		return CommonHelper.executeCallablenNoThrow(testContext,
+				() -> getAccountInfo(address));
+	}
+
+	/**
 	 * Creates an account with asset.
 	 *
 	 * @param mosaicId Mosaic id.

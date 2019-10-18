@@ -66,7 +66,7 @@ public class CreateMultisignatureContract extends BaseTest {
 		List<Account> cosigners = new Vector<>();
 		if (multisigAccountInfoOptional.isPresent()) {
 			cosigners = multisigAccountInfoOptional.get().getCosignatories().parallelStream().map(publicAccount ->  {
-				final Account cosignerAccount = getTestContext().getScenarioContext().getContext(publicAccount.getAddress().plain());
+				final Account cosignerAccount = getUserAccountFromContext(publicAccount.getAddress());
 				return getCosignersForAccount(cosignerAccount);
 			}).flatMap(Collection::stream).collect(Collectors.toList());
 		}
@@ -94,10 +94,10 @@ public class CreateMultisignatureContract extends BaseTest {
 			final List<Account> cosigners = getCosignersForAccount(account);
 			cosignerAccounts.addAll(cosigners);
 			return new MultisigCosignatoryModification(
-							MultisigCosignatoryModificationType.ADD, account.getPublicAccount());
+					CosignatoryModificationActionType.ADD, account.getPublicAccount());
 		}).collect(Collectors.toList());
-		final ModifyMultisigAccountTransaction modifyMultisigAccountTransaction =
-				multisigAccountHelper.createModifyMultisigAccountTransaction(
+		final MultisigAccountModificationTransaction modifyMultisigAccountTransaction =
+				multisigAccountHelper.createMultisigAccountModificationTransaction(
 						minimumApproval, minimumRemoval, multisigCosignatoryModifications);
 		getTestContext().addTransaction(modifyMultisigAccountTransaction);
 		final AggregateTransaction aggregateTransaction =
@@ -194,9 +194,9 @@ public class CreateMultisignatureContract extends BaseTest {
 				getTestContext().getScenarioContext().getContext(MULTISIG_ACCOUNT_INFO);
 		final MultisigAccountInfo multisigAccountInfo =
 				new AccountHelper(getTestContext()).getMultisigAccount(multisigAccount.getAddress());
-		final ModifyMultisigAccountTransaction modifyMultisigAccountTransaction =
+		final MultisigAccountModificationTransaction modifyMultisigAccountTransaction =
 				getTestContext()
-						.<ModifyMultisigAccountTransaction>findTransaction(
+						.<MultisigAccountModificationTransaction>findTransaction(
 								TransactionType.MODIFY_MULTISIG_ACCOUNT)
 						.get();
 		final String errorMessage =

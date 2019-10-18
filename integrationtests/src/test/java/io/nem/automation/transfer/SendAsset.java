@@ -58,7 +58,7 @@ public class SendAsset extends BaseTest {
 		transferHelper = new TransferHelper(testContext);
 	}
 
-	@When("^(\\w+) sends (\\d+) asset \"(.*)\" to (\\w+)$")
+	@When("^(\\w+) sends (\\d+) asset \"(\\w+)\" to (\\w+)$")
 	public void transferAsset(
 			final String sender,
 			final BigInteger amount,
@@ -87,7 +87,6 @@ public class SendAsset extends BaseTest {
 				PlainMessage.Empty);
 	}
 
-	//@And("^(\\w+) \"(.*)\" balance should increase in (\\d+) units?$")
 	@And("^(\\w+) should receive (\\d+) of asset \"(.*)\"$")
 	public void verifyRecipientAsset(
 			final String recipient, final int amount, final String assetName) {
@@ -137,7 +136,7 @@ public class SendAsset extends BaseTest {
 		}
 	}
 
-	@When("^(\\w+) tries to send (-?\\d+) asset \"(.*)\" to (.*)$")
+	@When("^(\\w+) tries to send (-?\\d+) asset \"(\\w+)\" to (.*)$")
 	public void triesToTransferAsset(
 			final String sender,
 			final BigInteger amount,
@@ -230,7 +229,7 @@ public class SendAsset extends BaseTest {
 	}
 
 	@Then("^(\\d+) asset transfered successfully$")
-	public void transferableAssetSucceed(final int amount) {
+	public void TransferableAssetSucceed(final int amount) {
 		final SignedTransaction signedTransaction = getTestContext().getSignedTransaction();
 		TransferTransaction transferTransaction =
 				new TransactionHelper(getTestContext()).getTransaction(signedTransaction.getHash());
@@ -240,4 +239,5 @@ public class SendAsset extends BaseTest {
 				transferTransaction.getMosaics().get(0).getId().getIdAsLong());
 		assertEquals(amount, transferTransaction.getMosaics().get(0).getAmount().intValue());
 	}
+
 }

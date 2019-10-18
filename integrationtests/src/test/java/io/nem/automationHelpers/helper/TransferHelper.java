@@ -26,10 +26,7 @@ import io.nem.sdk.model.account.Address;
 import io.nem.sdk.model.blockchain.NetworkType;
 import io.nem.sdk.model.mosaic.Mosaic;
 import io.nem.sdk.model.namespace.NamespaceId;
-import io.nem.sdk.model.transaction.Deadline;
-import io.nem.sdk.model.transaction.Message;
-import io.nem.sdk.model.transaction.SignedTransaction;
-import io.nem.sdk.model.transaction.TransferTransaction;
+import io.nem.sdk.model.transaction.*;
 
 import java.math.BigInteger;
 import java.util.List;
@@ -72,13 +69,12 @@ public class TransferHelper {
 			final NamespaceId namespaceId,
 			final List<Mosaic> mosaics,
 			Message message) {
-		return TransferTransaction.create(
-				deadline,
-				maxFee,
+		final TransferTransactionFactory transferTransactionFactory = TransferTransactionFactory.createWithNamespaceId(
+				testContext.getNetworkType(),
 				namespaceId,
 				mosaics,
-				message,
-				testContext.getNetworkType());
+				message);
+		return CommonHelper.appendCommonPropertiesAndBuildTransaction(transferTransactionFactory, deadline, maxFee);
 	}
 
 	private TransferTransaction createTransferTransaction(
@@ -126,8 +122,9 @@ public class TransferHelper {
 			final List<Mosaic> mosaics,
 			final Message message,
 			final NetworkType networkType) {
-		return TransferTransaction.create(
-				deadline, maxFee, recipientAddress, mosaics, message, networkType);
+		final TransferTransactionFactory transferTransactionFactory =  TransferTransactionFactory.create(
+				networkType, recipientAddress, mosaics, message);
+		return CommonHelper.appendCommonPropertiesAndBuildTransaction(transferTransactionFactory, deadline, maxFee);
 	}
 
 	/**
