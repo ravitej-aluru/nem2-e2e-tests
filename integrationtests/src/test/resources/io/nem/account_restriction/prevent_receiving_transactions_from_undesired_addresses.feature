@@ -21,11 +21,15 @@ Feature: Prevent receiving transactions from undesired addresses
     And Alex should receive the error "Failure_RestrictionAccount_Address_Interaction_Prohibited"
 
   Scenario: An account allows only receiving transactions from a set of addresses
-    When Alex only allows receiving transactions from:
-      | Bobby    |
-      | Carol  |
-    Then Alex should receive a confirmation message
-    And  only receiving transactions from the stated addresses should be allowed
+    When Bobby only allows receiving transactions from:
+      | Alex   |
+      And Alex sends 1 asset "cat.currency" to Bobby
+      And Carol tries to send 1 asset "cat.currency" to Bobby
+    Then Bobby should receive a confirmation message
+      And Bobby should receive 1 of asset "cat.currency"
+      And Alex "cat.currency" balance should decrease in 1 units
+      And Carol should receive the error "Failure_RestrictionAccount_Address_Interaction_Prohibited"
+#    And  only receiving transactions from the stated addresses should be allowed
 
   Scenario: An account unblocks an address
     Given Alex blocked receiving transactions from:
