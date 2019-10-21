@@ -14,7 +14,7 @@ import io.nem.sdk.model.account.Account;
 import io.nem.sdk.model.mosaic.MosaicId;
 import io.nem.sdk.model.mosaic.MosaicInfo;
 import io.nem.sdk.model.transaction.AccountRestrictionModification;
-import io.nem.sdk.model.transaction.AccountRestrictionModificationType;
+import io.nem.sdk.model.transaction.AccountRestrictionModificationAction;
 import io.nem.sdk.model.transaction.AccountRestrictionType;
 
 import java.math.BigInteger;
@@ -99,10 +99,10 @@ public class AccountRestrictionMosaic extends BaseTest {
         final Account signerAccount = getUser(userName);
         List<AccountRestrictionModification<MosaicId>> modifications = new ArrayList<>();
         MosaicInfo mosaicInfo = getTestContext().getScenarioContext().getContext(assetType);
-        modifications.add(accountRestrictionHelper.createMosaicRestriction(AccountRestrictionModificationType.REMOVE,
+        modifications.add(accountRestrictionHelper.createMosaicRestriction(AccountRestrictionModificationAction.REMOVE,
                 mosaicInfo.getMosaicId()));
         accountRestrictionHelper.createAccountMosaicRestrictionTransactionAndWait(signerAccount,
-                AccountRestrictionType.BLOCK_MOSAIC_ID, modifications);
+                AccountRestrictionType.BLOCK_MOSAIC, modifications);
     }
 
     @And("^receiving \"([^\"]*)\" assets should remain blocked$")
@@ -142,10 +142,10 @@ public class AccountRestrictionMosaic extends BaseTest {
         final Account signerAccount = getUser(username);
         List<AccountRestrictionModification<MosaicId>> modifications = new ArrayList<>();
         MosaicInfo mosaicInfo = getTestContext().getScenarioContext().getContext(asset);
-        modifications.add(accountRestrictionHelper.createMosaicRestriction(AccountRestrictionModificationType.REMOVE,
+        modifications.add(accountRestrictionHelper.createMosaicRestriction(AccountRestrictionModificationAction.REMOVE,
                 mosaicInfo.getMosaicId()));
         accountRestrictionHelper.createAccountMosaicRestrictionTransactionAndAnnounce(signerAccount,
-                AccountRestrictionType.BLOCK_MOSAIC_ID, modifications);
+                AccountRestrictionType.BLOCK_MOSAIC, modifications);
     }
 
     @When("^(\\w+) tries to block receiving \"([^\"]*)\" assets$")
@@ -160,10 +160,10 @@ public class AccountRestrictionMosaic extends BaseTest {
         final Account signerAccount = getUser(username);
         List<AccountRestrictionModification<MosaicId>> modifications = new ArrayList<>();
         MosaicInfo mosaicInfo = getTestContext().getScenarioContext().getContext(asset);
-        modifications.add(accountRestrictionHelper.createMosaicRestriction(AccountRestrictionModificationType.ADD,
+        modifications.add(accountRestrictionHelper.createMosaicRestriction(AccountRestrictionModificationAction.ADD,
                 mosaicInfo.getMosaicId()));
         accountRestrictionHelper.createAccountMosaicRestrictionTransactionAndAnnounce(signerAccount,
-                AccountRestrictionType.MOSAIC_ID, modifications);
+                AccountRestrictionType.ALLOW_INCOMING_MOSAIC, modifications);
     }
 
     @When("^(\\w+) tries to remove \"([^\"]*)\" from allowed assets$")
@@ -171,10 +171,10 @@ public class AccountRestrictionMosaic extends BaseTest {
         final Account signerAccount = getUser(username);
         List<AccountRestrictionModification<MosaicId>> modifications = new ArrayList<>();
         MosaicInfo mosaicInfo = getTestContext().getScenarioContext().getContext(asset);
-        modifications.add(accountRestrictionHelper.createMosaicRestriction(AccountRestrictionModificationType.REMOVE,
+        modifications.add(accountRestrictionHelper.createMosaicRestriction(AccountRestrictionModificationAction.REMOVE,
                 mosaicInfo.getMosaicId()));
         accountRestrictionHelper.createAccountMosaicRestrictionTransactionAndAnnounce(signerAccount,
-                AccountRestrictionType.MOSAIC_ID, modifications);
+                AccountRestrictionType.ALLOW_INCOMING_MOSAIC, modifications);
     }
 
     @Given("^(\\w+) has blocked receiving (\\d+) different assets$")

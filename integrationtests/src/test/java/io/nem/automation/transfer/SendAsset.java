@@ -30,6 +30,7 @@ import io.nem.automationHelpers.helper.*;
 import io.nem.sdk.model.account.Account;
 import io.nem.sdk.model.account.AccountInfo;
 import io.nem.sdk.model.mosaic.Mosaic;
+import io.nem.sdk.model.mosaic.MosaicFlags;
 import io.nem.sdk.model.mosaic.MosaicId;
 import io.nem.sdk.model.mosaic.MosaicInfo;
 import io.nem.sdk.model.transaction.PlainMessage;
@@ -58,7 +59,7 @@ public class SendAsset extends BaseTest {
 		transferHelper = new TransferHelper(testContext);
 	}
 
-	@When("^(\\w+) sends (\\d+) asset \"(\\w+)\" to (\\w+)$")
+	@When("^(\\w+) sends (\\d+) asset \"(.*)\" to (\\w+)$")
 	public void transferAsset(
 			final String sender,
 			final BigInteger amount,
@@ -176,7 +177,8 @@ public class SendAsset extends BaseTest {
 		final BigInteger initialSupply = BigInteger.valueOf(20);
 		final MosaicInfo mosaicInfo =
 				new MosaicHelper(getTestContext())
-						.createMosaic(senderAccount, supplyMutable, transferable, divisibility, initialSupply);
+						.createMosaic(senderAccount, MosaicFlags.create(supplyMutable, transferable),
+								divisibility, initialSupply);
 		final BigInteger transferAmount = BigInteger.valueOf(amount);
 		final TransferHelper transferHelper = new TransferHelper(getTestContext());
 		transferHelper.submitTransferAndWait(
@@ -214,8 +216,7 @@ public class SendAsset extends BaseTest {
 				new MosaicHelper(getTestContext())
 						.createMosaic(
 								getTestContext().getDefaultSignerAccount(),
-								supplyMutable,
-								transferable,
+								MosaicFlags.create(supplyMutable, transferable),
 								divisibility,
 								initialSupply);
 		final BigInteger transferAmount = BigInteger.valueOf(10);

@@ -88,7 +88,7 @@ public class AccountRestrictionHelper {
                                                                 final Account signerAccount,
                                                                 final AccountRestrictionType accountRestrictionType) {
         abcdefg(restrictedItem, restrictedItems, signerAccount, accountRestrictionType,
-                AccountRestrictionModificationType.REMOVE, true);
+				AccountRestrictionModificationAction.REMOVE, true);
     }
 
     public void addAppropriateModificationTransactionAndWait(final String restrictedItem,
@@ -96,7 +96,7 @@ public class AccountRestrictionHelper {
                                                              final Account signerAccount,
                                                              final AccountRestrictionType accountRestrictionType) {
         abcdefg(restrictedItem, restrictedItems, signerAccount, accountRestrictionType,
-                AccountRestrictionModificationType.ADD, true);
+				AccountRestrictionModificationAction.ADD, true);
     }
 
     public void removeAppropriateModificationTransactionAndAnnounce(final String restrictedItem,
@@ -104,7 +104,7 @@ public class AccountRestrictionHelper {
                                                                     final Account signerAccount,
                                                                     final AccountRestrictionType accountRestrictionType) {
         abcdefg(restrictedItem, restrictedItems, signerAccount, accountRestrictionType,
-                AccountRestrictionModificationType.REMOVE, false);
+				AccountRestrictionModificationAction.REMOVE, false);
     }
 
     public void addAppropriateModificationTransactionAndAnnounce(final String restrictedItem,
@@ -112,12 +112,12 @@ public class AccountRestrictionHelper {
                                                                  final Account signerAccount,
                                                                  final AccountRestrictionType accountRestrictionType) {
         abcdefg(restrictedItem, restrictedItems, signerAccount, accountRestrictionType,
-                AccountRestrictionModificationType.ADD, false);
+				AccountRestrictionModificationAction.ADD, false);
     }
 
     private void abcdefg(final String restrictedItem, final List<Object> restrictedItems, final Account signerAccount,
                          final AccountRestrictionType accountRestrictionType,
-                         final AccountRestrictionModificationType accountRestrictionModificationType,
+                         final AccountRestrictionModificationAction accountRestrictionModificationAction,
                          final Boolean waitForTransaction) {
         switch (restrictedItem.toUpperCase()) {
             case "ASSET":
@@ -126,7 +126,7 @@ public class AccountRestrictionHelper {
                 restrictedItems.forEach(asset -> {
                     MosaicInfo mosaicInfo = testContext.getScenarioContext().getContext(asset.toString());
                     assetModifications.add(createMosaicRestriction(
-                            accountRestrictionModificationType, mosaicInfo.getMosaicId()));
+                            accountRestrictionModificationAction, mosaicInfo.getMosaicId()));
                 });
                 if (waitForTransaction) {
                     createAccountMosaicRestrictionTransactionAndWait(
@@ -142,7 +142,7 @@ public class AccountRestrictionHelper {
                 List<AccountRestrictionModification<Address>> addressModifications = new ArrayList<>();
                 restrictedItems.forEach(address -> {
                     addressModifications.add(createAddressRestriction(
-                            accountRestrictionModificationType, ((Address)address)));
+                            accountRestrictionModificationAction, ((Address)address)));
                 });
                 if (waitForTransaction) {
                     createAccountAddressRestrictionTransactionAndWait(
@@ -159,7 +159,7 @@ public class AccountRestrictionHelper {
                     TransactionType transactionTypeInfo = testContext.getScenarioContext().getContext(
                     		transactionType.toString());
                     operationModifications.add(createTransactionTypeRestriction(
-                            accountRestrictionModificationType, transactionTypeInfo));
+                            accountRestrictionModificationAction, transactionTypeInfo));
                 });
                 if (waitForTransaction) {
                     createAccountTransactionTypeRestrictionTransactionAndWait(
@@ -174,38 +174,38 @@ public class AccountRestrictionHelper {
 
 	/**
 	 * Create an account mosaic restriction
-	 * @param accountRestrictionModificationType type of the modification
+	 * @param accountRestrictionModificationAction type of the modification
 	 * @param mosaicId id of the mosaic to apply the restriction to
 	 * @return An object of AccountRestrictionModification
 	 */
 	public AccountRestrictionModification createMosaicRestriction(
-			final AccountRestrictionModificationType accountRestrictionModificationType,
+			final AccountRestrictionModificationAction accountRestrictionModificationAction,
 																  final MosaicId mosaicId) {
-		return AccountRestrictionModification.createForMosaic(accountRestrictionModificationType, mosaicId);
+		return AccountRestrictionModification.createForMosaic(accountRestrictionModificationAction, mosaicId);
 	}
 
 	/**
 	 * Create an account address restriction
-	 * @param accountRestrictionModificationType type of the modification
+	 * @param accountRestrictionModificationAction type of the modification
 	 * @param address address of the account to restrict
 	 * @return AccountRestrictionModification object
 	 */
 	public AccountRestrictionModification createAddressRestriction(
-			final AccountRestrictionModificationType accountRestrictionModificationType,
+			final AccountRestrictionModificationAction accountRestrictionModificationAction,
 			final Address address) {
-		return AccountRestrictionModification.createForAddress(accountRestrictionModificationType, address);
+		return AccountRestrictionModification.createForAddress(accountRestrictionModificationAction, address);
 	}
 
 	/**
 	 *
-	 * @param accountRestrictionModificationType
+	 * @param accountRestrictionModificationAction
 	 * @param transactionType
 	 * @return
 	 */
 	public AccountRestrictionModification createTransactionTypeRestriction(
-			final AccountRestrictionModificationType accountRestrictionModificationType,
+			final AccountRestrictionModificationAction accountRestrictionModificationAction,
 			final TransactionType transactionType) {
-		return AccountRestrictionModification.createForEntityType(accountRestrictionModificationType, transactionType);
+		return AccountRestrictionModification.createForTransactionType(accountRestrictionModificationAction, transactionType);
 	}
 
 	/**
@@ -215,7 +215,7 @@ public class AccountRestrictionHelper {
 	 * @param modifications
 	 * @return
 	 */
-	public AccountMosaicRestrictionModificationTransaction createAccountMosaicRestrictionTransactionAndWait(
+	public AccountMosaicRestrictionTransaction createAccountMosaicRestrictionTransactionAndWait(
 			Account account,
 			AccountRestrictionType restrictionType,
 			List<AccountRestrictionModification<MosaicId>> modifications) {
@@ -233,7 +233,7 @@ public class AccountRestrictionHelper {
 	 * @param modifications
 	 * @return
 	 */
-	public AccountAddressRestrictionModificationTransaction createAccountAddressRestrictionTransactionAndWait(
+	public AccountAddressRestrictionTransaction createAccountAddressRestrictionTransactionAndWait(
 			Account account,
 			AccountRestrictionType restrictionType,
 			List<AccountRestrictionModification<Address>> modifications) {
@@ -251,7 +251,7 @@ public class AccountRestrictionHelper {
 	 * @param modifications
 	 * @return
 	 */
-	public AccountOperationRestrictionModificationTransaction createAccountTransactionTypeRestrictionTransactionAndWait(
+	public AccountOperationRestrictionTransaction createAccountTransactionTypeRestrictionTransactionAndWait(
 			Account account,
 			AccountRestrictionType restrictionType,
 			List<AccountRestrictionModification<TransactionType>> modifications) {
@@ -316,14 +316,13 @@ public class AccountRestrictionHelper {
 	 * @param modifications
 	 * @return
 	 */
-	private AccountMosaicRestrictionModificationTransaction createAccountMosaicRestrictionTransaction(
+	private AccountMosaicRestrictionTransaction createAccountMosaicRestrictionTransaction(
 			AccountRestrictionType restrictionType, List<AccountRestrictionModification<MosaicId>> modifications) {
-		return AccountMosaicRestrictionModificationTransaction.create(
-				TransactionHelper.getDefaultDeadline(),
+		return AccountMosaicRestrictionTransactionFactory.create(
+				testContext.getNetworkType(),
 				restrictionType,
-				modifications,
-				testContext.getNetworkType()
-		);
+				modifications
+				).build();
 	}
 
 	/**
@@ -332,14 +331,13 @@ public class AccountRestrictionHelper {
 	 * @param modifications
 	 * @return
 	 */
-	private AccountAddressRestrictionModificationTransaction createAccountAddressRestrictionTransaction(
+	private AccountAddressRestrictionTransaction createAccountAddressRestrictionTransaction(
 			AccountRestrictionType restrictionType, List<AccountRestrictionModification<Address>> modifications) {
-		return AccountAddressRestrictionModificationTransaction.create(
-				TransactionHelper.getDefaultDeadline(),
+		return AccountAddressRestrictionTransactionFactory.create(
+				testContext.getNetworkType(),
 				restrictionType,
-				modifications,
-				testContext.getNetworkType()
-		);
+				modifications
+				).build();
 	}
 
 	/**
@@ -348,13 +346,12 @@ public class AccountRestrictionHelper {
 	 * @param modifications
 	 * @return
 	 */
-	private AccountOperationRestrictionModificationTransaction createAccountTransactionTypeRestrictionTransaction(
+	private AccountOperationRestrictionTransaction createAccountTransactionTypeRestrictionTransaction(
 			AccountRestrictionType restrictionType, List<AccountRestrictionModification<TransactionType>> modifications) {
-		return AccountOperationRestrictionModificationTransaction.create(
-				TransactionHelper.getDefaultDeadline(),
+		return AccountOperationRestrictionTransactionFactory.create(
+				testContext.getNetworkType(),
 				restrictionType,
-				modifications,
-				testContext.getNetworkType()
-		);
+				modifications
+				).build();
 	}
 }
