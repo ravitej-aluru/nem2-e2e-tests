@@ -58,7 +58,7 @@ public class AccountRestrictionHelper {
         String accountRestrictionTypeString = "";
         switch (restrictionOperation.toUpperCase()) {
             case "ALLOWS":
-                accountRestrictionTypeString = "";
+                accountRestrictionTypeString = "ALLOW_INCOMING_";
                 break;
             case "BLOCKS":
                 accountRestrictionTypeString = "BLOCK_";
@@ -73,7 +73,7 @@ public class AccountRestrictionHelper {
                 break;
             case "ASSET":
             case "ASSETS":
-                accountRestrictionTypeString += "MOSAIC_ID";
+                accountRestrictionTypeString += "MOSAIC";
                 break;
             case "TRANSACTION TYPE":
             case "TRANSACTION TYPES":

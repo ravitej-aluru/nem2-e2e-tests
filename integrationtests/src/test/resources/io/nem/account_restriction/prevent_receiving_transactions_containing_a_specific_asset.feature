@@ -5,7 +5,6 @@ Feature: Prevent receiving transactions containing a specific asset
 
   Background:
     Given Alice has the following assets registered and active:
-      | asset            |
       | ticket           |
       | voucher          |
       | cat.currency     |
@@ -93,15 +92,15 @@ Feature: Prevent receiving transactions containing a specific asset
     When Bob tries to block receiving "ticket" assets
     Then Bob should receive the error "Failure_RestrictionAccount_Values_Count_Exceeded"
 
-  Scenario: An account tries to only allow too many mosaics
-    Given Bob has only allowed receiving 512 different assets
-    When Bob only allows receiving "ticket" assets
-    Then Bob should receive the error "Failure_RestrictionAccount_Values_Count_Exceeded"
-
-  Scenario: An account tries to block too many mosaics in a single transaction
-    When Bob blocks receiving 513 different assets
-    Then Bob should receive the error "Failure_RestrictionAccount_Modification_Count_Exceeded"
-
-  Scenario: An account tries to only allow too many mosaics in a single transaction
-    When Bob only allows receiving 513 different assets
-    Then Bob should receive the error "Failure_RestrictionAccount_Modification_Count_Exceeded"
+#  Scenario: An account tries to only allow too many mosaics
+#    Given Bob has only allowed receiving 512 different assets
+#    When Bob only allows receiving "ticket" assets
+#    Then Bob should receive the error "Failure_RestrictionAccount_Values_Count_Exceeded"
+#
+#  Scenario: An account tries to block too many mosaics in a single transaction
+#    When Bob blocks receiving 513 different assets
+#    Then Bob should receive the error "Failure_RestrictionAccount_Modification_Count_Exceeded"
+#
+#  Scenario: An account tries to only allow too many mosaics in a single transaction
+#    When Bob only allows receiving 513 different assets
+#    Then Bob should receive the error "Failure_RestrictionAccount_Modification_Count_Exceeded"

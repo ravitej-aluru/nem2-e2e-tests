@@ -137,7 +137,7 @@ public class SendAsset extends BaseTest {
 		}
 	}
 
-	@When("^(\\w+) tries to send (-?\\d+) asset \"(\\w+)\" to (.*)$")
+	@When("^(\\w+) tries to send (-?\\d+) asset \"(.*)\" to (.*)$")
 	public void triesToTransferAsset(
 			final String sender,
 			final BigInteger amount,
@@ -148,7 +148,7 @@ public class SendAsset extends BaseTest {
 				sender, recipient, Arrays.asList(new Mosaic(mosaicId, amount)), PlainMessage.Empty);
 	}
 
-	@When("^(\\w+) tries to send (-?\\d+) asset \"(\\w+)\" and (-?\\d+) asset \"(\\w+)\" to (.*)$")
+	@When("^(\\w+) tries to send (-?\\d+) asset \"(.*)\" and (-?\\d+) asset \"(.*)\" to (.*)$")
 	public void triesToTransferMultiAsset(
 			final String sender,
 			final BigInteger firstAmount,

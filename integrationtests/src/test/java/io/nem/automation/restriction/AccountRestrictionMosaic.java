@@ -80,7 +80,7 @@ public class AccountRestrictionMosaic extends BaseTest {
         final Account signerAccount = getUser(username);
         final List<Object> restrictedItemsList = new ArrayList<>();
         final AccountRestrictionType accountRestrictionType = accountRestrictionHelper.getAccountRestrictionType(
-                restrictionOperation, restrictedItemType);
+                restrictionOperation == "allowed" ? "allows" : "blocks", restrictedItemType);
         if (restrictedItemType == "addresses") {
             restrictedItems.parallelStream().forEach(user -> restrictedItemsList.add(getUser(user).getAddress()));
         }
