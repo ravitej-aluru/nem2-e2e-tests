@@ -88,4 +88,9 @@ public class TransactionStatus {
     public BigInteger getHeight() {
         return height;
     }
+
+    @Override
+    public String toString() {
+        return "Group: " + getGroup() + " Status: " + getStatus() + " height: " + getHeight().toString();
+    }
 }

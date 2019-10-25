@@ -526,13 +526,13 @@ class AccountMosaicRestrictionModificationTransactionMapper extends TransactionM
 						AccountRestrictionModification.createForMosaic(
 								AccountRestrictionModificationAction.rawValueOf(
 										modification.getInteger("modificationAction").byteValue()),
-								new MosaicId(extractBigInteger(modification, "value"))
+								new MosaicId(modification.getString("value"))
 						))
 				.collect(Collectors.toList());
 		final AccountMosaicRestrictionTransactionFactory accountMosaicRestrictionTransactionFactory =
 				AccountMosaicRestrictionTransactionFactory.create(
 						networkType,
-						AccountRestrictionType.rawValueOf(transaction.getInteger("restrictionType").byteValue()),
+						AccountRestrictionType.rawValueOf(transaction.getInteger("restrictionType")),
 						modifications);
 		return appendCommonPropertiesAndBuildTransaction(accountMosaicRestrictionTransactionFactory, jsonObject);
 	}
@@ -563,7 +563,7 @@ class AccountAddressRestrictionModificationTransactionMapper extends Transaction
 		final AccountAddressRestrictionTransactionFactory accountAddressRestrictionTransactionFactory =
 				AccountAddressRestrictionTransactionFactory.create(
 						networkType,
-						AccountRestrictionType.rawValueOf(transaction.getInteger("restrictionType").byteValue()),
+						AccountRestrictionType.rawValueOf(transaction.getInteger("restrictionType")),
 						modifications);
 		return appendCommonPropertiesAndBuildTransaction(accountAddressRestrictionTransactionFactory, jsonObject);
 	}
@@ -594,7 +594,7 @@ class AccountOperationRestrictionModificationTransactionMapper extends Transacti
 		final AccountOperationRestrictionTransactionFactory accountOperationRestrictionTransactionFactory =
 				AccountOperationRestrictionTransactionFactory.create(
 						networkType,
-						AccountRestrictionType.rawValueOf(transaction.getInteger("restrictionType").byteValue()),
+						AccountRestrictionType.rawValueOf(transaction.getInteger("restrictionType")),
 						modifications);
 		return appendCommonPropertiesAndBuildTransaction(accountOperationRestrictionTransactionFactory, jsonObject);
 	}
