@@ -63,8 +63,12 @@ public class AccountRestrictionMosaic extends BaseTest {
         final List<Object> restrictedItemsList = new ArrayList<>();
         final AccountRestrictionType accountRestrictionType = accountRestrictionHelper.getAccountRestrictionType(
                 restrictionOperation, restrictedItemType);
-        if (restrictedItemType == "addresses") {
+        getTestContext().getLogger().LogInfo("AccountRestrictionType = %s", accountRestrictionType.toString());
+        if (restrictedItemType.equals("addresses")) {
             restrictedItems.forEach(user -> restrictedItemsList.add(getUser(user).getAddress()));
+        }
+        else {
+            restrictedItemsList.addAll(restrictedItems);
         }
         accountRestrictionHelper.addAppropriateModificationTransactionAndWait(restrictedItemType,
                 restrictedItemsList, signerAccount, accountRestrictionType);
@@ -80,9 +84,12 @@ public class AccountRestrictionMosaic extends BaseTest {
         final Account signerAccount = getUser(username);
         final List<Object> restrictedItemsList = new ArrayList<>();
         final AccountRestrictionType accountRestrictionType = accountRestrictionHelper.getAccountRestrictionType(
-                restrictionOperation == "allowed" ? "allows" : "blocks", restrictedItemType);
-        if (restrictedItemType == "addresses") {
+                restrictionOperation.equals("allowed") ? "allows" : "blocks", restrictedItemType);
+        if (restrictedItemType.equals("addresses")) {
             restrictedItems.parallelStream().forEach(user -> restrictedItemsList.add(getUser(user).getAddress()));
+        }
+        else {
+            restrictedItemsList.addAll(restrictedItems);
         }
         accountRestrictionHelper.removeAppropriateModificationTransactionAndWait(restrictedItemType,
                 restrictedItemsList, signerAccount, accountRestrictionType);
