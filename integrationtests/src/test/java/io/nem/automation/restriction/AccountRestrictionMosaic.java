@@ -157,9 +157,13 @@ public class AccountRestrictionMosaic extends BaseTest {
 
     @When("^(\\w+) tries to block receiving \"([^\"]*)\" assets$")
     public void triesToBlockReceivingAssets(final String username, final String asset) throws Throwable {
-        // calling another step in this class to allow multiple step grammar possibilities with minimum code duplication
-        this.allowsOrBlocksReceivingTransactionsContainingTheFollowingItems(username, "blocks",
-                "assets", new ArrayList<String>(Arrays.asList(asset)));
+        final Account signerAccount = getUser(username);
+        List<AccountRestrictionModification<MosaicId>> modifications = new ArrayList<>();
+        MosaicInfo mosaicInfo = getTestContext().getScenarioContext().getContext(asset);
+        modifications.add(accountRestrictionHelper.createMosaicRestriction(AccountRestrictionModificationAction.ADD,
+                mosaicInfo.getMosaicId()));
+        accountRestrictionHelper.createAccountMosaicRestrictionTransactionAndAnnounce(signerAccount,
+                AccountRestrictionType.BLOCK_MOSAIC, modifications);
     }
 
     @When("^(\\w+) tries to only allow receiving \"([^\"]*)\" assets$")
