@@ -29,7 +29,7 @@ public class AccountRestrictionAddress extends BaseTest {
 
     @Given("^the following accounts exist:$")
     public void theFollowingAccountsExists(final List<String> usernames) {
-        usernames.parallelStream().forEach(this::getUserWithCurrency);
+        usernames.parallelStream().forEach(username -> getUserWithCurrency(username, 1000000));
     }
 
     @When("^(\\w+) blocks receiving transactions from:$")

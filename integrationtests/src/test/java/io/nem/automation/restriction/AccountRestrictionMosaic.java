@@ -16,6 +16,7 @@ import io.nem.sdk.model.mosaic.MosaicInfo;
 import io.nem.sdk.model.transaction.AccountRestrictionModification;
 import io.nem.sdk.model.transaction.AccountRestrictionModificationAction;
 import io.nem.sdk.model.transaction.AccountRestrictionType;
+import org.apache.commons.lang3.RandomStringUtils;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -41,7 +42,7 @@ public class AccountRestrictionMosaic extends BaseTest {
     public void theFollowingAssetsAreRegisteredAndActive(final String userName, final List<String> assets) {
         final AssetRegistration assetRegistration = new AssetRegistration(getTestContext());
         // Alice already has cat.currency registered to her. What happens if we try to register again?
-        assets.forEach(asset -> {
+        assets.parallelStream().forEach(asset -> {
                 assetRegistration.registerAsset(userName, asset);
         });
     }
@@ -102,14 +103,17 @@ public class AccountRestrictionMosaic extends BaseTest {
     }
 
     @When("^(\\w+) unblocks \"([^\"]*)\"$")
-    public void unblocksGivenAsset(final String userName, final String assetType) throws Throwable {
+    public void unblocksGivenAsset(final String userName, final String asset) throws Throwable {
         final Account signerAccount = getUser(userName);
         List<AccountRestrictionModification<MosaicId>> modifications = new ArrayList<>();
-        MosaicInfo mosaicInfo = getTestContext().getScenarioContext().getContext(assetType);
+        MosaicInfo mosaicInfo = getTestContext().getScenarioContext().getContext(asset);
         modifications.add(accountRestrictionHelper.createMosaicRestriction(AccountRestrictionModificationAction.REMOVE,
                 mosaicInfo.getMosaicId()));
         accountRestrictionHelper.createAccountMosaicRestrictionTransactionAndWait(signerAccount,
                 AccountRestrictionType.BLOCK_MOSAIC, modifications);
+//        alternative implementation
+//        this.removesAllowedOrBlockedReceivingTransactionsContainingTheFollowingItems(userName, "allowed",
+//                "assets", new ArrayList<String>(Arrays.asList(asset)));
     }
 
     @And("^receiving \"([^\"]*)\" assets should remain blocked$")
@@ -188,14 +192,39 @@ public class AccountRestrictionMosaic extends BaseTest {
                 AccountRestrictionType.ALLOW_INCOMING_MOSAIC, modifications);
     }
 
-    @Given("^(\\w+) has blocked receiving (\\d+) different assets$")
+    @Given("^(\\w+) has already blocked receiving (\\d+) different assets$")
     public void hasBlockedReceivingDifferentAssets(final String username, final int count) {
-        
+        // first register assets to another user than the given username.
+        List<String> assets = new ArrayList<>(count);
+        for (int i=0; i<count; i++) assets.add(RandomStringUtils.randomAlphanumeric(10));
+        this.theFollowingAssetsAreRegisteredAndActive("Alex", assets);
+        //TODO: figure out how to confirm Alex is the correct user to use
+        this.allowsOrBlocksReceivingTransactionsContainingTheFollowingItems(username, "blocks",
+                "assets", assets);
     }
 
     @Given("^(\\w+) has only allowed receiving \"([^\"]*)\" assets$")
     public void hasOnlyAllowedReceivingAssets(final String username, final String asset) {
         this.allowsOrBlocksReceivingTransactionsContainingTheFollowingItems(username, "allows",
                 "assets", new ArrayList<>(Arrays.asList(asset)));
+    }
+
+    @When("^(\\w+) tries to add too many modifications in a transaction$")
+    public void bobbyTriesToAddTooManyModificationsInATransaction(final String username) {
+        // first register assets to another user than the given username.
+        Integer count = 256;
+        List<String> assets = new ArrayList<>(count);
+        for (int i=0; i<count; i++) assets.add(RandomStringUtils.randomAlphanumeric(10));
+        this.theFollowingAssetsAreRegisteredAndActive("Alex", assets);
+
+        final Account signerAccount = getUser(username);
+        List<AccountRestrictionModification<MosaicId>> modifications = new ArrayList<>();
+        assets.forEach(asset -> {
+            MosaicInfo mosaicInfo = getTestContext().getScenarioContext().getContext(asset);
+            modifications.add(accountRestrictionHelper.createMosaicRestriction(AccountRestrictionModificationAction.ADD,
+                    mosaicInfo.getMosaicId()));
+        });
+        accountRestrictionHelper.createAccountMosaicRestrictionTransactionAndAnnounce(signerAccount,
+                AccountRestrictionType.BLOCK_MOSAIC, modifications);
     }
 }
