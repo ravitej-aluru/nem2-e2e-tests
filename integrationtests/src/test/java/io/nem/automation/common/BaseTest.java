@@ -186,17 +186,30 @@ public abstract class BaseTest {
 	}
 
 	/**
-	 * Gets a test account with some cat currency.
+	 * Gets the account with the given name if already exists or
+	 * creates a new account with the given name and 100 units of cat.currency.
 	 *
-	 * @param username User name.
+	 * @param username Name of the account.
 	 * @return Account.
 	 */
 	protected Account getUserWithCurrency(final String username) {
+		return getUserWithCurrency(username, 100);
+	}
+
+	/**
+	 * Gets the account with the given name if already exists or
+	 * creates a new account with the given name and amount of cat.currency.
+	 *
+	 * @param username Name of the account.
+	 * @param amount amount of default asset to give the user
+	 * @return Account
+	 */
+	protected Account getUserWithCurrency(final String username, final Integer amount){
 		if (CommonHelper.accountExist(username)) {
 			return CommonHelper.getAccount(
 					username, getTestContext().getNetworkType());
 		}
-		final Mosaic mosaic = NetworkCurrencyMosaic.createRelative(BigInteger.valueOf(100));
+		final Mosaic mosaic = NetworkCurrencyMosaic.createRelative(BigInteger.valueOf(amount));
 		final Account account = new AccountHelper(testContext).createAccountWithAsset(mosaic);
 		addUser(username, account);
 		storeUserAccountInContext(account);
