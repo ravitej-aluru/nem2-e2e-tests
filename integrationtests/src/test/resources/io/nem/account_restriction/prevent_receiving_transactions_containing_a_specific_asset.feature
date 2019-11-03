@@ -42,7 +42,7 @@ Feature: Prevent receiving transactions containing a specific asset
     Given Bobby blocks receiving transactions containing the following assets:
       | ticket  |
       | voucher |
-    When Bobby unblocks "ticket"
+    When Bobby unblocks "ticket" asset
     And Alex tries to send 1 asset "voucher" to Bobby
     Then Bobby should receive a confirmation message
 #     And receiving "voucher" assets should remain blocked
@@ -93,23 +93,25 @@ Feature: Prevent receiving transactions containing a specific asset
     Then Bobby should receive the error "Failure_RestrictionAccount_Invalid_Modification"
 
   Scenario: An account tries to block too many mosaics
-    Given Bobby has already blocked receiving 255 different assets
+    Given Bobby has already blocked receiving 512 different assets
     When Bobby tries to block receiving "ticket" assets
     Then Bobby should receive the error "Failure_RestrictionAccount_Values_Count_Exceeded"
 
-  Scenario: An account tries add too many modifications in a transaction
-    When Bobby tries to add too many modifications in a transaction
-    Then Bobby should receive the error "Failure_RestrictionAccount_Values_Count_Exceeded"
+  Scenario: An account tries add too many modifications in a single transaction
+    Given Alex has 515 different assets registered and active
+#    Assuming that any modification add/remove an allow/block asset/address/operation is treated the same way.
+    When Bobby tries to add more than 512 modifications in a transaction
+    Then Bobby should receive the error "Failure_RestrictionAccount_Modification_Count_Exceeded"
 
   Scenario: An account tries to only allow too many mosaics
-    Given Bobby has only allowed receiving 512 different assets
-    When Bobby only allows receiving "ticket" assets
+    Given Bobby has already allowed receiving 512 different assets
+    When Bobby tries to only allow receiving "ticket" assets
     Then Bobby should receive the error "Failure_RestrictionAccount_Values_Count_Exceeded"
 
-  Scenario: An account tries to block too many mosaics in a single transaction
-    When Bobby blocks receiving 513 different assets
-    Then Bobby should receive the error "Failure_RestrictionAccount_Modification_Count_Exceeded"
-
-  Scenario: An account tries to only allow too many mosaics in a single transaction
-    When Bobby only allows receiving 513 different assets
-    Then Bobby should receive the error "Failure_RestrictionAccount_Modification_Count_Exceeded"
+#  Scenario: An account tries to block too many mosaics in a single transaction
+#    When Bobby blocks receiving 513 different assets
+#    Then Bobby should receive the error "Failure_RestrictionAccount_Modification_Count_Exceeded"
+#
+#  Scenario: An account tries to only allow too many mosaics in a single transaction
+#    When Bobby only allows receiving 513 different assets
+#    Then Bobby should receive the error "Failure_RestrictionAccount_Modification_Count_Exceeded"
