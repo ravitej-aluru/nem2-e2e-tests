@@ -1,16 +1,16 @@
-@not-implemented
 Feature: Prevent receiving transactions from undesired addresses
   As Alex
   I don't want to receive assets from Bobby
   So that I have control of which accounts can send me transactions
-#  TODO: this and other restriction features do not have scenarios considering the direction of allow/block.Scenario:
+#  TODO: this and other restriction features do not have scenarios considering the direction of allow/block.
+#   Scenario:
 #  ALLOW_INCOMING_ADDRESS - done, ALLOW_OUTGOING_ADDRESS - not done!
   Background:
     Given the following accounts exist:
       | Alex    |
       | Bobby   |
       | Carol   |
-#    And an account can only define up to 512 address filters
+#       And an account can only define up to 512 address filters
 
   Scenario: An account blocks receiving transactions from a set of addresses
     Given Bobby blocks receiving transactions from:
@@ -18,7 +18,7 @@ Feature: Prevent receiving transactions from undesired addresses
       | Carol  |
     When Alex tries to send 1 asset "cat.currency" to Bobby
     Then Bobby should receive a confirmation message
-#    And receiving transactions from the stated addresses should be blocked
+#       And receiving transactions from the stated addresses should be blocked
     And Alex should receive the error "Failure_RestrictionAccount_Address_Interaction_Prohibited"
 
   Scenario: An account only allows receiving transactions from a set of addresses
@@ -28,7 +28,7 @@ Feature: Prevent receiving transactions from undesired addresses
       And Carol tries to send 1 asset "cat.currency" to Bobby
     Then Bobby should receive a confirmation message
       And Bobby should receive 1 of asset "cat.currency"
-      And Alex "cat.currency" balance should decrease in 1 units
+    And Alex "cat.currency" balance should decrease by 1 unit
       And Carol should receive the error "Failure_RestrictionAccount_Address_Interaction_Prohibited"
 #    And  only receiving transactions from the stated addresses should be allowed
 
@@ -41,20 +41,20 @@ Feature: Prevent receiving transactions from undesired addresses
     And Carol tries to send 1 asset "cat.currency" to Bobby
     Then Bobby should receive a confirmation message
     And Bobby should receive 1 of asset "cat.currency"
-    And Alex "cat.currency" balance should decrease in 1 units
+    And Alex "cat.currency" balance should decrease by 1 unit
     And Carol should receive the error "Failure_RestrictionAccount_Address_Interaction_Prohibited"
 #    And only Carol should remain blocked
 
   Scenario: An account removes an address from the allowed addresses
     Given Bobby only allowed receiving transactions from:
       | Alex  |
-      | Carol  |
+      | Carol |
     When Bobby removes Alex from the allowed addresses
     And Carol sends 1 asset "cat.currency" to Bobby
     And Alex tries to send 1 asset "cat.currency" to Bobby
     Then Bobby should receive a confirmation message
     And Bobby should receive 1 of asset "cat.currency"
-    And Carol "cat.currency" balance should decrease in 1 units
+    And Carol "cat.currency" balance should decrease by 1 unit
     And Alex should receive the error "Failure_RestrictionAccount_Address_Interaction_Prohibited"
 #    And only Carol should remain allowed - this is achieved by above 6 lines
 
@@ -73,53 +73,58 @@ Feature: Prevent receiving transactions from undesired addresses
   Scenario: An account tries only to allow receiving transactions from a set of addresses when it has blocked addresses
     Given Bobby blocked receiving transactions from:
       | Alex |
-    When Bobby only allows receiving transactions from Carol
-    Then she should receive the error "Failure_RestrictionAccount_Modification_Not_Allowed"
+    When Bobby tries to only allow receiving transactions from Carol
+    Then Bobby should receive the error "Failure_RestrictionAccount_Modification_Not_Allowed"
 
   Scenario: An account tries to block receiving transactions from a set of addresses when it has allowed addresses
-    Given Alex only allowed receiving transactions from "Bobby"
-    When Alex blocks receiving transactions from "Carol"
-    Then she should receive the error "Failure_RestrictionAccount_Modification_Not_Allowed"
+    Given Bobby only allowed receiving transactions from:
+      | Alex |
+    When Bobby tries to block receiving transactions from Carol
+    Then Bobby should receive the error "Failure_RestrictionAccount_Modification_Not_Allowed"
 
   Scenario: An account tries to block an address twice
-    Given Alex blocked receiving transactions from "Bobby"
-    When Alex blocks receiving transactions from "Bobby"
-    Then she should receive the error "Failure_RestrictionAccount_Modification_Redundant"
+    Given Alex blocked receiving transactions from:
+      | Bobby |
+    When Alex tries to block receiving transactions from Bobby
+    Then Alex should receive the error "Failure_RestrictionAccount_Modification_Redundant"
 
   Scenario: An account tries to allow an address twice
-    Given Alex only allowed receiving transactions from "Bobby"
-    When Alex only allows receiving transactions from "Bobby"
-    Then she should receive the error "Failure_RestrictionAccount_Modification_Redundant"
+    Given Alex only allowed receiving transactions from:
+      | Bobby |
+    When Alex tries to only allow receiving transactions from Bobby
+    Then Alex should receive the error "Failure_RestrictionAccount_Modification_Redundant"
 
-  Scenario: An account tries to block herself
-    When Alex blocks receiving transactions from herself:
-    Then she should receive the error "Failure_RestrictionAccount_Modification_Address_Invalid"
+  Scenario: An account tries to block self
+    When Alex tries to block receiving transactions from herself
+    Then Alex should receive the error "Failure_RestrictionAccount_Modification_Address_Invalid"
 
-  Scenario: An account tries to only allow itself
-    When Alex only allows receiving transactions from herself
+  Scenario: An account tries to only allow self
+    When Alex tries to only allow receiving transactions from herself
     Then she should receive the error "Failure_RestrictionAccount_Modification_Address_Invalid"
 
   Scenario: An account tries to block too many addresses
-    Given Alex blocked receiving transactions from 512 addresses
-    When Alex blocks receiving transactions from "Bobby"
-    Then she should receive the error "Failure_RestrictionAccount_Values_Count_Exceeded"
+    Given Alex has blocked receiving transactions from 512 different addresses
+    When Alex tries to block receiving transactions from Bobby
+    Then Alex should receive the error "Failure_RestrictionAccount_Values_Count_Exceeded"
 
   Scenario: An account tries to only allow too many addresses
-    Given Alex only allowed receiving transactions from 512 addresses
-    When Alex only allows receiving transactions from "Bobby"
-    Then she should receive the error "Failure_RestrictionAccount_Values_Count_Exceeded"
+    Given Alex has allowed receiving transactions from 512 different addresses
+    When Alex tries to only allow receiving transactions from Bobby
+    Then Alex should receive the error "Failure_RestrictionAccount_Values_Count_Exceeded"
 
   Scenario: An account tries to block too many addresses in a single transaction
-    When Alex blocks receiving transactions from 513 addresses
-    Then she should receive the error "Failure_RestrictionAccount_Modification_Count_Exceeded"
+    Given there are at least 515 different addresses registered
+    When Alex tries to block receiving transactions from 513 different addresses
+    Then Alex should receive the error "Failure_RestrictionAccount_Modification_Count_Exceeded"
 
   Scenario: An account tries to only allow too many addresses in a single transaction
-    When Alex only allows receiving transactions from 513 addresses
-    Then she should receive the error "Failure_RestrictionAccount_Modification_Count_Exceeded"
+    Given there are at least 515 different addresses registered
+    When Alex tries to only allow receiving transactions from 513 different addresses
+    Then Alex should receive the error "Failure_RestrictionAccount_Modification_Count_Exceeded"
 
   Scenario Outline: An account tries to block an invalid address
-    When Alex blocks receiving transactions from "<address>"
-    Then she should receive the error "<error>"
+    When Alex tries to block receiving transactions from "<address>"
+    Then Alex should receive the error "<error>"
 
     Examples:
       | address                                        | error                        |
@@ -128,8 +133,8 @@ Feature: Prevent receiving transactions from undesired addresses
       | MAIBV5-BKEVGJ-IZQ4RP-224TYE-J3ZIUL-WDHUTI-X3H5 | Failure_Core_Wrong_Network   |
 
   Scenario Outline: An account tries only allow transactions from an invalid address
-    When Alex only allows receiving transactions from "<address>"
-    Then she should receive the error "<error>"
+    When Alex tries to only allow receiving transactions from "<address>"
+    Then Alex should receive the error "<error>"
 
     Examples:
       | address                                        | error                        |

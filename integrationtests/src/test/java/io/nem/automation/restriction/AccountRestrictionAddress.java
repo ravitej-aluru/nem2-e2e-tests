@@ -12,15 +12,18 @@ import io.nem.sdk.model.account.Address;
 import io.nem.sdk.model.transaction.AccountRestrictionModification;
 import io.nem.sdk.model.transaction.AccountRestrictionModificationAction;
 import io.nem.sdk.model.transaction.AccountRestrictionType;
+import org.apache.commons.lang3.RandomStringUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class AccountRestrictionAddress extends BaseTest {
     private final MosaicHelper mosaicHelper;
     private final AccountRestrictionHelper accountRestrictionHelper;
     private final AccountRestrictionMosaic accountRestrictionMosaic;
+    private final List<String> pronouns = new ArrayList<>(Arrays.asList("herself", "himself", "self"));
 
     /**
      * Constructor.
@@ -37,6 +40,7 @@ public class AccountRestrictionAddress extends BaseTest {
     @Given("^the following accounts exist:$")
     public void theFollowingAccountsExists(final List<String> usernames) {
         usernames.parallelStream().forEach(username -> getUserWithCurrency(username, 1000000));
+        usernames.forEach(username -> getTestContext().getLogger().LogInfo(getAccountInfoFromContext(username).toString()));
     }
 
     @When("^(\\w+) blocks receiving transactions from:$")
@@ -91,5 +95,87 @@ public class AccountRestrictionAddress extends BaseTest {
                 AccountRestrictionModificationAction.REMOVE, getUser(allowed).getAddress()));
         accountRestrictionHelper.createAccountAddressRestrictionTransactionAndAnnounce(signerAccount,
                 AccountRestrictionType.ALLOW_INCOMING_ADDRESS, modifications);
+    }
+
+    @When("^(\\w+) tries to only allow receiving transactions from (\\w+)$")
+    public void userTriesToOnlyAllowAddress(final String username, String allowed) {
+        allowed = pronouns.parallelStream().anyMatch(allowed::equalsIgnoreCase) ? username : allowed;
+        final Account signerAccount = getUser(username);
+        List<AccountRestrictionModification<Address>> modifications = new ArrayList<>();
+        modifications.add(accountRestrictionHelper.createAddressRestriction(
+                AccountRestrictionModificationAction.ADD, getUser(allowed).getAddress()));
+        accountRestrictionHelper.createAccountAddressRestrictionTransactionAndAnnounce(signerAccount,
+                AccountRestrictionType.ALLOW_INCOMING_ADDRESS, modifications);
+    }
+
+    @When("^(\\w+) tries to block receiving transactions from (\\w+)$")
+    public void userTriesToBlockAddress(final String blocker, String blocked) {
+        blocked = pronouns.parallelStream().anyMatch(blocked::equalsIgnoreCase) ? blocker : blocked;
+        final Account signerAccount = getUser(blocker);
+        List<AccountRestrictionModification<Address>> modifications = new ArrayList<>();
+        modifications.add(accountRestrictionHelper.createAddressRestriction(
+                AccountRestrictionModificationAction.ADD, getUser(blocked).getAddress()));
+        accountRestrictionHelper.createAccountAddressRestrictionTransactionAndAnnounce(signerAccount,
+                AccountRestrictionType.BLOCK_ADDRESS, modifications);
+    }
+
+    @Given("^(\\w+) has (allowed|blocked) receiving transactions from (\\d+) different addresses$")
+    public void hasAllowedOrBlockedReceivingFromDifferentAddresses(final String username, final String restrictionType, final int count) {
+        // first register given number of addresses.
+        this.thereAreAtLeastDifferentAddressesRegistered(count);
+        List<String> addresses = getTestContext().getScenarioContext().getContext("randomAddressesList");
+        if (restrictionType.equalsIgnoreCase("allowed")) {
+            accountRestrictionMosaic.allowsOrBlocksReceivingTransactionsContainingTheFollowingItems(username, "allows",
+                    "addresses", addresses);
+        } else {
+            accountRestrictionMosaic.allowsOrBlocksReceivingTransactionsContainingTheFollowingItems(username, "blocks",
+                    "addresses", addresses);
+        }
+    }
+
+    @When("^(\\w+) tries to block receiving transactions from (\\d+) different addresses$")
+    public void userTriesToBlockReceivingTransactionsFromDifferentAddresses(final String username, final int count) {
+        final Account signerAccount = getUser(username);
+        List<AccountRestrictionModification<Address>> modifications = new ArrayList<>();
+        List<String> randomAddresses = getTestContext().getScenarioContext().getContext("randomAddressesList");
+        //TODO: assuming that at least count + 1 addresses are registered. May be better to check and throw if not.
+        randomAddresses.stream().limit(count + 1).collect(Collectors.toList()).parallelStream().forEach(address -> {
+            modifications.add(accountRestrictionHelper.createAddressRestriction(AccountRestrictionModificationAction.ADD,
+                    getUser(address).getAddress()));
+        });
+        accountRestrictionHelper.createAccountAddressRestrictionTransactionAndAnnounce(signerAccount,
+                AccountRestrictionType.BLOCK_ADDRESS, modifications);
+    }
+
+    @When("^(\\w+) tries to only allow receiving transactions from (\\d+) different addresses$")
+    public void userTriesToAllowReceivingTransactionsFromDifferentAddresses(final String username, final int count) {
+        final Account signerAccount = getUser(username);
+        List<AccountRestrictionModification<Address>> modifications = new ArrayList<>();
+        List<String> randomAddresses = getTestContext().getScenarioContext().getContext("randomAddressesList");
+        //TODO: assuming that at least count + 1 addresses are registered. May be better to check and throw if not.
+        randomAddresses.stream().limit(count + 1).collect(Collectors.toList()).parallelStream().forEach(address -> {
+            modifications.add(accountRestrictionHelper.createAddressRestriction(AccountRestrictionModificationAction.ADD,
+                    getUser(address).getAddress()));
+        });
+        accountRestrictionHelper.createAccountAddressRestrictionTransactionAndAnnounce(signerAccount,
+                AccountRestrictionType.ALLOW_INCOMING_ADDRESS, modifications);
+    }
+
+    @Given("^there are at least (\\d+) different addresses registered$")
+    public void thereAreAtLeastDifferentAddressesRegistered(int count) {
+        List<String> addresses = new ArrayList<>(count);
+        for (int i = 0; i < count; i++) addresses.add(RandomStringUtils.randomAlphanumeric(10));
+        this.theFollowingAccountsExists(addresses);
+        getTestContext().getScenarioContext().setContext("randomAddressesList", addresses);
+    }
+
+    @When("^(\\w+) tries to block receiving transactions from \"([^\"]*)\"$")
+    public void userTriesToBlockReceivingTransactionsFrom(final String blocker, final String blocked) {
+        this.userTriesToBlockAddress(blocker, blocked);
+    }
+
+    @When("^(\\w+) tries to only allow receiving transactions from \"([^\"]*)\"$")
+    public void userTriesToOnlyAllowReceivingTransactionsFrom(final String username, final String allowed) {
+        this.userTriesToOnlyAllowAddress(username, allowed);
     }
 }
