@@ -147,13 +147,6 @@ public class AssetRegistration extends BaseTest {
 		verifyAsset(userAccount, duration);
 	}
 
-	@And("(\\w+) \"cat.currency\" balance should decrease in (\\d+) units")
-	public void verifyAccountBalance(final String userName, final int change) {
-		final AccountInfo accountInfoBefore = getAccountInfoFromContext(userName);
-		final BigInteger actualAmountChange = NetworkCurrencyMosaic.createRelative(BigInteger.valueOf(change)).getAmount();
-		verifyAccountBalance(accountInfoBefore, actualAmountChange.longValue());
-	}
-
 	@And("(\\w+) pays fee in (\\d+) units")
 	public void verifyAccountBalanceDueToFee(final String userName, final int change) {
 		final AccountInfo accountInfoBefore = getAccountInfoFromContext(userName);
