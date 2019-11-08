@@ -66,6 +66,8 @@ public class SendAsset extends BaseTest {
 			final String assetName,
 			final String recipient) {
 		final MosaicId mosaicId = resolveMosaicId(assetName);
+		getTestContext().getLogger().LogInfo(String.format("transferAsset: sender = %s; " +
+				"recipient: %s; mosaicId: %d; amount: %d", sender, recipient, mosaicId.getId(), amount));
 		transferAssets(
 				sender, recipient, Arrays.asList(new Mosaic(mosaicId, amount)), PlainMessage.Empty);
 	}
@@ -93,32 +95,38 @@ public class SendAsset extends BaseTest {
 			final String recipient, final int amount, final String assetName) {
 		final AccountInfo recipientAccountInfo =
 				getTestContext().getScenarioContext().getContext(recipient);
-		final MosaicInfo mosaicInfo = getTestContext().getScenarioContext().getContext(assetName);
+		final MosaicId mosaicId = resolveMosaicId(assetName);
 		final Optional<Mosaic> initialMosaic =
-				getMosaic(recipientAccountInfo, mosaicInfo.getMosaicId());
+				getMosaic(recipientAccountInfo, mosaicId);
 		final long initialAmount =
 				initialMosaic.isPresent() ? initialMosaic.get().getAmount().longValue() : 0;
 		final AccountInfo recipientAccountInfoAfter =
 				new AccountHelper(getTestContext()).getAccountInfo(recipientAccountInfo.getAddress());
 		final Optional<Mosaic> mosaicAfter =
-				getMosaic(recipientAccountInfoAfter, mosaicInfo.getMosaicId());
+				getMosaic(recipientAccountInfoAfter, mosaicId);
+		final long amountAfter = mosaicAfter.get().getAmount().longValue();
 		final String errorMessage =
 				"Recipient("
 						+ recipientAccountInfoAfter.getAddress()
 						+ ") did not receive Asset mosaic id:"
-						+ mosaicInfo.getMosaicId();
+						+ mosaicId;
+		getTestContext().getLogger().LogInfo("Recipient Account Info before: %s\n", recipientAccountInfo.toString());
+		getTestContext().getLogger().LogInfo("Mosaic before: %s = %d\n\n", initialMosaic, initialAmount);
+		getTestContext().getLogger().LogInfo("Recipient Account Info AFTER: %s\n", recipientAccountInfoAfter.toString());
+		getTestContext().getLogger().LogInfo("Mosaic AFTER: %s = %d\n\n", mosaicAfter, amountAfter);
 		assertEquals(errorMessage, true, mosaicAfter.isPresent());
-		assertEquals(errorMessage, amount, mosaicAfter.get().getAmount().longValue() - initialAmount);
+		assertEquals(errorMessage, amount, amountAfter - initialAmount);
 	}
 
-	@And("^(\\w+) \"(\\w+)\" balance should decrease in (\\d+) units?$")
+	@And("^(\\w+) \"(.*)\" balance should decrease by (\\d+) units?$")
 	public void verifySenderAsset(final String sender, final String assetName, final int amount) {
 		final AccountInfo senderAccountInfo = getTestContext().getScenarioContext().getContext(sender);
-		final MosaicInfo mosaicInfo = getTestContext().getScenarioContext().getContext(assetName);
-		final Mosaic initialMosaic = getMosaic(senderAccountInfo, mosaicInfo.getMosaicId()).get();
+		final MosaicId mosaicId = resolveMosaicId(assetName);
+//		final MosaicInfo mosaicInfo = getTestContext().getScenarioContext().getContext(assetName);
+		final Mosaic initialMosaic = getMosaic(senderAccountInfo, mosaicId).get();
 		final AccountInfo recipientAccountInfoAfter =
 				new AccountHelper(getTestContext()).getAccountInfo(senderAccountInfo.getAddress());
-		final Mosaic mosaicAfter = getMosaic(recipientAccountInfoAfter, mosaicInfo.getMosaicId()).get();
+		final Mosaic mosaicAfter = getMosaic(recipientAccountInfoAfter, mosaicId).get();
 		assertEquals(
 				amount, initialMosaic.getAmount().longValue() - mosaicAfter.getAmount().longValue());
 	}

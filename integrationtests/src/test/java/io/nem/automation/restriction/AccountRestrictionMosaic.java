@@ -46,6 +46,8 @@ public class AccountRestrictionMosaic extends BaseTest {
         assets.parallelStream().forEach(asset -> {
                 assetRegistration.registerAsset(userName, asset);
         });
+        getTestContext().getLogger().LogInfo(getAccountInfoFromContext(userName).toString());
+
     }
 
     /**
@@ -66,10 +68,11 @@ public class AccountRestrictionMosaic extends BaseTest {
         final AccountRestrictionType accountRestrictionType = accountRestrictionHelper.getAccountRestrictionType(
                 restrictionOperation, restrictedItemType);
         getTestContext().getLogger().LogInfo("AccountRestrictionType = %s", accountRestrictionType.toString());
-        if (restrictedItemType.equals("addresses")) {
+        if (restrictedItemType.equalsIgnoreCase("addresses")) {
             restrictedItems.forEach(user -> restrictedItemsList.add(getUser(user).getAddress()));
-        }
-        else {
+        } else if (restrictedItemType.matches("^assets?")) {
+            restrictedItems.forEach(asset -> restrictedItemsList.add(resolveMosaicId(asset)));
+        } else {
             restrictedItemsList.addAll(restrictedItems);
         }
         accountRestrictionHelper.addAppropriateModificationTransactionAndWait(restrictedItemType,
@@ -89,18 +92,15 @@ public class AccountRestrictionMosaic extends BaseTest {
                 restrictionOperation.equals("allowed") ? "allows" : "blocks", restrictedItemType);
         if (restrictedItemType.equals("addresses")) {
             restrictedItems.parallelStream().forEach(user -> restrictedItemsList.add(getUser(user).getAddress()));
-        }
-        else {
+        } else if (restrictedItemType.matches("^assets?")) {
+            restrictedItems.forEach(asset -> restrictedItemsList.add(resolveMosaicId(asset)));
+        } else {
             restrictedItemsList.addAll(restrictedItems);
         }
         accountRestrictionHelper.removeAppropriateModificationTransactionAndWait(restrictedItemType,
                 restrictedItemsList, signerAccount, accountRestrictionType);
         // setting recipient since one who blocks/allows will most probably be the recipient when testing
         getTestContext().getScenarioContext().setContext("recipient", username);
-    }
-
-    @And("^receiving the stated assets should be allowed$")
-    public void receivingTheStatedAssetsShouldBeAllowed() {
     }
 
     @When("^(\\w+) unblocks \"([^\"]*)\" asset$")
