@@ -160,7 +160,7 @@ public class SendTransaction extends BaseTest {
 									if (current.getStatus().toUpperCase().startsWith("FAILURE_")) {
 										return current;
 									}
-									throw new RuntimeException("Test as not fail yet - " + current.toString());
+									throw new RuntimeException("Transaction has not failed yet. TransactionStatus: " + current.toString());
 								});
 		assertEquals(
 				"Transaction " + signedTransaction.toString() + " did not fail.",
