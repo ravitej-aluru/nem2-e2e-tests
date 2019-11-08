@@ -34,6 +34,7 @@ import io.nem.sdk.model.namespace.NamespaceId;
 import io.nem.sdk.model.namespace.NamespaceInfo;
 import io.nem.sdk.model.namespace.NamespaceRegistrationType;
 import io.nem.sdk.model.transaction.NamespaceRegistrationTransaction;
+import io.nem.sdk.model.transaction.SignedTransaction;
 
 import java.math.BigInteger;
 
@@ -131,4 +132,15 @@ public class RegisterNamespace extends BaseTest {
 		getTestContext().getScenarioContext().setContext(namespaceName, randomName);
 		registerNamespaceForUserAndWait(userName, randomName, duration);
 	}
+
+	@When("^(\\w+) tries to register a namespace named \"(\\w+)\" for (\\d+) blocks?$")
+	public void triesToRegisterNamespaceValid(
+			final String userName, final String namespaceName, final BigInteger duration) {
+		storeUserInfoInContext(userName);
+		final Account account = getUser(userName);
+		final SignedTransaction namespaceRegistrationTransaction =
+				namespaceHelper.createRootNamespaceAndAnnonce(account, namespaceName, duration);
+
+	}
+
 }
