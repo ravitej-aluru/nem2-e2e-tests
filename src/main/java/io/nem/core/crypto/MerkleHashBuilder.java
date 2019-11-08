@@ -38,7 +38,7 @@ public class MerkleHashBuilder {
 
   private byte[] getRootHash(List<byte[]> hashes) {
     if (hashes.isEmpty()) {
-      final byte[] emptyHash = new byte[0];
+      final byte[] emptyHash = new byte[32];
       return emptyHash;
     }
 
