@@ -40,6 +40,15 @@ public class AccountRestrictionOperation extends BaseTest {
     @When("^(\\w+) blocks sending transactions of type:$")
     public void blocksSendingTransactionsOfType(String userName, List<Object> transactionTypes) {
         final Account userAccount = getUser(userName);
+        accountRestrictionHelper.addAppropriateModificationTransactionAndWait(transactionType,
+                transactionTypes,
+                userAccount,
+                AccountRestrictionType.BLOCK_OUTGOING_TRANSACTION_TYPE);
+    }
+
+    @When("^(\\w+) tries to block sending transactions of type:$")
+    public void triesToBlockSendingTransactionsOfType(String userName, List<Object> transactionTypes) {
+        final Account userAccount = getUser(userName);
         accountRestrictionHelper.addAppropriateModificationTransactionAndAnnounce(transactionType,
                 transactionTypes,
                 userAccount,
@@ -55,7 +64,16 @@ public class AccountRestrictionOperation extends BaseTest {
     }
 
     @When("^(\\w+) only allows sending transactions of type:$")
-    public void onlyAllowsSendingTransactionsWithType(String userName, List<Object> transactionTypes) {
+    public void onlyAllowsSendingTransactionsOfType(String userName, List<Object> transactionTypes) {
+        final Account userAccount = getUser(userName);
+        accountRestrictionHelper.addAppropriateModificationTransactionAndWait(transactionType,
+                transactionTypes,
+                userAccount,
+                AccountRestrictionType.ALLOW_OUTGOING_TRANSACTION_TYPE);
+    }
+
+    @When("^(\\w+) tries to only allow sending transactions of type:$")
+    public void triesToOnlyAllowSendingTransactionsOfType(String userName, List<Object> transactionTypes) {
         final Account userAccount = getUser(userName);
         accountRestrictionHelper.addAppropriateModificationTransactionAndAnnounce(transactionType,
                 transactionTypes,
@@ -63,7 +81,7 @@ public class AccountRestrictionOperation extends BaseTest {
                 AccountRestrictionType.ALLOW_OUTGOING_TRANSACTION_TYPE);
     }
 
-    @When("^(\\w+) unblocks \"([^\"]*)\"$")
+    @When("^(\\w+) unblocks \"([^\"]*)\" transaction type$")
     public void unblocksAnOperation(String userName, String operation) {
         final Account userAccount = getUser(userName);
         List<Object> operationToUnblock = Arrays.asList(operation);

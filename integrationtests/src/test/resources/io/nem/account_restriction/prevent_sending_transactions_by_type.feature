@@ -32,7 +32,7 @@ Feature: Prevent sending transactions by type
  #   And sending transactions with the stated transaction types should be blocked
 
   Scenario: 2. An account only allows sending transactions of a given transaction type
-    Given Alex only allows sending transactions with type:
+    Given Alex only allows sending transactions of type:
       | TRANSFER           |
       | REGISTER_NAMESPACE |
     When Alex sends 1 asset "cat.currency" to Bobby
@@ -48,7 +48,7 @@ Feature: Prevent sending transactions by type
     Given Alex blocks sending transactions of type:
       | TRANSFER           |
       | REGISTER_NAMESPACE |
-    When Alex unblocks "TRANSFER"
+    When Alex unblocks "TRANSFER" transaction type
     And Alex sends 1 asset "cat.currency" to Bobby
     And Alex tries to register a namespace named "alexexp" for 10 blocks
     Then Bobby should receive a confirmation message
@@ -74,7 +74,7 @@ Feature: Prevent sending transactions by type
 #    Given Alex blocked sending "TRANSFER" transactions
     Given Alex blocks sending transactions of type:
       | TRANSFER |
-    When Alex unblocks "REGISTER_NAMESPACE"
+    When Alex unblocks "REGISTER_NAMESPACE" transaction type
     Then Alex should receive the error "Failure_RestrictionAccount_Modification_Not_Allowed"
 
   Scenario: 6. An account removes a transaction type that does not exist in the allowed transaction types
