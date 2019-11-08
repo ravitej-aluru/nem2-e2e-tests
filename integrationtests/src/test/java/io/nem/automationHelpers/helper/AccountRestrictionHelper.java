@@ -24,10 +24,10 @@ import io.nem.automationHelpers.common.TestContext;
 import io.nem.sdk.model.account.Account;
 import io.nem.sdk.model.account.Address;
 import io.nem.sdk.model.mosaic.MosaicId;
-import io.nem.sdk.model.mosaic.MosaicInfo;
 import io.nem.sdk.model.transaction.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -87,7 +87,7 @@ public class AccountRestrictionHelper {
                                                                 final List<Object> restrictedItems,
                                                                 final Account signerAccount,
                                                                 final AccountRestrictionType accountRestrictionType) {
-        abcdefg(restrictedItem, restrictedItems, signerAccount, accountRestrictionType,
+		createAppropriateRestrictionTransaction(restrictedItem, restrictedItems, signerAccount, accountRestrictionType,
 				AccountRestrictionModificationAction.REMOVE, true);
     }
 
@@ -95,7 +95,7 @@ public class AccountRestrictionHelper {
                                                              final List<Object> restrictedItems,
                                                              final Account signerAccount,
                                                              final AccountRestrictionType accountRestrictionType) {
-        abcdefg(restrictedItem, restrictedItems, signerAccount, accountRestrictionType,
+		createAppropriateRestrictionTransaction(restrictedItem, restrictedItems, signerAccount, accountRestrictionType,
 				AccountRestrictionModificationAction.ADD, true);
     }
 
@@ -103,7 +103,7 @@ public class AccountRestrictionHelper {
                                                                     final List<Object> restrictedItems,
                                                                     final Account signerAccount,
                                                                     final AccountRestrictionType accountRestrictionType) {
-        abcdefg(restrictedItem, restrictedItems, signerAccount, accountRestrictionType,
+		createAppropriateRestrictionTransaction(restrictedItem, restrictedItems, signerAccount, accountRestrictionType,
 				AccountRestrictionModificationAction.REMOVE, false);
     }
 
@@ -111,23 +111,23 @@ public class AccountRestrictionHelper {
                                                                  final List<Object> restrictedItems,
                                                                  final Account signerAccount,
                                                                  final AccountRestrictionType accountRestrictionType) {
-        abcdefg(restrictedItem, restrictedItems, signerAccount, accountRestrictionType,
+		createAppropriateRestrictionTransaction(restrictedItem, restrictedItems, signerAccount, accountRestrictionType,
 				AccountRestrictionModificationAction.ADD, false);
     }
 
-    private void abcdefg(final String restrictedItem, final List<Object> restrictedItems, final Account signerAccount,
-                         final AccountRestrictionType accountRestrictionType,
-                         final AccountRestrictionModificationAction accountRestrictionModificationAction,
-                         final Boolean waitForTransaction) {
+	private void createAppropriateRestrictionTransaction(final String restrictedItem, final List<Object> restrictedItems, final Account signerAccount,
+														 final AccountRestrictionType accountRestrictionType,
+														 final AccountRestrictionModificationAction accountRestrictionModificationAction,
+														 final Boolean waitForTransaction) {
         switch (restrictedItem.toUpperCase()) {
             case "ASSET":
             case "ASSETS":
                 List<AccountRestrictionModification<MosaicId>> assetModifications = new ArrayList<>();
-                restrictedItems.forEach(asset -> {
-                    MosaicInfo mosaicInfo = testContext.getScenarioContext().getContext(asset.toString());
+				restrictedItems.parallelStream().forEach(asset -> {
                     assetModifications.add(createMosaicRestriction(
-                            accountRestrictionModificationAction, mosaicInfo.getMosaicId()));
+							accountRestrictionModificationAction, (MosaicId) asset));
                 });
+				testContext.getLogger().LogInfo("assetModifications = %s", Arrays.toString(assetModifications.toArray()));
                 if (waitForTransaction) {
                     createAccountMosaicRestrictionTransactionAndWait(
                             signerAccount, accountRestrictionType, assetModifications);
@@ -135,12 +135,11 @@ public class AccountRestrictionHelper {
                     createAccountMosaicRestrictionTransactionAndAnnounce(
                             signerAccount, accountRestrictionType, assetModifications);
                 }
-
                 break;
             case "ADDRESS":
             case "ADDRESSES":
                 List<AccountRestrictionModification<Address>> addressModifications = new ArrayList<>();
-                restrictedItems.forEach(address -> {
+				restrictedItems.parallelStream().forEach(address -> {
                     addressModifications.add(createAddressRestriction(
                             accountRestrictionModificationAction, ((Address)address)));
                 });
@@ -155,7 +154,7 @@ public class AccountRestrictionHelper {
             case "TRANSACTION TYPE":
             case "TRANSACTION TYPES":
                 List<AccountRestrictionModification<TransactionType>> operationModifications = new ArrayList<>();
-                restrictedItems.forEach(transactionType -> {
+				restrictedItems.parallelStream().forEach(transactionType -> {
                     TransactionType transactionTypeInfo = testContext.getScenarioContext().getContext(
                     		transactionType.toString());
                     operationModifications.add(createTransactionTypeRestriction(
