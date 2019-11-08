@@ -55,7 +55,7 @@ Feature: Prevent sending transactions by type
     And Bobby should receive 1 of asset "cat.currency"
     And Alex "cat.currency" balance should decrease by 1 units
     And Alex should receive the error "FAILURE_RESTRICTIONACCOUNT_OPERATION_TYPE_PROHIBITED"
-#    And only "REGISTER_NAMESPACE" should remain blocked
+#      And only "REGISTER_NAMESPACE" should remain blocked
 
   Scenario: 4. An account removes a transaction type from the allowed transaction types
     Given Alex only allows sending transactions of type:
