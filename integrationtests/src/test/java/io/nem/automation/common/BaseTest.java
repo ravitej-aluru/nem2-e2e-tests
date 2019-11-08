@@ -30,10 +30,7 @@ import io.nem.sdk.model.account.Address;
 import io.nem.sdk.model.mosaic.*;
 import io.nem.sdk.model.namespace.NamespaceId;
 import io.nem.sdk.model.namespace.NamespaceInfo;
-import io.nem.sdk.model.transaction.Message;
-import io.nem.sdk.model.transaction.SignedTransaction;
-import io.nem.sdk.model.transaction.Transaction;
-import io.nem.sdk.model.transaction.UInt64Id;
+import io.nem.sdk.model.transaction.*;
 
 import java.math.BigInteger;
 import java.util.*;
@@ -213,6 +210,7 @@ public abstract class BaseTest {
 		final Account account = new AccountHelper(testContext).createAccountWithAsset(mosaic);
 		addUser(username, account);
 		storeUserAccountInContext(account);
+        storeUserInfoInContext(username);
 		return account;
 	}
 
@@ -247,10 +245,16 @@ public abstract class BaseTest {
 				getTestContext().getDefaultSignerAccount().getPublicAccount());
 	}
 
-	protected BigInteger getActualMosaicQuantity(final NamespaceId namespaceId, final BigInteger amount) {
-		return NetworkCurrencyMosaic.NAMESPACEID.getIdAsLong() == namespaceId.getIdAsLong() ?
-				NetworkCurrencyMosaic.createRelative(amount).getAmount() : amount;
-	}
+//	protected BigInteger getActualMosaicQuantity(final NamespaceId namespaceId, final BigInteger amount) {
+//		return NetworkCurrencyMosaic.NAMESPACEID.getIdAsLong() == namespaceId.getIdAsLong() ?
+//				NetworkCurrencyMosaic.createRelative(amount).getAmount() : amount;
+//	}
+//
+//	protected BigInteger getActualMosaicQuantity(final MosaicId mosaicId, final BigInteger amount) {
+//		MosaicId catCurrencyMosaicId = new NamespaceHelper(getTestContext()).getLinkedMosaicId(NetworkCurrencyMosaic.NAMESPACEID);
+//		return NetworkCurrencyMosaic.NAMESPACEID.getIdAsLong() == namespaceId.getIdAsLong() ?
+//				NetworkCurrencyMosaic.createRelative(amount).getAmount() : amount;
+//	}
 
 	/**
 	 * Resolves a valid user.
@@ -301,8 +305,11 @@ public abstract class BaseTest {
 		final Address recipientAddress = resolveRecipientAddress(recipient);
 		storeUserInfoInContext(sender);
 		storeUserInfoInContext(recipient, recipientAddress, getTestContext());
+        getTestContext().getLogger().LogInfo("transferAssets: \n");
+        getTestContext().getLogger().LogInfo(String.format("Sender before transfer (stored in context): %s\n", getAccountInfoFromContext(sender).toString()));
+        getTestContext().getLogger().LogInfo(String.format("Recipient before transfer (stored in context): %s\n", getAccountInfoFromContext(recipient).toString()));
 		final TransferHelper transferHelper = new TransferHelper(getTestContext());
-		transferHelper.submitTransferAndWait(senderAccount, recipientAddress, mosaics, message);
+        TransferTransaction transfer = transferHelper.submitTransferAndWait(senderAccount, recipientAddress, mosaics, message);
 	}
 
 	/**
