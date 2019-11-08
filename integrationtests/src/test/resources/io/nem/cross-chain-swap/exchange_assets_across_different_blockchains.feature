@@ -23,14 +23,14 @@ Feature: Exchange assets across different blockchains
     And Alice locked 10 "cat.currency" for Tom on the network for 5 blocks
     When Tom proved knowing the secret's seed on the network
     Then she should receive a confirmation message
-    And Alice "cat.currency" balance should decrease in 10 units
+    And Alice "cat.currency" balance should decrease by 10 units
     And Tom should receive 10 of asset "cat.currency"
 
   Scenario: An account locks assets with hash 160
     Given Alice derived the secret from the seed using "HASH_160"
     And Alice locked 10 "cat.currency" for Tom on the network for 5 blocks
     When Tom proved knowing the secret's seed on the network
-    Then Alice "cat.currency" balance should decrease in 10 units
+    Then Alice "cat.currency" balance should decrease by 10 units
     And Tom should receive 10 of asset "cat.currency"
 
   Scenario: An exchange of assets across different blockchain concludes

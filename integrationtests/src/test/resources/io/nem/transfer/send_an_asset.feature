@@ -12,7 +12,7 @@ Background: Create assets for transfer.
     When Alice sends <amount> asset "<asset>" to Bob
     Then she should receive a confirmation message
     And Bob should receive <amount> of asset "<asset>"
-    And Alice "<asset>" balance should decrease in <amount> unit
+    And Alice "<asset>" balance should decrease by <amount> unit
 
     Examples:
       | amount | asset |
@@ -53,8 +53,8 @@ Background: Create assets for transfer.
     Then she should receive a confirmation message
     And Bob should receive 1 of asset "X"
     And Bob should receive 2 of asset "Y"
-    And Alice "X" balance should decrease in 1 unit
-    And Alice "Y" balance should decrease in 2 units
+    And Alice "X" balance should decrease by 1 unit
+    And Alice "Y" balance should decrease by 2 units
 
   @bvt
   Scenario Outline: An account tries to send multiple assets to another account but at least one of the attached assets can't be sent

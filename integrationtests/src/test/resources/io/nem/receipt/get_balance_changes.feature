@@ -47,7 +47,7 @@ Feature: Get balance changes
     And the hash lock expires
     When she checks if the lock has expired
     Then harvesting account should get 10 "cat.currency" from the hash lock
-    And Alice "cat.currency" balance should decrease in 10 units
+    And Alice "cat.currency" balance should decrease by 10 units
 
   # SecretLock
   Scenario: An account wants to check if assets are locked

@@ -12,7 +12,6 @@ Feature: Prevent receiving transactions containing a specific asset
     And Alex has the following assets registered and active:
       | ticket           |
       | voucher          |
-      | cat.currency     |
 #    And an account can only define up to 512 mosaic filters
 
   Scenario: An account blocks receiving transactions containing a specific asset
@@ -22,21 +21,21 @@ Feature: Prevent receiving transactions containing a specific asset
     When Alex tries to send 1 asset "ticket" to Bobby
     Then Bobby should receive a confirmation message
     And Alex should receive the error "Failure_RestrictionAccount_Mosaic_Transfer_Prohibited"
-#    And Bobby balance should remain intact
-#    And Alex balance should remain intact
+#      And Bobby balance should remain intact
+#      And Alex balance should remain intact
 
   Scenario Outline: An account allows receiving transactions containing a specific asset
     When Bobby allows receiving transactions containing the following assets:
       | <asset> |
     And Alex sends <amount> asset "<asset>" to Bobby
     Then Bobby should receive a confirmation message
-    And receiving the stated assets should be allowed
     And Bobby should receive <amount> of asset "<asset>"
-    And Alex "<asset>" balance should decrease in <amount> units
+    And Alex "<asset>" balance should decrease by <amount> units
 
     Examples:
       | amount | asset        |
-      | 1      | cat.currency |
+      | 10     | cat.currency |
+      | 10     | ticket       |
 
   Scenario: An account unblocks an asset but tries to transfer a blocked asset
     Given Bobby blocks receiving transactions containing the following assets:
@@ -46,11 +45,9 @@ Feature: Prevent receiving transactions containing a specific asset
     And Alex tries to send 1 asset "voucher" to Bobby
     Then Bobby should receive a confirmation message
 #     And receiving "voucher" assets should remain blocked
-      # This can be confirmed when Alex receives below error when she tries send a "voucher" asset to Bobby.
+      # This can be confirmed when Alex receives below error when he tries send a "voucher" asset to Bobby.
     And Alex should receive the error "Failure_RestrictionAccount_Mosaic_Transfer_Prohibited"
 
-### Is this scenario actually valid? By default, all assets are allowed. Adding a "BLOCK_XXXX" modification
-#   actually blocks the asset.
   Scenario: An account removes an asset from the allowed assets
     Given Bobby has only allowed receiving the following assets
       | ticket  |
