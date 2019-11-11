@@ -86,7 +86,8 @@ public class TransactionStatementsMapper implements Function<JsonObject, Transac
 				return createArtifactExpiryReceipt(receiptJsonObject, type, (final BigInteger id) -> new MosaicId(id));
 			case NAMESPACE_DELETED:
 			case NAMESPACE_EXPIRED:
-				return createArtifactExpiryReceipt(receiptJsonObject, type, (final BigInteger id) -> NamespaceId.createFromId(id));
+				return createArtifactExpiryReceipt(receiptJsonObject, type, (final BigInteger id) -> NamespaceId
+					.createFromId(id));
 			case INFLATION:
 				return createInflationReceipt(receiptJsonObject, type);
 			default:

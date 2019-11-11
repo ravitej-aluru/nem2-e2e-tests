@@ -54,7 +54,7 @@ public class TransactionMapper implements Function<JsonObject, Transaction> {
    * Gets the common properties for all transactions.
    *
    * @param jsonObject Json object.
-   * @return Transaction.
+   *
    */
   protected void extractCommonProperties(final JsonObject jsonObject) {
     transaction = jsonObject.getJsonObject("transaction");
@@ -66,6 +66,7 @@ public class TransactionMapper implements Function<JsonObject, Transaction> {
    *
    * @param factory Transaction factory.
    * @param jsonObject Json object.
+   * @param <T> transaction type.
    * @return Transaction.
    */
   protected <T extends Transaction> T appendCommonPropertiesAndBuildTransaction(

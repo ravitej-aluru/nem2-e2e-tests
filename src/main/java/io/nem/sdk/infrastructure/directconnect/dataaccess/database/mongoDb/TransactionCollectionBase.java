@@ -72,6 +72,7 @@ public abstract class TransactionCollectionBase implements TransactionState {
    * Find Transaction by hash.
    *
    * @param transactionHash Transaction hash.
+   * @param timeoutInSeconds the database time out.
    * @return Transaction.
    */
   public Optional<Transaction> findByHash(
