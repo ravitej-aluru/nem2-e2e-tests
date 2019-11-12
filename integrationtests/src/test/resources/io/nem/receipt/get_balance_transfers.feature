@@ -1,4 +1,4 @@
-@Testing9
+@bvt
 Feature: Get balance transfers
   As Alice
   I want to know why my balance was decrease

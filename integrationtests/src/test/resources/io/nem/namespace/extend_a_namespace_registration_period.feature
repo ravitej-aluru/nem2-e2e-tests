@@ -23,6 +23,7 @@
       | 10       | 10   |
       | 20       | 20   |
 
+  @bvt
   Scenario: An account tries to extend a namespace registration period and this is under grace period
     Given Alice registered the namespace named "aliceexp" for 6 block
     And the namespace is now under grace period
@@ -35,10 +36,10 @@
     Given Bob registered the namespace named "bobnew" for 5 block
     And the namespace is now under grace period
     When Alice tries to extends the registration of the namespace named "bobnew" for 6 block
-    Then she should receive the error "Failure_Namespace_Owner_Conflict"
+    Then she should receive the error "FAILURE_NAMESPACE_OWNER_CONFLICT"
     And Alice "cat.currency" balance should remain intact
 
   Scenario: An account tries to extend a namespace registration period but does not have enough funds
     Given Bob registered the namespace named "bob_nofunds" for 5 block
     When  Bob tries to extends the registration of the namespace named "bob_nofunds" for 1000 blocks
-    Then  she should receive the error "Failure_Core_Insufficient_Balance"
+    Then  she should receive the error "FAILURE_CORE_INSUFFICIENT_BALANCE"

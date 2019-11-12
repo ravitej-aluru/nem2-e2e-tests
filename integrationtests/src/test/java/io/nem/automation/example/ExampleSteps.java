@@ -26,6 +26,7 @@ import io.nem.sdk.model.account.Account;
 import io.nem.sdk.model.account.AccountInfo;
 import io.nem.sdk.model.account.Address;
 import io.nem.sdk.model.blockchain.NetworkType;
+import io.nem.sdk.model.message.PlainMessage;
 import io.nem.sdk.model.mosaic.*;
 import io.nem.sdk.model.transaction.*;
 import org.bouncycastle.util.encoders.Hex;
@@ -91,7 +92,7 @@ public class ExampleSteps {
 
 
 		final List<Runnable> runnables = new ArrayList<>();
-		runnables.add(() -> {
+/*		runnables.add(() -> {
 			final NamespaceHelper namespaceHelper = new NamespaceHelper(testContext);
 			final NamespaceRegistrationTransaction tx = namespaceHelper.createRootNamespaceAndWait(signerAccount,
 					"te" + CommonHelper.getRandomNamespaceName("tet"),
@@ -99,13 +100,13 @@ public class ExampleSteps {
 			testContext.getLogger().LogError("height for Namespace: " + tx.getTransactionInfo().get().getHeight());
 		});
 		runnables.add(() -> {
-/*      final MosaicInfo mosaicInfo = new MosaicHelper(testContext)
+*//*      final MosaicInfo mosaicInfo = new MosaicHelper(testContext)
               .createMosaic(
                       signerAccount,
                       true,
                       true,
                       0,
-                      BigInteger.valueOf(1000));*/
+                      BigInteger.valueOf(1000));*//*
 			final MosaicFlags mosaicFlags = MosaicFlags.create(CommonHelper.getRandomNextBoolean(),
 					CommonHelper.getRandomNextBoolean());
 			final SignedTransaction tx = new MosaicHelper(testContext).createExpiringMosaicDefinitionTransactionAndAnnounce(signerAccount,
@@ -142,28 +143,64 @@ public class ExampleSteps {
 			SignedTransaction signedAggregateTransaction = aggregateTransaction.signWith(signerAccount,
 					testContext.getGenerationHash());
 
-			final BigInteger duration = BigInteger.valueOf(3);
+			final BigInteger duration = BigInteger.valueOf(13);
 			final Mosaic mosaic = NetworkCurrencyMosaic.createRelative(BigInteger.valueOf(10));
 			final HashLockTransaction hashLockTransaction = HashLockTransactionFactory.create(networkType, mosaic, duration,
 					signedAggregateTransaction).build();
 
 			final Transaction tx = transactionHelper.signAndAnnounceTransactionAndWait(signerAccount, () -> hashLockTransaction);
 			transactionHelper.announceAggregateBonded(signedAggregateTransaction);
-			final long sleeptime = CommonHelper.getRandomValueInRange(10000, 30000);
+			final long sleeptime = CommonHelper.getRandomValueInRange(30000, 60000);
 			testContext.getLogger().LogError("height for lock: " + tx.getTransactionInfo().get().getHeight());
-		});
-//		ExecutorService es = Executors.newCachedThreadPool();
-//
-//		for (int i = 0; i < 400; i++) {
-//			for (final Runnable runnable : runnables) {
-//				es.execute(runnable);
-//			}
-//		}
-//		es.awaitTermination(2, TimeUnit.MINUTES);
-		//runnables.parallelStream().map(r -> r.get()).collect(Collectors.toList());
-
+		});*/
 		final TransactionHelper transactionHelper1 = new TransactionHelper(testContext);
 		final MosaicHelper mosaicHelper = new MosaicHelper(testContext);
+		final MosaicInfo mosaic  = mosaicHelper.createMosaic(
+				signerAccount,
+				MosaicFlags.create(true, true, false),
+				6,
+				BigInteger.TEN);
+		runnables.add(() -> {
+			final Account recipientAccount = Account.generateNewAccount(networkType);
+			final MosaicSupplyChangeTransaction mosaicSupplyChangeTransaction = MosaicSupplyChangeTransactionFactory.create(networkType,
+					mosaic.getMosaicId(), MosaicSupplyChangeActionType.INCREASE, BigInteger.valueOf(CommonHelper.getRandomValueInRange(1,
+							1000000))).build();
+			final TransactionHelper transactionHelper = new TransactionHelper(testContext);
+			transactionHelper.signAndAnnounceTransactionAndWait(signerAccount, () -> mosaicSupplyChangeTransaction);
+				});
+		runnables.add(() -> {
+			final Account recipientAccount = Account.generateNewAccount(networkType);
+			final MosaicSupplyChangeTransaction mosaicSupplyChangeTransaction = MosaicSupplyChangeTransactionFactory.create(networkType,
+					mosaic.getMosaicId(), MosaicSupplyChangeActionType.INCREASE, BigInteger.valueOf(CommonHelper.getRandomValueInRange(1,
+							1000000))).build();
+			final TransactionHelper transactionHelper = new TransactionHelper(testContext);
+			transactionHelper.signAndAnnounceTransactionAndWait(signerAccount, () -> mosaicSupplyChangeTransaction);
+		});
+		runnables.add(() -> {
+			final MosaicSupplyChangeTransaction mosaicSupplyChangeTransaction = MosaicSupplyChangeTransactionFactory.create(networkType,
+					mosaic.getMosaicId(), MosaicSupplyChangeActionType.INCREASE, BigInteger.valueOf(CommonHelper.getRandomValueInRange(1,
+							1000000))).build();
+			final TransactionHelper transactionHelper = new TransactionHelper(testContext);
+			transactionHelper.signAndAnnounceTransactionAndWait(signerAccount, () -> mosaicSupplyChangeTransaction);
+		});
+		runnables.add(() -> {
+			final MosaicSupplyChangeTransaction mosaicSupplyChangeTransaction = MosaicSupplyChangeTransactionFactory.create(networkType,
+					mosaic.getMosaicId(), MosaicSupplyChangeActionType.INCREASE, BigInteger.valueOf(CommonHelper.getRandomValueInRange(1,
+							1000000))).build();
+			final TransactionHelper transactionHelper = new TransactionHelper(testContext);
+			transactionHelper.signAndAnnounceTransactionAndWait(signerAccount, () -> mosaicSupplyChangeTransaction);
+		});
+		ExecutorService es = Executors.newCachedThreadPool();
+
+		for (int i = 0; i < 200; i++) {
+			for (final Runnable runnable : runnables) {
+				es.execute(runnable);
+			}
+		}
+		es.awaitTermination(2, TimeUnit.MINUTES);
+		//runnables.parallelStream().map(r -> r.get()).collect(Collectors.toList());
+
+
 		final MosaicInfo mosaic1  = mosaicHelper.createMosaic(
 				signerAccount,
 				MosaicFlags.create(true, true, true),
@@ -171,7 +208,7 @@ public class ExampleSteps {
 				BigInteger.TEN);
 		final MosaicGlobalRestrictionTransaction mosaicGlobalRestrictionTransaction1 =
 				MosaicGlobalRestrictionTransactionFactory.create(testContext.getNetworkType(), mosaic1.getMosaicId(), BigInteger.ZERO,
-						BigInteger.TEN, MosaicRestrictionType.EQ).build();
+						BigInteger.ONE, MosaicRestrictionType.EQ).build();
 		final Transaction tx1 = transactionHelper1.signAndAnnounceTransactionAndWait(signerAccount, () -> mosaicGlobalRestrictionTransaction1);
 		final MosaicInfo mosaic2  = mosaicHelper.createMosaic(
 				signerAccount,
@@ -179,7 +216,7 @@ public class ExampleSteps {
 				0,
 				BigInteger.TEN);
 		final MosaicGlobalRestrictionTransaction mosaicGlobalRestrictionTransaction2 =
-				MosaicGlobalRestrictionTransactionFactory.create(testContext.getNetworkType(), mosaic2.getMosaicId(), BigInteger.ONE,
+				MosaicGlobalRestrictionTransactionFactory.create(testContext.getNetworkType(), mosaic2.getMosaicId(), BigInteger.ZERO,
 						BigInteger.TEN, MosaicRestrictionType.EQ).referenceMosaicId(mosaic1.getMosaicId()).build();
 		final Transaction tx2 = transactionHelper1.signAndAnnounceTransactionAndWait(signerAccount,
 				() -> mosaicGlobalRestrictionTransaction2);
@@ -299,8 +336,8 @@ public class ExampleSteps {
 				submitTransferTransaction.getMessage().getPayload(),
 				actualTransferTransaction.getMessage().getPayload());
 		assertEquals(
-				submitTransferTransaction.getRecipient().get().plain(),
-				actualTransferTransaction.getRecipient().get().plain());
+				((Address)submitTransferTransaction.getRecipient()).plain(),
+				((Address)actualTransferTransaction.getRecipient()).plain());
 		assertEquals(
 				submitTransferTransaction.getMosaics().size(),
 				actualTransferTransaction.getMosaics().size());

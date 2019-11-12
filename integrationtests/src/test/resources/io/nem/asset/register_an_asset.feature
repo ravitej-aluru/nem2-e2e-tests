@@ -1,5 +1,4 @@
-  @Testing
-  Feature: Register an asset
+ Feature: Register an asset
   As Alice
   I want to register an asset
   So that I can send one unit to Bob.
@@ -38,13 +37,13 @@
 
     Examples:
       | duration | divisibility | error                                |
-      | -1       | 0            | Failure_Mosaic_Invalid_Duration      |
-      | 1        | -1           | Failure_Mosaic_Invalid_Divisibility  |
-      | 22000000 | 0            | Failure_Mosaic_Invalid_Duration      |
-      | 60       | 7            | Failure_Mosaic_Invalid_Divisibility  |
+      | -1       | 0            | FAILURE_MOSAIC_INVALID_DURATION      |
+      | 1        | -1           | FAILURE_MOSAIC_INVALID_DIVISIBILITY  |
+      | 22000000 | 0            | FAILURE_MOSAIC_INVALID_DURATION      |
+      | 60       | 7            | FAILURE_MOSAIC_INVALID_DIVISIBILITY  |
 
   Scenario: An account tries to register an asset but does not have enough funds
     Given Sue has spent all her "cat.currency"
     When Sue registers an asset
-    Then she should receive the error "Failure_Core_Insufficient_Balance"
+    Then she should receive the error "FAILURE_CORE_INSUFFICIENT_BALANCE"
 

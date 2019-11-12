@@ -56,7 +56,6 @@ Background: Create assets for transfer.
     And Alice "X" balance should decrease in 1 unit
     And Alice "Y" balance should decrease in 2 units
 
-  @bvt
   Scenario Outline: An account tries to send multiple assets to another account but at least one of the attached assets can't be sent
     When Alice tries to send <amount> asset "<asset>" and 1 asset "Y" to "Bob"
     Then she should receive the error "<error>"
@@ -88,7 +87,7 @@ Background: Create assets for transfer.
 
   @bvt
   Scenario: An account tries to send an expired asset
-  Given Alice has registered expiring asset for 2 blocks
+  Given Alice has registered expiring asset "A" for 2 blocks
   And the asset is now expired
   When Alice transfer 1 asset to Bob
   Then she should receive the error "Failure_Core_Insufficient_Balance"

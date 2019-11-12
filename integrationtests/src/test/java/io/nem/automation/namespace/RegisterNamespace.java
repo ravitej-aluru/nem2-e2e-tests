@@ -127,8 +127,7 @@ public class RegisterNamespace extends BaseTest {
 	@Given("^(\\w+) registered the namespace \"(\\w+)\"$")
 	public void registerNamespace(final String userName, final String namespaceName) {
 		final BigInteger duration = BigInteger.valueOf(20);
-		final String randomName = CommonHelper.getRandomNamespaceName(namespaceName);
-		getTestContext().getScenarioContext().setContext(namespaceName, randomName);
+		final String randomName = createRandomNamespace(namespaceName, getTestContext()); ;
 		registerNamespaceForUserAndWait(userName, randomName, duration);
 	}
 }

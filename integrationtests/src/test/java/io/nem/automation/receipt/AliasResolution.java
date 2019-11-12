@@ -28,16 +28,16 @@ import io.nem.automation.common.BaseTest;
 import io.nem.automationHelpers.common.TestContext;
 import io.nem.automationHelpers.helper.BlockChainHelper;
 import io.nem.automationHelpers.helper.NamespaceHelper;
-import io.nem.automationHelpers.helper.NetworkHelper;
 import io.nem.automationHelpers.helper.TransferHelper;
 import io.nem.sdk.model.account.Account;
 import io.nem.sdk.model.account.Address;
+import io.nem.sdk.model.message.PlainMessage;
 import io.nem.sdk.model.mosaic.Mosaic;
 import io.nem.sdk.model.mosaic.MosaicId;
 import io.nem.sdk.model.namespace.NamespaceId;
-import io.nem.sdk.model.receipt.ResolutionStatement;
+import io.nem.sdk.model.receipt.AddressResolutionStatement;
+import io.nem.sdk.model.receipt.MosaicResolutionStatement;
 import io.nem.sdk.model.receipt.Statement;
-import io.nem.sdk.model.transaction.PlainMessage;
 import io.nem.sdk.model.transaction.TransferTransaction;
 
 import java.math.BigInteger;
@@ -50,59 +50,79 @@ import static org.junit.Assert.assertTrue;
 
 public class AliasResolution extends BaseTest {
 
-	public AliasResolution(final TestContext testContext) {
-		super(testContext);
-	}
+  public AliasResolution(final TestContext testContext) {
+    super(testContext);
+  }
 
-	@Given("^\"(\\w+)\" sent (\\d+) \"(\\w+)\" to \"(\\w+)\"$")
-	public void sendAliasAsset(final String username, final BigInteger amount, final String assetAlias, final String recipientAlias) {
-		final Account senderAccount = getUser(username);
-		final NamespaceId recipientAddress = resolveNamespaceIdFromName(recipientAlias);
-		final List<Mosaic> mosaics = Arrays.asList(new Mosaic(getNamespaceIdFromName(assetAlias), amount));
-		final TransferHelper transferHelper = new TransferHelper(getTestContext());
-		transferHelper.submitTransferAndWait(senderAccount, recipientAddress, mosaics, PlainMessage.Empty);
-	}
+  @Given("^\"(\\w+)\" sent (\\d+) \"(\\w+)\" to \"(\\w+)\"$")
+  public void sendAliasAsset(
+      final String username,
+      final BigInteger amount,
+      final String assetAlias,
+      final String recipientAlias) {
+    final Account senderAccount = getUser(username);
+    final NamespaceId recipientAddress = resolveNamespaceIdFromName(recipientAlias);
+    final List<Mosaic> mosaics =
+        Arrays.asList(new Mosaic(getNamespaceIdFromName(assetAlias), amount));
+    final TransferHelper transferHelper = new TransferHelper(getTestContext());
+    transferHelper.submitTransferAndWait(
+        senderAccount, recipientAddress, mosaics, PlainMessage.Empty);
+  }
 
-	@And("^\"(\\w+)\" wants to get asset identifier for the previous transaction$")
-	public void getAssetIdentifierFromReceipt(final String userName) {
-	}
+  @And("^\"(\\w+)\" wants to get asset identifier for the previous transaction$")
+  public void getAssetIdentifierFromReceipt(final String userName) {}
 
-	@When("^\"(\\w+)\" wants to get the recipient address for the previous transaction$")
-	public void getRecipientAddressFromReceipt(final String userName) {
-	}
+  @When("^\"(\\w+)\" wants to get the recipient address for the previous transaction$")
+  public void getRecipientAddressFromReceipt(final String userName) {}
 
-	@Then("^\"(\\w+)\" should get address of \"(\\w+)\" as (\\w+)$")
-	public void VerifyAddressResolution(final String userName, final String recipientAlias, final String recipientName) {
-		final Account recipientAccount = getUser(recipientName);
-		final TransferTransaction transferTransaction = waitForLastTransactionToComplete();
-		final Statement statement =
-				new BlockChainHelper(getTestContext()).getBlockReceipts(transferTransaction.getTransactionInfo().get().getHeight());
-		final NamespaceId recipientAddress = resolveNamespaceIdFromName(recipientAlias);
-		final Address aliasAddress =
-				new NamespaceHelper(getTestContext()).getNamespaceIdAsUnresolvedAddressBuffer(recipientAddress,
-						getTestContext().getNetworkType());
-		final Optional<ResolutionStatement<Address>>  addressResolutionStatement =
-				statement.getAddressResolutionStatements().stream()
-						.filter(r -> r.getUnresolved().equals(aliasAddress)).findAny();
-		assertTrue("Failed to find address " + recipientAccount.getAddress().plain(), addressResolutionStatement.isPresent());
-		final Address resolvedAddress = (Address)addressResolutionStatement.get().getResolutionEntries().get(0).getResolved();
-		assertEquals("Resolved address did not match " + recipientAccount.getAddress().plain(), recipientAccount.getAddress().plain(),
-				resolvedAddress.plain());
-	}
+  @Then("^\"(\\w+)\" should get address of \"(\\w+)\" as (\\w+)$")
+  public void VerifyAddressResolution(
+      final String userName, final String recipientAlias, final String recipientName) {
+    final Account recipientAccount = getUser(recipientName);
+    final TransferTransaction transferTransaction = waitForLastTransactionToComplete();
+    final Statement statement =
+        new BlockChainHelper(getTestContext())
+            .getBlockReceipts(transferTransaction.getTransactionInfo().get().getHeight());
+    final NamespaceId recipientAddress = resolveNamespaceIdFromName(recipientAlias);
+    final Address aliasAddress =
+        new NamespaceHelper(getTestContext())
+            .getNamespaceIdAsUnresolvedAddressBuffer(
+                recipientAddress, getTestContext().getNetworkType());
+    final Optional<AddressResolutionStatement> addressResolutionStatement =
+        statement.getAddressResolutionStatements().stream()
+            .filter(r -> r.getUnresolved().equals(aliasAddress))
+            .findAny();
+    assertTrue(
+        "Failed to find address " + recipientAccount.getAddress().plain(),
+        addressResolutionStatement.isPresent());
+    final Address resolvedAddress =
+        addressResolutionStatement.get().getResolutionEntries().get(0).getResolved();
+    assertEquals(
+        "Resolved address did not match " + recipientAccount.getAddress().plain(),
+        recipientAccount.getAddress().plain(),
+        resolvedAddress.plain());
+  }
 
-	@Then("^\"(\\w+)\" should get asset for (\\w+)$")
-	public void VerifyAssetResolution(final String userName, final String assetName) {
-		final NamespaceId namespaceId = getNamespaceIdFromName(assetName);
-		final MosaicId mosaicId = new NamespaceHelper(getTestContext()).getLinkedMosaicId(namespaceId);
-		final TransferTransaction transferTransaction = waitForLastTransactionToComplete();
-		final Statement statement =
-				new BlockChainHelper(getTestContext()).getBlockReceipts(transferTransaction.getTransactionInfo().get().getHeight());
-		final Optional<ResolutionStatement<MosaicId>> mosaicIdResolutionStatement =
-				statement.getMosaicResolutionStatement().stream()
-						.filter(r -> r.getUnresolved().getIdAsLong() == namespaceId.getIdAsLong()).findAny();
-		assertTrue("Failed to find asset " + namespaceId.getIdAsLong(), mosaicIdResolutionStatement.isPresent());
-		final MosaicId resolvedMosaicId = (MosaicId)mosaicIdResolutionStatement.get().getResolutionEntries().get(0).getResolved();
-		assertEquals("Resolved mosaic id did not match " + mosaicId.getIdAsLong(), mosaicId.getIdAsLong(),
-				resolvedMosaicId.getIdAsLong());
-	}
+  @Then("^\"(\\w+)\" should get asset for (\\w+)$")
+  public void VerifyAssetResolution(final String userName, final String assetName) {
+    final NamespaceId namespaceId = getNamespaceIdFromName(assetName);
+    final MosaicId mosaicId = new NamespaceHelper(getTestContext()).getLinkedMosaicId(namespaceId);
+    final TransferTransaction transferTransaction = waitForLastTransactionToComplete();
+    final Statement statement =
+        new BlockChainHelper(getTestContext())
+            .getBlockReceipts(transferTransaction.getTransactionInfo().get().getHeight());
+    final Optional<MosaicResolutionStatement> mosaicIdResolutionStatement =
+        statement.getMosaicResolutionStatement().stream()
+            .filter(r -> r.getUnresolved().getIdAsLong() == namespaceId.getIdAsLong())
+            .findAny();
+    assertTrue(
+        "Failed to find asset " + namespaceId.getIdAsLong(),
+        mosaicIdResolutionStatement.isPresent());
+    final MosaicId resolvedMosaicId =
+        mosaicIdResolutionStatement.get().getResolutionEntries().get(0).getResolved();
+    assertEquals(
+        "Resolved mosaic id did not match " + mosaicId.getIdAsLong(),
+        mosaicId.getIdAsLong(),
+        resolvedMosaicId.getIdAsLong());
+  }
 }

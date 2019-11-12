@@ -35,7 +35,7 @@ import io.nem.sdk.model.mosaic.MosaicId;
 import io.nem.sdk.model.mosaic.MosaicInfo;
 import io.nem.sdk.model.mosaic.MosaicNonce;
 import io.nem.sdk.model.namespace.NamespaceId;
-import io.nem.sdk.model.transaction.PlainMessage;
+import io.nem.sdk.model.message.PlainMessage;
 
 import java.math.BigInteger;
 import java.util.Arrays;
@@ -57,7 +57,7 @@ public class LinkAssetToNamespace extends BaseTest {
 	}
 
 	private MosaicId resolveMosaicIdFromName(final String name) {
-		final MosaicInfo mosaicInfo = getTestContext().getScenarioContext().getContext(name);
+		final MosaicInfo mosaicInfo = getMosaicInfo(name);
 		return mosaicInfo != null
 				? mosaicInfo.getMosaicId()
 				: MosaicId.createFromNonce(
@@ -113,7 +113,7 @@ public class LinkAssetToNamespace extends BaseTest {
 		final AccountInfo senderInfo = accountHelper.getAccountInfo(senderAccount.getAddress());
 		final AccountInfo recipientInfo = accountHelper.getAccountInfo(recipientAccount.getAddress());
 		final NamespaceId namespaceId = resolveNamespaceIdFromName(namespaceName);
-		final MosaicInfo mosaicInfo = getTestContext().getScenarioContext().getContext(assetName);
+		final MosaicInfo mosaicInfo = getMosaicInfo(assetName);
 		final int amount = 1;
 		final TransferHelper transferHelper = new TransferHelper(getTestContext());
 		transferHelper.submitTransferAndWait(

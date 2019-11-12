@@ -18,6 +18,7 @@ Feature: Exchange assets across different blockchains
     And "Bob" owns 999999 bob:token units in "MAIN_NET"
     And "Bob" owns an account in "MIJIN"
 
+  @bvt
   Scenario: An account locks assets
     Given Alice derived the secret from the seed using "SHA3_256"
     And Alice locked 10 "cat.currency" for Tom on the network for 5 blocks
@@ -33,6 +34,7 @@ Feature: Exchange assets across different blockchains
     Then Alice "cat.currency" balance should decrease in 10 units
     And Tom should receive 10 of asset "cat.currency"
 
+  @bvt
   Scenario: An exchange of assets across different blockchain concludes
     Given Alice derived the secret from the seed using "KECCAK_256"
     And Alice locked 10 "cat.currency" for Tom on the network for 10 blocks
@@ -42,6 +44,7 @@ Feature: Exchange assets across different blockchains
     Then Alice should receive 10 of asset "euros"
     And Tom should receive 10 of asset "cat.currency"
 
+  @bvt
   Scenario: An exchange of assets doesn't conclude because the participant decides not locking the assets
     Given Alice derived the secret from the seed using "SHA3_256"
     And Alice locked 10 "cat.currency" for Bob on the network for 1 block
@@ -53,17 +56,17 @@ Feature: Exchange assets across different blockchains
     And Alice locked 10 "cat.currency" for Bob on the network for 1 block
     And the secret lock expires
     When Bob tries to prove the secret's seed on the network
-    Then Bob should receive the error "Failure_Secret_Lock_Inactive_Secret"
+    Then Bob should receive the error "FAILURE_LOCKSECRET_INACTIVE_SECRET"
 
   Scenario: An account tries to lock assets that does not have
     Given Sue derived the secret from the seed using "SHA3_256"
     When Sue tries to lock 10 "cat.currency" for Bob on the network for 1 block
-    Then she should receive the error "Failure_Core_Insufficient_Balance"
+    Then she should receive the error "FAILURE_CORE_INSUFFICIENT_BALANCE"
 
   Scenario Outline: An account tries to lock assets but the duration set is invalid
     Given Sue derived the secret from the seed using "SHA3_256"
     When Alice tries to lock 10 "cat.currency" for Bob on the network for <numberOfBlocks> blocks
-    Then she should receive the error "Failure_Secret_Lock_Invalid_Duration"
+    Then she should receive the error "FAILURE_LOCKSECRET_INVALID_DURATION"
 
     Examples:
       | numberOfBlocks |
@@ -74,30 +77,30 @@ Feature: Exchange assets across different blockchains
     Given Alice derived the secret from the seed using "SHA3_256"
     And Alice locked 10 "cat.currency" for Bob on the network for 5 blocks
     When Alice tries to lock 10 "cat.currency" for Bob on the network for 5 blocks
-    Then she should receive the error "Failure_Secret_Lock_Already_Hash_Exists"
+    Then she should receive the error "FAILURE_LOCKSECRET_HASH_ALREADY_EXISTS"
 
   Scenario: An account tries to lock assets but the recipient address used is not valid
     Given Alice derived the secret from the seed using "SHA3_256"
     When Alice tries to lock 10 "cat.currency" for NAIBV5-BKEVGJ-IZQ4RP-224TYE-J3ZIUL-WDHUTI-X3HT on the network for 5 blocks
-    Then she should receive the error "Failure_Core_Invalid_Address"
+    Then she should receive the error "FAILURE_CORE_INVALID_ADDRESS"
 
   Scenario: An account tries to prove knowing a secret's seed that has not been used
     Given Alice derived the secret from the seed using "SHA3_256"
     When Alice tries to prove the secret's seed on the network
-    Then she should receive the error "Failure_Secret_Lock_Unknown_Composite_Key"
+    Then she should receive the error "FAILURE_LOCKSECRET_UNKNOWN_COMPOSITE_KEY"
 
   Scenario: An account tries to unlock assets but the secret doesn't equal the hashed seed
     Given Alice derived the secret from the seed using "SHA3_256"
     And Alice locked 10 "cat.currency" for Bob on the network for 5 blocks
     When Alice tries to prove the secret's seed on the network but use the incorrect seed
-    Then she should receive the error "Failure_Secret_Lock_Secret_Mismatch"
+    Then she should receive the error "FAILURE_LOCKSECRET_SECRET_MISMATCH"
 
   Scenario Outline: An account tries to unlock assets but the seed used was too large
     Given Alice generated a <length> characters length seed
     And  Alice derived the secret from the seed using "SHA3_256"
     And Alice locked 10 "cat.currency" for Bob on the network for 10 blocks
     When Bob tries to prove the secret's seed on the network
-    Then she should receive the error "Failure_Secret_Lock_Proof_Size_Out_Of_Bounds"
+    Then she should receive the error "FAILURE_LOCKSECRET_PROOF_SIZE_OUT_OF_BOUNDS"
 
     Examples:
       | length |
@@ -108,7 +111,7 @@ Feature: Exchange assets across different blockchains
     Given Alice derived the secret from the seed using "SHA3_256"
     And Alice locked 10 "cat.currency" for Bob on the network for 5 blocks
     When Alice tries to prove knowing the secret's seed using "KECCAK_256" as the hashing algorithm
-    Then she should receive the error "Failure_Secret_Lock_Hash_Algorithm_Mismatch"
+    Then she should receive the error "FAILURE_LOCKSECRET_SECRET_MISMATCH"
 
     #Restrictions
   Scenario: An account tries to lock assets but the recipient does not allow this asset

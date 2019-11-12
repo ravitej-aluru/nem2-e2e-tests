@@ -33,7 +33,7 @@ import io.nem.sdk.model.account.AccountInfo;
 import io.nem.sdk.model.mosaic.Mosaic;
 import io.nem.sdk.model.mosaic.MosaicInfo;
 import io.nem.sdk.model.namespace.NamespaceId;
-import io.nem.sdk.model.transaction.PlainMessage;
+import io.nem.sdk.model.message.PlainMessage;
 
 import java.math.BigInteger;
 import java.util.Arrays;
@@ -107,7 +107,7 @@ public class LinkAddressToNamespace extends BaseTest {
 		final AccountInfo senderInfo = accountHelper.getAccountInfo(senderAccount.getAddress());
 		final AccountInfo recipientInfo = accountHelper.getAccountInfo(recipientAccount.getAddress());
 		final NamespaceId namespaceId = resolveNamespaceIdFromName(namespaceName);
-		final MosaicInfo mosaicInfo = getTestContext().getScenarioContext().getContext(assetName);
+		final MosaicInfo mosaicInfo = getMosaicInfo(assetName);
 		final int amount = 1;
 		final TransferHelper transferHelper = new TransferHelper(getTestContext());
 		transferHelper.submitTransferAndWait(
@@ -131,7 +131,7 @@ public class LinkAddressToNamespace extends BaseTest {
 		final Account senderAccount = getUser(sender);
 		final String realName = getTestContext().getScenarioContext().getContext(namespaceName);
 		final NamespaceId namespaceId = getNamespaceIdFromName(realName);
-		final MosaicInfo mosaicInfo = getTestContext().getScenarioContext().getContext(assetName);
+		final MosaicInfo mosaicInfo = getMosaicInfo(assetName);
 		final int amount = 1;
 		final TransferHelper transferHelper = new TransferHelper(getTestContext());
 		transferHelper.createTransferAndAnnounce(

@@ -32,6 +32,7 @@ import io.nem.core.utils.RetryCommand;
 import io.nem.sdk.model.account.Account;
 import io.nem.sdk.model.account.Address;
 import io.nem.sdk.model.blockchain.NetworkType;
+import io.nem.sdk.model.message.PlainMessage;
 import io.nem.sdk.model.transaction.*;
 
 import java.math.BigInteger;

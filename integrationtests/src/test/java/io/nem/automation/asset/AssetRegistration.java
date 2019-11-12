@@ -228,21 +228,21 @@ mosaicFlags,
 		final MosaicInfo mosaicInfo =
 				new MosaicHelper(getTestContext())
 						.createMosaic(account, mosaicFlags, divisibility, initialSupply);
-		getTestContext().getScenarioContext().setContext(MOSAIC_INFO_KEY, mosaicInfo);
+		storeMosaicInfo(MOSAIC_INFO_KEY, mosaicInfo);
 	}
 
 	@When("^(\\w+) decides to (\\w+) the asset supply in (\\d+) units$")
 	public void changeAssetAmountSucceed(
 			final String username, final MosaicSupplyChangeActionType direction, final BigInteger amount) {
 		final Account account = getUser(username);
-		final MosaicInfo mosaicInfo = getTestContext().getScenarioContext().getContext(MOSAIC_INFO_KEY);
+		final MosaicInfo mosaicInfo = getMosaicInfo(MOSAIC_INFO_KEY);
 		new MosaicHelper(getTestContext())
 				.submitMosaicSupplyChangeAndWait(account, mosaicInfo.getMosaicId(), direction, amount);
 	}
 
 	@Then("^the balance of the asset in her account should (\\w+) in (\\d+) units$")
 	public void verifyChangeAssetAmount(final MosaicSupplyChangeActionType direction, final BigInteger amount) {
-		final MosaicInfo mosaicInfo = getTestContext().getScenarioContext().getContext(MOSAIC_INFO_KEY);
+		final MosaicInfo mosaicInfo = getMosaicInfo(MOSAIC_INFO_KEY);
 		final BigInteger newSupply =
 				MosaicSupplyChangeActionType.INCREASE == direction
 						? mosaicInfo.getSupply().add(amount)
@@ -267,7 +267,7 @@ mosaicFlags,
 								mosaicFlags,
 								divisibility,
 								initialSupply);
-		getTestContext().getScenarioContext().setContext(MOSAIC_INFO_KEY, mosaicInfo);
+		storeMosaicInfo(MOSAIC_INFO_KEY, mosaicInfo);
 		storeUserInfoInContext(userName);
 	}
 
@@ -275,7 +275,7 @@ mosaicFlags,
 	public void changeAssetAmountFailed(
 			final String username, final MosaicSupplyChangeActionType direction, final BigInteger amount) {
 		final Account account = getUser(username);
-		final MosaicInfo mosaicInfo = getTestContext().getScenarioContext().getContext(MOSAIC_INFO_KEY);
+		final MosaicInfo mosaicInfo = getMosaicInfo(MOSAIC_INFO_KEY);
 		final SignedTransaction signedTransaction =
 				new MosaicHelper(getTestContext())
 						.createMosaicSupplyChangeAndAnnounce(
@@ -285,7 +285,7 @@ mosaicFlags,
 
 	@And("^she transfer (\\d+) units to another account$")
 	public void transferSupplyImmutable(final BigInteger amount) {
-		final MosaicInfo mosaicInfo = getTestContext().getScenarioContext().getContext(MOSAIC_INFO_KEY);
+		final MosaicInfo mosaicInfo = getMosaicInfo(MOSAIC_INFO_KEY);
 		final Account account =
 				new AccountHelper(getTestContext())
 						.createAccountWithAsset(mosaicInfo.getMosaicId(), amount);
@@ -297,8 +297,8 @@ mosaicFlags,
 		changeAssetAmountFailed(username, direction, amount);
 	}
 
-	@Given("^(\\w+) has registered expiring asset for (\\d+) blocks?$")
-	public void registerExpiringAsset(final String userName, final BigInteger duration) {
+	@Given("^(\\w+) has registered expiring asset \"(\\w+)\" for (\\d+) blocks?$")
+	public void registerExpiringAsset(final String userName, final String assetName, final BigInteger duration) {
 		final Account account = getUser(userName);
 		final boolean supplyMutable = CommonHelper.getRandomNextBoolean();
 		final boolean transferable = CommonHelper.getRandomNextBoolean();
@@ -314,7 +314,8 @@ mosaicFlags,
 				new TransactionHelper(getTestContext()).waitForTransactionToComplete(signedTransaction);
 		final MosaicInfo mosaicInfo =
 				new MosaicHelper(getTestContext()).getMosaic(mosaicDefinitionTransaction.getMosaicId());
-		getTestContext().getScenarioContext().setContext(MOSAIC_INFO_KEY, mosaicInfo);
+		storeMosaicInfo(MOSAIC_INFO_KEY, mosaicInfo);
+		storeMosaicInfo(assetName, mosaicInfo);
 	}
 
 	@And("^(\\w+) registered the asset \"(\\w+)\"$")
@@ -327,14 +328,13 @@ mosaicFlags,
 		final MosaicFlags mosaicFlags = MosaicFlags.create(supplyMutable, transferable);
 		final MosaicInfo mosaicInfo =
 				mosaicHelper.createMosaic(account, mosaicFlags, divisibility, initialSuppy);
-		getTestContext().getScenarioContext().setContext(assetName, mosaicInfo);
+		storeMosaicInfo(assetName, mosaicInfo);
 	}
 
 
 	@And("^the asset is now expired$")
 	public void waitForMosaicToExpire() {
-		final MosaicInfo mosaicInfo =
-				getTestContext().getScenarioContext().getContext(MOSAIC_INFO_KEY);
+		final MosaicInfo mosaicInfo = getMosaicInfo(MOSAIC_INFO_KEY);
 		final BlockChainHelper blockchainDao = new BlockChainHelper(getTestContext());
 		if (0 == mosaicInfo.getDuration().longValue()) {
 			final String errorMessage = "Mosaicid " + mosaicInfo.getMosaicId() + " does not expire.";
