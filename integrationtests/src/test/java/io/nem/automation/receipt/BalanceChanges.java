@@ -90,8 +90,8 @@ public class BalanceChanges extends BaseTest {
 				actualMosaic.getId().getIdAsLong(),
 				balanceChangeReceipt.getMosaicId().getIdAsLong());
 		assertEquals("Receipt target public failed for " + receiptType + " @" + receiptHeight.longValue(),
-				targetPublicKey.toString(),
-				balanceChangeReceipt.getAccount().getPublicKey().toString());
+				targetPublicKey.toHex(),
+				balanceChangeReceipt.getAccount().getPublicKey().toHex());
 
 	}
 

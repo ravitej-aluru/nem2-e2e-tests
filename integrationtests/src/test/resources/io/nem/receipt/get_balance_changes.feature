@@ -1,3 +1,4 @@
+@bvt
 Feature: Get balance changes
   As Alice
   I want to know why my balance has changed

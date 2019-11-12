@@ -76,8 +76,7 @@ public class ArtifactExpiration extends BaseTest {
 
 	@Then("^she should get an estimated time reference$")
 	public void verifyAssetExpiredReceipt() {
-		final MosaicInfo mosaicInfo =
-				getTestContext().getScenarioContext().getContext(MOSAIC_INFO_KEY);
+		final MosaicInfo mosaicInfo = getMosaicInfo(MOSAIC_INFO_KEY);
 		final BigInteger endHeight = mosaicInfo.getStartHeight().add(mosaicInfo.getDuration());
 		final Statement statement = new BlockChainHelper(getTestContext()).getBlockReceipts(endHeight);
 		final boolean expiredReceiptFound =

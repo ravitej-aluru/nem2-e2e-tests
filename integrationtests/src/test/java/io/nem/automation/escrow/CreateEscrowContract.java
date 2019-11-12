@@ -32,6 +32,7 @@ import io.nem.sdk.model.account.Account;
 import io.nem.sdk.model.account.AccountInfo;
 import io.nem.sdk.model.account.Address;
 import io.nem.sdk.model.account.PublicAccount;
+import io.nem.sdk.model.message.PlainMessage;
 import io.nem.sdk.model.mosaic.Mosaic;
 import io.nem.sdk.model.mosaic.MosaicId;
 import io.nem.sdk.model.namespace.NamespaceId;
@@ -82,8 +83,7 @@ public class CreateEscrowContract extends BaseTest {
 			(final Map<String, String> dataMap) -> {
 				final String namespaceName = dataMap.get(TRANSACTION_DATA_HEADER);
 				return new MultisigAccountHelper(getTestContext()).createMultisigAccountModificationTransaction((byte) 1, (byte) 1,
-						Arrays.asList(new MultisigCosignatoryModification(CosignatoryModificationActionType.ADD,
-								getUser("Bob").getPublicAccount())));
+						Arrays.asList(getUser("Bob").getPublicAccount()), new ArrayList<>());
 			};
 	final Map<String, Function<Map<String, String>, Transaction>> transactionFunctionMap =
 			Stream.of(
@@ -152,7 +152,7 @@ public class CreateEscrowContract extends BaseTest {
 		final PublicAccount sender = transferTransaction.getSigner().get();
 		final AccountInfo senderAccountInfo = getAccountInfoFromContext(sender.getAddress());
 		verifySenderAsset(senderAccountInfo, transferTransaction.getMosaics());
-		final Address recipientAddress = transferTransaction.getRecipient().get();
+		final Address recipientAddress = (Address)transferTransaction.getRecipient();
 		final AccountInfo recipientAccountInfo = getAccountInfoFromContext(recipientAddress);
 		verifyRecipientAsset(recipientAccountInfo, transferTransaction.getMosaics());
 	}

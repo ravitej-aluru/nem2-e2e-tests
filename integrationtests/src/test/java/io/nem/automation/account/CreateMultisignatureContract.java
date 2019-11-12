@@ -87,18 +87,17 @@ public class CreateMultisignatureContract extends BaseTest {
 		final Account multiSigAccount = getUserWithCurrency(multisigAccountName);
 		getTestContext().getLogger().LogError("MultiSig account " + multisigAccountName + " public key:" + multiSigAccount.getPublicKey());
 		final List<Account> cosignerAccounts = new Vector<>(cosignatories.size());
-		final List<MultisigCosignatoryModification> multisigCosignatoryModifications =
+		final List<PublicAccount> accountsAdditions =
 				cosignatories.parallelStream().map(name -> {
 			final Account account = getUserWithCurrency(name);
 			getTestContext().getLogger().LogError("Cosigner account " + name + " public key:" + account.getPublicKey());
 			final List<Account> cosigners = getCosignersForAccount(account);
 			cosignerAccounts.addAll(cosigners);
-			return new MultisigCosignatoryModification(
-					CosignatoryModificationActionType.ADD, account.getPublicAccount());
+			return account.getPublicAccount();
 		}).collect(Collectors.toList());
 		final MultisigAccountModificationTransaction modifyMultisigAccountTransaction =
 				multisigAccountHelper.createMultisigAccountModificationTransaction(
-						minimumApproval, minimumRemoval, multisigCosignatoryModifications);
+						minimumApproval, minimumRemoval, accountsAdditions, new ArrayList<>());
 		getTestContext().addTransaction(modifyMultisigAccountTransaction);
 		final AggregateTransaction aggregateTransaction =
 				new AggregateHelper(getTestContext())
@@ -210,18 +209,23 @@ public class CreateMultisignatureContract extends BaseTest {
 				errorMessage,
 				modifyMultisigAccountTransaction.getMinRemovalDelta(),
 				multisigAccountInfo.getMinRemoval());
-		assertEquals(
-				errorMessage,
-				modifyMultisigAccountTransaction.getModifications().size(),
-				multisigAccountInfo.getCosignatories().size());
-		for (final MultisigCosignatoryModification modification :
-				modifyMultisigAccountTransaction.getModifications()) {
+		for (final PublicAccount publicAccount :
+				modifyMultisigAccountTransaction.getPublicAccountsAdditions()) {
 			assertEquals(
 					errorMessage,
 					true,
 					multisigAccountInfo
 							.getCosignatories()
-							.contains(modification.getCosignatoryPublicAccount()));
+							.contains(publicAccount));
+		}
+		for (final PublicAccount publicAccount :
+				modifyMultisigAccountTransaction.getPublicAccountsDeletions()) {
+			assertEquals(
+					errorMessage,
+					false,
+					multisigAccountInfo
+							.getCosignatories()
+							.contains(publicAccount));
 		}
 	}
 

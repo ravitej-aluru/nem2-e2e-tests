@@ -30,6 +30,7 @@ import io.nem.automationHelpers.helper.MultisigAccountHelper;
 import io.nem.automationHelpers.helper.TransactionHelper;
 import io.nem.sdk.model.account.Account;
 import io.nem.sdk.model.account.MultisigAccountInfo;
+import io.nem.sdk.model.account.PublicAccount;
 import io.nem.sdk.model.transaction.*;
 
 import java.util.*;
@@ -69,31 +70,31 @@ public class EditMultisignatureContract extends BaseTest {
 		final Account multiSigAccount = getTestContext().getScenarioContext().getContext(MULTISIG_ACCOUNT_INFO);
 		final MultisigAccountModificationTransaction originalMultisigAccountModificationTransaction =
 				getTestContext().<MultisigAccountModificationTransaction>findTransaction(TransactionType.MODIFY_MULTISIG_ACCOUNT).get();
-		final List<MultisigCosignatoryModification> multisigCosignatoryModificationsUpdate =
-				originalMultisigAccountModificationTransaction.getModifications();
+		final List<PublicAccount> accountsAdditions =
+				originalMultisigAccountModificationTransaction.getPublicAccountsAdditions();
+		final List<PublicAccount> accountsDeletions =
+				originalMultisigAccountModificationTransaction.getPublicAccountsDeletions();
 		getTestContext().clearTransaction();
 		boolean requireBondedTransaction = originalMultisigAccountModificationTransaction.getMinApprovalDelta() > 1;
-		final List<MultisigCosignatoryModification> multisigCosignatoryModifications =
-				new ArrayList<>();
+		final List<PublicAccount> publicAccountsAddition = new ArrayList<>();
+		final List<PublicAccount> publicAccountsDeletion = new ArrayList<>();
 		for (Map.Entry<String, String> entry : operationList.entrySet()) {
 			final Account account = getUser(entry.getKey());
-			final CosignatoryModificationActionType modificationType =
-					CosignatoryModificationActionType.valueOf(entry.getValue().toUpperCase());
-			final MultisigCosignatoryModification multisigCosignatoryModification =
-					new MultisigCosignatoryModification(modificationType, account.getPublicAccount());
-			multisigCosignatoryModifications.add(multisigCosignatoryModification);
-			if (modificationType == CosignatoryModificationActionType.ADD) {
-				multisigCosignatoryModificationsUpdate.add(multisigCosignatoryModification);
+			if (entry.getValue().equalsIgnoreCase("add")) {
+				publicAccountsAddition.add(account.getPublicAccount());
+				accountsAdditions.add(account.getPublicAccount());
 				requireBondedTransaction = true;
-			} else if (modificationType == CosignatoryModificationActionType.REMOVE) {
-				multisigCosignatoryModificationsUpdate.removeIf(
-						m -> m.getCosignatoryPublicAccount().equals(multisigCosignatoryModification.getCosignatoryPublicAccount()));
+			} else if (entry.getValue().equalsIgnoreCase("remove")) {
+				publicAccountsDeletion.add(account.getPublicAccount());
+				accountsDeletions.add(account.getPublicAccount());
+				accountsAdditions.removeIf(
+						publicAccount -> publicAccount.equals(account.getPublicAccount()));
 			}
 		}
 
 		final MultisigAccountModificationTransaction modifyMultisigAccountTransaction =
 				multisigAccountHelper.createMultisigAccountModificationTransaction(
-						minimumApproval, minimumRemoval, multisigCosignatoryModifications);
+						minimumApproval, minimumRemoval, publicAccountsAddition, publicAccountsDeletion);
 		final List<Transaction> innerTransactions = Arrays.asList(
 				modifyMultisigAccountTransaction.toAggregate(
 						multiSigAccount.getPublicAccount()));
@@ -104,7 +105,7 @@ public class EditMultisignatureContract extends BaseTest {
 		final byte newRemoval = (byte) (originalMultisigAccountModificationTransaction.getMinRemovalDelta() + minimumRemoval);
 		final MultisigAccountModificationTransaction newMultisigAccountModificationTransaction =
 				multisigAccountHelper.createMultisigAccountModificationTransaction(newApproval, newRemoval,
-						multisigCosignatoryModificationsUpdate);
+						accountsAdditions, accountsDeletions);
 		getTestContext().addTransaction(newMultisigAccountModificationTransaction);
 	}
 

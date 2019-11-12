@@ -30,7 +30,8 @@ import io.nem.sdk.model.account.Address;
 import io.nem.sdk.model.mosaic.*;
 import io.nem.sdk.model.namespace.NamespaceId;
 import io.nem.sdk.model.namespace.NamespaceInfo;
-import io.nem.sdk.model.transaction.*;
+import io.nem.sdk.model.transaction.SignedTransaction;
+import io.nem.sdk.model.transaction.Transaction;
 
 import java.math.BigInteger;
 import java.util.*;
@@ -245,16 +246,19 @@ public abstract class BaseTest {
 				getTestContext().getDefaultSignerAccount().getPublicAccount());
 	}
 
-//	protected BigInteger getActualMosaicQuantity(final NamespaceId namespaceId, final BigInteger amount) {
-//		return NetworkCurrencyMosaic.NAMESPACEID.getIdAsLong() == namespaceId.getIdAsLong() ?
-//				NetworkCurrencyMosaic.createRelative(amount).getAmount() : amount;
-//	}
-//
-//	protected BigInteger getActualMosaicQuantity(final MosaicId mosaicId, final BigInteger amount) {
-//		MosaicId catCurrencyMosaicId = new NamespaceHelper(getTestContext()).getLinkedMosaicId(NetworkCurrencyMosaic.NAMESPACEID);
-//		return NetworkCurrencyMosaic.NAMESPACEID.getIdAsLong() == namespaceId.getIdAsLong() ?
-//				NetworkCurrencyMosaic.createRelative(amount).getAmount() : amount;
-//	}
+  /**
+   * Get the actual mosaic quantity.
+   *
+   * @param namespaceId Namespace id.
+   * @param amount Amount of mosaic
+   * @return Actual mosaic.
+   */
+  protected BigInteger getActualMosaicQuantity(
+      final NamespaceId namespaceId, final BigInteger amount) {
+    return NetworkCurrencyMosaic.NAMESPACEID.getIdAsLong() == namespaceId.getIdAsLong()
+        ? NetworkCurrencyMosaic.createRelative(amount).getAmount()
+        : amount;
+  }
 
 	/**
 	 * Resolves a valid user.
