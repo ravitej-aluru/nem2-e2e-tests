@@ -24,7 +24,10 @@ import io.nem.automationHelpers.common.TestContext;
 import io.nem.sdk.model.account.Account;
 import io.nem.sdk.model.account.PublicAccount;
 import io.nem.sdk.model.mosaic.MosaicId;
-import io.nem.sdk.model.transaction.*;
+import io.nem.sdk.model.transaction.Deadline;
+import io.nem.sdk.model.transaction.MosaicMetadataTransaction;
+import io.nem.sdk.model.transaction.MosaicMetadataTransactionFactory;
+import io.nem.sdk.model.transaction.SignedTransaction;
 
 import java.math.BigInteger;
 
@@ -45,13 +48,13 @@ public class MosaicMetadataHelper {
 			final BigInteger maxFee,
 			final PublicAccount targetPublicAccount,
 			final BigInteger scopedMetadataKey,
-			final UInt64Id mosaicId,
+			final MosaicId mosaicId,
 			final short valueSizeDelta,
 			final String value) {
 		final MosaicMetadataTransactionFactory mosaicMetadataTransactionFactory = MosaicMetadataTransactionFactory.create(
 				testContext.getNetworkType(),
 				targetPublicAccount,
-				(MosaicId) mosaicId,
+				mosaicId,
 				scopedMetadataKey,
 				value);
 		mosaicMetadataTransactionFactory.valueSizeDelta(valueSizeDelta);
@@ -61,7 +64,7 @@ public class MosaicMetadataHelper {
 	private MosaicMetadataTransaction createMosaicMetadataTransaction(
 			final PublicAccount targetPublicAccount,
 			final BigInteger scopedMetadataKey,
-			final UInt64Id mosaicId,
+			final MosaicId mosaicId,
 			final short valueSizeDelta,
 			final String value) {
 		return createMosaicMetadataTransaction(
@@ -88,7 +91,7 @@ public class MosaicMetadataHelper {
 			final Account account,
 			final PublicAccount targetPublicAccount,
 			final BigInteger scopedMetadataKey,
-			final UInt64Id mosaicId,
+			final MosaicId mosaicId,
 			final short valueSizeDelta,
 			final String value) {
 		final TransactionHelper transactionHelper = new TransactionHelper(testContext);
@@ -114,7 +117,7 @@ public class MosaicMetadataHelper {
 			final Account account,
 			final PublicAccount targetPublicAccount,
 			final BigInteger scopedMetadataKey,
-			final UInt64Id mosaicId,
+			final MosaicId mosaicId,
 			final short valueSizeDelta,
 			final String value) {
 		final TransactionHelper transactionHelper = new TransactionHelper(testContext);

@@ -22,7 +22,11 @@ package io.nem.automationHelpers.helper;
 
 import io.nem.automationHelpers.common.TestContext;
 import io.nem.sdk.model.account.Account;
-import io.nem.sdk.model.transaction.*;
+import io.nem.sdk.model.account.PublicAccount;
+import io.nem.sdk.model.transaction.Deadline;
+import io.nem.sdk.model.transaction.MultisigAccountModificationTransaction;
+import io.nem.sdk.model.transaction.MultisigAccountModificationTransactionFactory;
+import io.nem.sdk.model.transaction.SignedTransaction;
 
 import java.math.BigInteger;
 import java.util.List;
@@ -47,7 +51,7 @@ public class MultisigAccountHelper {
 			final BigInteger maxFee,
 			final byte minApprovalDelta,
 			final byte minRemovalDelta,
-			final List<MultisigCosignatoryModification> modifications) {
+			final List<PublicAccount> modifications) {
 		final MultisigAccountModificationTransactionFactory multisigAccountModificationTransactionFactory =
 				MultisigAccountModificationTransactionFactory.create(
 						testContext.getNetworkType(),
@@ -68,7 +72,7 @@ public class MultisigAccountHelper {
 	public MultisigAccountModificationTransaction createMultisigAccountModificationTransaction(
 			final byte minApprovalDelta,
 			final byte minRemovalDelta,
-			final List<MultisigCosignatoryModification> modifications) {
+			final List<PublicAccount> modifications) {
 		return createMultisigAccountModificationTransaction(
 				TransactionHelper.getDefaultDeadline(),
 				TransactionHelper.getDefaultMaxFee(),
@@ -90,7 +94,7 @@ public class MultisigAccountHelper {
 			final Account account,
 			final byte minApprovalDelta,
 			final byte minRemovalDelta,
-			final List<MultisigCosignatoryModification> modifications) {
+			final List<PublicAccount> modifications) {
 		return new TransactionHelper(testContext)
 				.signAndAnnounceTransaction(
 						account,
@@ -113,7 +117,7 @@ public class MultisigAccountHelper {
 			final Account account,
 			final byte minApprovalDelta,
 			final byte minRemovalDelta,
-			final List<MultisigCosignatoryModification> modifications) {
+			final List<PublicAccount> modifications) {
 		return new TransactionHelper(testContext)
 				.signAndAnnounceTransactionAndWait(
 						account,

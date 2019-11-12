@@ -59,7 +59,7 @@ public class AccountRestrictionMosaic extends BaseTest {
      * @param restrictedItems
      */
     @When("^(\\w+) (allows|blocks) receiving transactions containing the following " +
-            "(assets?|addresses|transaction types?):$")
+            "(assets?|addresses):$")
     public void allowsOrBlocksReceivingTransactionsContainingTheFollowingItems(
             final String username, final String restrictionOperation, final String restrictedItemType,
             final List<String> restrictedItems) {

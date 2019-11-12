@@ -5,18 +5,16 @@ import cucumber.api.java.en.When;
 import io.nem.automation.common.BaseTest;
 import io.nem.automationHelpers.common.TestContext;
 import io.nem.automationHelpers.helper.AccountRestrictionHelper;
-import io.nem.automationHelpers.helper.NamespaceHelper;
 import io.nem.sdk.model.account.Account;
 import io.nem.sdk.model.transaction.AccountRestrictionType;
 
-import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.List;
 
 
 public class AccountRestrictionOperation extends BaseTest {
     private final AccountRestrictionHelper accountRestrictionHelper;
-    private final String transactionType = "TRANSACTION_TYPE";
+    private final String transactionType = "TRANSACTION TYPE";
     private final String userBobby = "Bobby";
     private final String userAlex = "Alex";
     private final String userCarol = "Carol";
@@ -53,14 +51,6 @@ public class AccountRestrictionOperation extends BaseTest {
                 transactionTypes,
                 userAccount,
                 AccountRestrictionType.BLOCK_OUTGOING_TRANSACTION_TYPE);
-    }
-
-    @When("^(\\w+) tries to register a Namespace$")
-    public void triesToRegisterANamespace() {
-        NamespaceHelper namespaceHelper = new NamespaceHelper(getTestContext());
-        namespaceHelper.createRootNamespaceAndWait(getUser(userAlex),
-                "sample.namespace",
-                BigInteger.valueOf(100));
     }
 
     @When("^(\\w+) only allows sending transactions of type:$")

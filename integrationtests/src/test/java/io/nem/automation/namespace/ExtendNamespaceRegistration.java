@@ -25,7 +25,6 @@ import cucumber.api.java.en.When;
 import io.nem.automation.common.BaseTest;
 import io.nem.automationHelpers.common.TestContext;
 import io.nem.automationHelpers.helper.NamespaceHelper;
-import io.nem.sdk.model.account.Account;
 import io.nem.sdk.model.namespace.NamespaceInfo;
 import io.nem.sdk.model.transaction.NamespaceRegistrationTransaction;
 import io.nem.sdk.model.transaction.TransactionType;
@@ -63,7 +62,7 @@ public class ExtendNamespaceRegistration extends BaseTest {
 			"^(\\w+) tries to extends the registration of the namespace named \"(\\w+)\" for (\\d+) blocks?$")
 	public void extendsNamespaceRegistrationFails(
 			final String userName, final String namespaceName, final BigInteger duration) {
-		new RegisterNamespace(getTestContext()).registerNamespaceForUser(userName, namespaceName, duration);
+        new RegisterNamespace(getTestContext()).registerNamespaceForUserAndAnnounce(userName, namespaceName, duration);
 	}
 
 	@And("^the namespace is now under grace period$")

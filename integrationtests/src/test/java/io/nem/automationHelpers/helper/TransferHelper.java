@@ -24,9 +24,13 @@ import io.nem.automationHelpers.common.TestContext;
 import io.nem.sdk.model.account.Account;
 import io.nem.sdk.model.account.Address;
 import io.nem.sdk.model.blockchain.NetworkType;
+import io.nem.sdk.model.message.Message;
 import io.nem.sdk.model.mosaic.Mosaic;
 import io.nem.sdk.model.namespace.NamespaceId;
-import io.nem.sdk.model.transaction.*;
+import io.nem.sdk.model.transaction.Deadline;
+import io.nem.sdk.model.transaction.SignedTransaction;
+import io.nem.sdk.model.transaction.TransferTransaction;
+import io.nem.sdk.model.transaction.TransferTransactionFactory;
 
 import java.math.BigInteger;
 import java.util.List;
@@ -69,7 +73,7 @@ public class TransferHelper {
 			final NamespaceId namespaceId,
 			final List<Mosaic> mosaics,
 			Message message) {
-		final TransferTransactionFactory transferTransactionFactory = TransferTransactionFactory.createWithNamespaceId(
+		final TransferTransactionFactory transferTransactionFactory = TransferTransactionFactory.create(
 				testContext.getNetworkType(),
 				namespaceId,
 				mosaics,

@@ -155,10 +155,9 @@ public class AccountRestrictionHelper {
             case "TRANSACTION TYPES":
                 List<AccountRestrictionModification<TransactionType>> operationModifications = new ArrayList<>();
 				restrictedItems.parallelStream().forEach(transactionType -> {
-                    TransactionType transactionTypeInfo = testContext.getScenarioContext().getContext(
-                    		transactionType.toString());
+					TransactionType ty = TransactionType.valueOf(transactionType.toString());
                     operationModifications.add(createTransactionTypeRestriction(
-                            accountRestrictionModificationAction, transactionTypeInfo));
+							accountRestrictionModificationAction, ty));
                 });
                 if (waitForTransaction) {
                     createAccountTransactionTypeRestrictionTransactionAndWait(
