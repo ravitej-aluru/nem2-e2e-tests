@@ -22,7 +22,11 @@ package io.nem.automationHelpers.helper;
 
 import io.nem.automationHelpers.common.TestContext;
 import io.nem.sdk.model.account.Account;
-import io.nem.sdk.model.transaction.*;
+import io.nem.sdk.model.account.PublicAccount;
+import io.nem.sdk.model.transaction.Deadline;
+import io.nem.sdk.model.transaction.MultisigAccountModificationTransaction;
+import io.nem.sdk.model.transaction.MultisigAccountModificationTransactionFactory;
+import io.nem.sdk.model.transaction.SignedTransaction;
 
 import java.math.BigInteger;
 import java.util.List;

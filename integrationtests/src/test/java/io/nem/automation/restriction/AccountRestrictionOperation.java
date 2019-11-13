@@ -7,17 +7,14 @@ import io.nem.automationHelpers.common.TestContext;
 import io.nem.automationHelpers.helper.AccountRestrictionHelper;
 import io.nem.sdk.model.account.Account;
 import io.nem.sdk.model.transaction.AccountRestrictionType;
+import io.nem.sdk.model.transaction.TransactionType;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 
 public class AccountRestrictionOperation extends BaseTest {
     private final AccountRestrictionHelper accountRestrictionHelper;
-    private final String transactionType = "TRANSACTION TYPE";
-    private final String userBobby = "Bobby";
-    private final String userAlex = "Alex";
-    private final String userCarol = "Carol";
 
     /**
      * Constructor.
@@ -36,58 +33,56 @@ public class AccountRestrictionOperation extends BaseTest {
     }
 
     @When("^(\\w+) blocks sending transactions of type:$")
-    public void blocksSendingTransactionsOfType(String userName, List<Object> transactionTypes) {
+    public void blocksSendingTransactionsOfType(String userName, List<String> transactionTypes) {
         final Account userAccount = getUser(userName);
-        accountRestrictionHelper.addAppropriateModificationTransactionAndWait(transactionType,
-                transactionTypes,
-                userAccount,
-                AccountRestrictionType.BLOCK_OUTGOING_TRANSACTION_TYPE);
+        List<TransactionType> additions = new ArrayList<>();
+        transactionTypes.parallelStream().forEach(transactionType -> additions.add(TransactionType.valueOf(transactionType)));
+        accountRestrictionHelper.createAccountTransactionTypeRestrictionTransactionAndWait(userAccount,
+                AccountRestrictionType.BLOCK_OUTGOING_TRANSACTION_TYPE, additions, new ArrayList<>());
     }
 
     @When("^(\\w+) tries to block sending transactions of type:$")
-    public void triesToBlockSendingTransactionsOfType(String userName, List<Object> transactionTypes) {
+    public void triesToBlockSendingTransactionsOfType(String userName, List<String> transactionTypes) {
         final Account userAccount = getUser(userName);
-        accountRestrictionHelper.addAppropriateModificationTransactionAndAnnounce(transactionType,
-                transactionTypes,
-                userAccount,
-                AccountRestrictionType.BLOCK_OUTGOING_TRANSACTION_TYPE);
+        List<TransactionType> additions = new ArrayList<>();
+        transactionTypes.parallelStream().forEach(transactionType -> additions.add(TransactionType.valueOf(transactionType)));
+        accountRestrictionHelper.createAccountTransactionTypeRestrictionTransactionAndAnnounce(userAccount,
+                AccountRestrictionType.BLOCK_OUTGOING_TRANSACTION_TYPE, additions, new ArrayList<>());
     }
 
     @When("^(\\w+) only allows sending transactions of type:$")
-    public void onlyAllowsSendingTransactionsOfType(String userName, List<Object> transactionTypes) {
+    public void onlyAllowsSendingTransactionsOfType(String userName, List<String> transactionTypes) {
         final Account userAccount = getUser(userName);
-        accountRestrictionHelper.addAppropriateModificationTransactionAndWait(transactionType,
-                transactionTypes,
-                userAccount,
-                AccountRestrictionType.ALLOW_OUTGOING_TRANSACTION_TYPE);
+        List<TransactionType> additions = new ArrayList<>();
+        transactionTypes.parallelStream().forEach(transactionType -> additions.add(TransactionType.valueOf(transactionType)));
+        accountRestrictionHelper.createAccountTransactionTypeRestrictionTransactionAndWait(userAccount,
+                AccountRestrictionType.ALLOW_OUTGOING_TRANSACTION_TYPE, additions, new ArrayList<>());
     }
 
     @When("^(\\w+) tries to only allow sending transactions of type:$")
-    public void triesToOnlyAllowSendingTransactionsOfType(String userName, List<Object> transactionTypes) {
+    public void triesToOnlyAllowSendingTransactionsOfType(String userName, List<String> transactionTypes) {
         final Account userAccount = getUser(userName);
-        accountRestrictionHelper.addAppropriateModificationTransactionAndAnnounce(transactionType,
-                transactionTypes,
-                userAccount,
-                AccountRestrictionType.ALLOW_OUTGOING_TRANSACTION_TYPE);
+        List<TransactionType> additions = new ArrayList<>();
+        transactionTypes.parallelStream().forEach(transactionType -> additions.add(TransactionType.valueOf(transactionType)));
+        accountRestrictionHelper.createAccountTransactionTypeRestrictionTransactionAndAnnounce(userAccount,
+                AccountRestrictionType.ALLOW_OUTGOING_TRANSACTION_TYPE, additions, new ArrayList<>());
     }
 
-    @When("^(\\w+) unblocks \"([^\"]*)\" transaction type$")
+    @When("^(\\w+) unblocks ([^\"]*) transaction type$")
     public void unblocksAnOperation(String userName, String operation) {
         final Account userAccount = getUser(userName);
-        List<Object> operationToUnblock = Arrays.asList(operation);
-        accountRestrictionHelper.removeAppropriateModificationTransactionAndAnnounce(transactionType,
-                operationToUnblock,
-                userAccount,
-                AccountRestrictionType.BLOCK_OUTGOING_TRANSACTION_TYPE);
+        List<TransactionType> deletions = new ArrayList<>();
+        deletions.add(TransactionType.valueOf(operation));
+        accountRestrictionHelper.createAccountTransactionTypeRestrictionTransactionAndWait(userAccount,
+                AccountRestrictionType.BLOCK_OUTGOING_TRANSACTION_TYPE, new ArrayList<>(), deletions);
     }
 
-    @When("^(\\w+) removes \"([^\"]*)\" from the allowed transaction types$")
+    @When("^(\\w+) removes ([^\"]*) from allowed transaction types$")
     public void removesFromTheAllowedTransactionTypes(String userName, String operation) {
         final Account userAccount = getUser(userName);
-        List<Object> transferTransaction = Arrays.asList(operation);
-        accountRestrictionHelper.removeAppropriateModificationTransactionAndAnnounce(transactionType,
-                transferTransaction,
-                userAccount,
-                AccountRestrictionType.ALLOW_OUTGOING_TRANSACTION_TYPE);
+        List<TransactionType> deletions = new ArrayList<>();
+        deletions.add(TransactionType.valueOf(operation));
+        accountRestrictionHelper.createAccountTransactionTypeRestrictionTransactionAndWait(userAccount,
+                AccountRestrictionType.ALLOW_OUTGOING_TRANSACTION_TYPE, new ArrayList<>(), deletions);
     }
 }
