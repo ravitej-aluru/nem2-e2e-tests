@@ -26,7 +26,6 @@ import io.nem.sdk.infrastructure.directconnect.dataaccess.database.common.Transa
 import io.nem.sdk.infrastructure.directconnect.dataaccess.mappers.TransactionStatusErrorMapper;
 import io.nem.sdk.model.transaction.TransactionStatus;
 import io.nem.sdk.model.transaction.TransactionStatusError;
-
 import java.math.BigInteger;
 import java.util.Optional;
 

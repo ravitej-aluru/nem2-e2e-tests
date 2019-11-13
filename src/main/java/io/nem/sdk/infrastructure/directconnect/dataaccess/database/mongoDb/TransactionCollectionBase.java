@@ -27,7 +27,6 @@ import io.nem.sdk.infrastructure.directconnect.dataaccess.mappers.TransactionMap
 import io.nem.sdk.model.transaction.Transaction;
 import io.nem.sdk.model.transaction.TransactionInfo;
 import io.nem.sdk.model.transaction.TransactionStatus;
-
 import java.util.List;
 import java.util.Optional;
 

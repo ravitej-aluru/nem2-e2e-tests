@@ -22,7 +22,6 @@ package io.nem.sdk.infrastructure.directconnect.dataaccess.database.mongoDb;
 
 import io.nem.sdk.infrastructure.directconnect.dataaccess.common.DataAccessContext;
 import io.nem.sdk.model.transaction.Transaction;
-
 import java.util.List;
 
 /** Transactions collection. */

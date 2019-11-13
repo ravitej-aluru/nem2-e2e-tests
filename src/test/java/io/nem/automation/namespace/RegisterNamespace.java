@@ -20,7 +20,7 @@
 
 package io.nem.automation.namespace;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;

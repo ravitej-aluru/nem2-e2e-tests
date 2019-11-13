@@ -23,7 +23,6 @@ package io.nem.sdk.infrastructure.directconnect.auth;
 import io.nem.sdk.infrastructure.directconnect.packet.Packet;
 import io.nem.sdk.infrastructure.directconnect.packet.PacketHeader;
 import io.nem.sdk.infrastructure.directconnect.packet.PacketType;
-
 import java.nio.ByteBuffer;
 
 /** Challenge parser. */

@@ -22,11 +22,10 @@ package io.nem.sdk.infrastructure.directconnect.dataaccess.mappers;
 
 import io.nem.core.utils.ConvertUtils;
 import io.vertx.core.json.JsonObject;
+import java.util.function.Function;
 import org.bson.Document;
 import org.bson.json.JsonMode;
 import org.bson.json.JsonWriterSettings;
-
-import java.util.function.Function;
 
 /** Document to JsonObject mapper */
 public class JsonObjectMapper implements Function<Document, JsonObject> {

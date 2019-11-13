@@ -23,7 +23,6 @@ package io.nem.sdk.infrastructure.directconnect.dataaccess.database.mongoDb;
 import io.nem.sdk.infrastructure.directconnect.dataaccess.common.DataAccessContext;
 import io.nem.sdk.infrastructure.directconnect.dataaccess.mappers.BlocksInfoMapper;
 import io.nem.sdk.model.blockchain.BlockInfo;
-
 import java.util.Optional;
 
 /** Block collection */

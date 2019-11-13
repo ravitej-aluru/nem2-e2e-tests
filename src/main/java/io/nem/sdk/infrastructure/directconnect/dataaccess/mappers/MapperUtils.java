@@ -22,13 +22,14 @@ package io.nem.sdk.infrastructure.directconnect.dataaccess.mappers;
 
 import io.nem.sdk.model.account.Address;
 import io.nem.sdk.model.account.UnresolvedAddress;
-import io.nem.sdk.model.mosaic.Mosaic;
 import io.nem.sdk.model.mosaic.MosaicId;
 import io.nem.sdk.model.mosaic.UnresolvedMosaicId;
-import io.nem.sdk.model.receipt.*;
+import io.nem.sdk.model.receipt.AddressResolutionStatement;
+import io.nem.sdk.model.receipt.MosaicResolutionStatement;
+import io.nem.sdk.model.receipt.ReceiptSource;
+import io.nem.sdk.model.receipt.ReceiptType;
+import io.nem.sdk.model.receipt.ResolutionEntry;
 import io.vertx.core.json.JsonObject;
-import org.apache.commons.math3.analysis.function.Add;
-
 import java.math.BigInteger;
 import java.util.List;
 import java.util.function.Function;

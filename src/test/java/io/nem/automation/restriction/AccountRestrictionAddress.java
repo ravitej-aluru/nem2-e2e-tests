@@ -8,7 +8,6 @@ import io.nem.automationHelpers.common.TestContext;
 import io.nem.automationHelpers.helper.AccountRestrictionHelper;
 import io.nem.automationHelpers.helper.MosaicHelper;
 import io.nem.sdk.model.account.Account;
-import io.nem.sdk.model.account.Address;
 import io.nem.sdk.model.account.UnresolvedAddress;
 import io.nem.sdk.model.transaction.AccountRestrictionType;
 import java.util.ArrayList;

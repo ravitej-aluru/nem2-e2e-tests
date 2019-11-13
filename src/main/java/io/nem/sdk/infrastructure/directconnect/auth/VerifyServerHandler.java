@@ -28,7 +28,6 @@ import io.nem.sdk.infrastructure.directconnect.packet.Packet;
 import io.nem.sdk.infrastructure.directconnect.packet.PacketHeader;
 import io.nem.sdk.infrastructure.directconnect.packet.PacketType;
 import io.nem.sdk.model.blockchain.NetworkType;
-
 import java.nio.ByteBuffer;
 import java.util.LinkedList;
 import java.util.List;

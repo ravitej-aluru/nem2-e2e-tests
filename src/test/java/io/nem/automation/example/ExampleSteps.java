@@ -11,7 +11,7 @@
  */
 package io.nem.automation.example;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;

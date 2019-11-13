@@ -23,9 +23,15 @@ package io.nem.sdk.infrastructure.directconnect.dataaccess.mappers;
 import io.nem.sdk.model.account.Address;
 import io.nem.sdk.model.account.PublicAccount;
 import io.nem.sdk.model.mosaic.MosaicId;
-import io.nem.sdk.model.namespace.*;
+import io.nem.sdk.model.namespace.AddressAlias;
+import io.nem.sdk.model.namespace.Alias;
+import io.nem.sdk.model.namespace.AliasType;
+import io.nem.sdk.model.namespace.EmptyAlias;
+import io.nem.sdk.model.namespace.MosaicAlias;
+import io.nem.sdk.model.namespace.NamespaceId;
+import io.nem.sdk.model.namespace.NamespaceInfo;
+import io.nem.sdk.model.namespace.NamespaceRegistrationType;
 import io.vertx.core.json.JsonObject;
-
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;

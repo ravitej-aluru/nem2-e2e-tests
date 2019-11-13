@@ -26,7 +26,6 @@ import io.nem.sdk.model.account.Address;
 import io.nem.sdk.model.account.Importances;
 import io.nem.sdk.model.mosaic.Mosaic;
 import io.vertx.core.json.JsonObject;
-
 import java.math.BigInteger;
 import java.util.List;
 import java.util.function.Function;

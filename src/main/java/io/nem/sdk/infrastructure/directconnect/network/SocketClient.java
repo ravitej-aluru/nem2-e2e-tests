@@ -21,7 +21,6 @@
 package io.nem.sdk.infrastructure.directconnect.network;
 
 import io.nem.core.utils.ExceptionUtils;
-
 import java.io.OutputStream;
 import java.net.Socket;
 import java.nio.ByteBuffer;

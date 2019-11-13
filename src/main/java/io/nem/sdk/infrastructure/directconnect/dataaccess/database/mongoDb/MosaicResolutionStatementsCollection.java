@@ -23,7 +23,6 @@ package io.nem.sdk.infrastructure.directconnect.dataaccess.database.mongoDb;
 import io.nem.sdk.infrastructure.directconnect.dataaccess.common.DataAccessContext;
 import io.nem.sdk.infrastructure.directconnect.dataaccess.mappers.MosaicResolutionStatementsMapper;
 import io.nem.sdk.model.receipt.MosaicResolutionStatement;
-
 import java.util.List;
 
 public class MosaicResolutionStatementsCollection {

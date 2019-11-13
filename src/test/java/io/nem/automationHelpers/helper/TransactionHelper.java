@@ -23,8 +23,6 @@ package io.nem.automationHelpers.helper;
 import io.nem.automationHelpers.common.TestContext;
 import io.nem.core.utils.ExceptionUtils;
 import io.nem.core.utils.RetryCommand;
-import io.nem.sdk.api.AggregateRepository;
-import io.nem.sdk.api.MultisigRepository;
 import io.nem.sdk.api.TransactionRepository;
 import io.nem.sdk.infrastructure.directconnect.dataaccess.dao.AccountsDao;
 import io.nem.sdk.infrastructure.directconnect.dataaccess.dao.TransactionDao;
@@ -240,7 +238,7 @@ public class TransactionHelper {
 	 * @param signedTransaction Signed transaction.
 	 */
 	public void announceAggregateBonded(final SignedTransaction signedTransaction) {
-		final AggregateRepository transactionRepository =
+		final TransactionRepository transactionRepository =
 				new TransactionDao(testContext.getCatapultContext());
 		testContext.getLogger().LogInfo("Announce bonded tx : " + signedTransaction.toString());
 		ExceptionUtils.propagate(
@@ -254,7 +252,7 @@ public class TransactionHelper {
 	 */
 	public void announceAggregateBondedCosignature(
 			final CosignatureSignedTransaction signedTransaction) {
-		final AggregateRepository transactionRepository =
+		final TransactionRepository transactionRepository =
 				new TransactionDao(testContext.getCatapultContext());
 		testContext.getLogger().LogInfo("Announce aggregate bonded cosignature tx : " + signedTransaction.toString());
 		ExceptionUtils.propagate(

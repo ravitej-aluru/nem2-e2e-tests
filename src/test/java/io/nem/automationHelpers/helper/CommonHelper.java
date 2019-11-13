@@ -20,7 +20,7 @@
 
 package io.nem.automationHelpers.helper;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import io.nem.automation.common.BaseTest;
 import io.nem.automationHelpers.common.TestContext;

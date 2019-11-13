@@ -20,14 +20,9 @@
 
 package io.nem.sdk.infrastructure.directconnect.dataaccess.mappers;
 
-import io.nem.sdk.model.mosaic.MosaicId;
-import io.nem.sdk.model.namespace.MosaicAlias;
-import io.nem.sdk.model.receipt.*;
+import io.nem.sdk.model.receipt.MosaicResolutionStatement;
 import io.vertx.core.json.JsonObject;
-
-import java.util.List;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public class MosaicResolutionStatementsMapper implements Function<JsonObject, MosaicResolutionStatement> {
 	/**

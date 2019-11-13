@@ -23,7 +23,6 @@ package io.nem.sdk.infrastructure.directconnect.dataaccess.mappers;
 import io.nem.sdk.model.mosaic.Mosaic;
 import io.nem.sdk.model.mosaic.MosaicId;
 import io.vertx.core.json.JsonObject;
-
 import java.util.function.Function;
 
 /** Mosaic mapper. */

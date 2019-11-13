@@ -23,7 +23,6 @@ package io.nem.sdk.infrastructure.directconnect.dataaccess.database.mongoDb;
 import io.nem.sdk.infrastructure.directconnect.dataaccess.common.DataAccessContext;
 import io.nem.sdk.infrastructure.directconnect.dataaccess.mappers.MultisigAccountInfoMapper;
 import io.nem.sdk.model.account.MultisigAccountInfo;
-
 import java.util.Optional;
 
 /** Multisigs collection. */

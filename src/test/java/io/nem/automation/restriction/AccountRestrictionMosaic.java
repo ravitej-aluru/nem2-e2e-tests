@@ -11,7 +11,6 @@ import io.nem.automationHelpers.common.TestContext;
 import io.nem.automationHelpers.helper.AccountRestrictionHelper;
 import io.nem.automationHelpers.helper.MosaicHelper;
 import io.nem.sdk.model.account.Account;
-import io.nem.sdk.model.mosaic.MosaicId;
 import io.nem.sdk.model.mosaic.MosaicInfo;
 import io.nem.sdk.model.mosaic.UnresolvedMosaicId;
 import io.nem.sdk.model.transaction.AccountRestrictionType;

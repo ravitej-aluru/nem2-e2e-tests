@@ -21,7 +21,6 @@
 package io.nem.sdk.infrastructure.directconnect.network;
 
 import io.nem.core.utils.ExceptionUtils;
-
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;

@@ -13,7 +13,6 @@
 package io.nem.sdk.infrastructure.directconnect.dataaccess.dao;
 
 import io.nem.core.utils.RetryCommand;
-import io.nem.sdk.api.AggregateRepository;
 import io.nem.sdk.api.TransactionRepository;
 import io.nem.sdk.infrastructure.common.CatapultContext;
 import io.nem.sdk.infrastructure.directconnect.dataaccess.database.common.TransactionState;
@@ -35,7 +34,7 @@ import java.util.Optional;
 /**
  * Transaction dao repository.
  */
-public class TransactionDao implements TransactionRepository, AggregateRepository {
+public class TransactionDao implements TransactionRepository {
 
     /* Catapult context. */
     private final CatapultContext catapultContext;

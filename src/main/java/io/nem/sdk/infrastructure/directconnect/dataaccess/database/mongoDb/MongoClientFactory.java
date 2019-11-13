@@ -21,7 +21,6 @@
 package io.nem.sdk.infrastructure.directconnect.dataaccess.database.mongoDb;
 
 import com.mongodb.MongoClient;
-
 import java.util.HashMap;
 
 /**

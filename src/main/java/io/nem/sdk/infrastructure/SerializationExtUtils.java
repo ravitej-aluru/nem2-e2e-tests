@@ -16,30 +16,9 @@
 
 package io.nem.sdk.infrastructure;
 
-import io.nem.catapult.builders.*;
-import io.nem.core.utils.ConvertUtils;
-import io.nem.core.utils.MapperUtils;
-import io.nem.core.utils.StringEncoder;
 import io.nem.sdk.model.account.Address;
-import io.nem.sdk.model.account.PublicAccount;
-import io.nem.sdk.model.account.UnresolvedAddress;
-import io.nem.sdk.model.blockchain.NetworkType;
-import io.nem.sdk.model.mosaic.Mosaic;
-import io.nem.sdk.model.mosaic.MosaicId;
-import io.nem.sdk.model.mosaic.UnresolvedMosaicId;
-import io.nem.sdk.model.namespace.NamespaceId;
-import io.nem.sdk.model.transaction.TransactionType;
-import org.apache.commons.codec.binary.Base32;
-import org.apache.commons.lang3.Validate;
-
-import java.io.ByteArrayInputStream;
-import java.io.DataInput;
-import java.io.DataInputStream;
-import java.math.BigInteger;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.util.List;
-import java.util.stream.Collectors;
+import org.apache.commons.codec.binary.Base32;
 
 /**
  * Utility class used to serialize/deserialize catbuffer values.

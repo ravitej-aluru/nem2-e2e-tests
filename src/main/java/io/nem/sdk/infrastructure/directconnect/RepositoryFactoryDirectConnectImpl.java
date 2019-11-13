@@ -1,7 +1,6 @@
 package io.nem.sdk.infrastructure.directconnect;
 
 import io.nem.sdk.api.AccountRepository;
-import io.nem.sdk.api.AggregateRepository;
 import io.nem.sdk.api.BlockRepository;
 import io.nem.sdk.api.ChainRepository;
 import io.nem.sdk.api.DiagnosticRepository;
@@ -88,11 +87,6 @@ public class RepositoryFactoryDirectConnectImpl implements RepositoryFactory {
 
     @Override
     public TransactionRepository createTransactionRepository() {
-        return new TransactionDao(context);
-    }
-
-    @Override
-    public AggregateRepository createAggregateRepository() {
         return new TransactionDao(context);
     }
 

@@ -20,7 +20,7 @@
 
 package io.nem.automation.transaction;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;

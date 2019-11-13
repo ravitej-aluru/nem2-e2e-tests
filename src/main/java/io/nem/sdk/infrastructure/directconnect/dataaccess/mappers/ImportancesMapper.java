@@ -22,7 +22,6 @@ package io.nem.sdk.infrastructure.directconnect.dataaccess.mappers;
 
 import io.nem.sdk.model.account.Importances;
 import io.vertx.core.json.JsonObject;
-
 import java.util.function.Function;
 
 /** Importances mapper */

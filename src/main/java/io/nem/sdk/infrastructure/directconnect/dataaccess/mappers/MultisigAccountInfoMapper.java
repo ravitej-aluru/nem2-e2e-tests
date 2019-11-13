@@ -25,7 +25,6 @@ import io.nem.sdk.model.account.MultisigAccountInfo;
 import io.nem.sdk.model.account.PublicAccount;
 import io.nem.sdk.model.blockchain.NetworkType;
 import io.vertx.core.json.JsonObject;
-
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;

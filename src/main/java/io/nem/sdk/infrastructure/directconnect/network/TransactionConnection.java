@@ -31,9 +31,8 @@ import io.nem.sdk.infrastructure.directconnect.packet.Packet;
 import io.nem.sdk.infrastructure.directconnect.packet.PacketType;
 import io.nem.sdk.model.transaction.CosignatureSignedTransaction;
 import io.nem.sdk.model.transaction.SignedTransaction;
-import org.apache.commons.codec.binary.Hex;
-
 import java.nio.ByteBuffer;
+import org.apache.commons.codec.binary.Hex;
 
 /** Transaction connection. */
 public class TransactionConnection {

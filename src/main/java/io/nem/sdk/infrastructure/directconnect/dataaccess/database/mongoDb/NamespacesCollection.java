@@ -24,12 +24,11 @@ import com.mongodb.client.model.Filters;
 import io.nem.sdk.infrastructure.directconnect.dataaccess.common.DataAccessContext;
 import io.nem.sdk.infrastructure.directconnect.dataaccess.mappers.NamespacesMapper;
 import io.nem.sdk.model.namespace.NamespaceInfo;
-import org.bson.Document;
-import org.bson.conversions.Bson;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import org.bson.Document;
+import org.bson.conversions.Bson;
 
 public class NamespacesCollection {
   /* Catapult context. */

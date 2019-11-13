@@ -12,24 +12,14 @@
 
 package io.nem.sdk.infrastructure.directconnect.dataaccess.dao;
 
-import io.nem.sdk.api.AccountRepository;
 import io.nem.sdk.api.MultisigRepository;
 import io.nem.sdk.infrastructure.SerializationExtUtils;
 import io.nem.sdk.infrastructure.common.CatapultContext;
-import io.nem.sdk.infrastructure.directconnect.dataaccess.database.mongoDb.AccountsCollection;
 import io.nem.sdk.infrastructure.directconnect.dataaccess.database.mongoDb.MultisigsCollection;
-import io.nem.sdk.infrastructure.directconnect.dataaccess.database.mongoDb.PartialTransactionsCollection;
-import io.nem.sdk.infrastructure.directconnect.dataaccess.database.mongoDb.UnconfirmedTransactionsCollection;
-import io.nem.sdk.model.account.AccountInfo;
 import io.nem.sdk.model.account.Address;
 import io.nem.sdk.model.account.MultisigAccountGraphInfo;
 import io.nem.sdk.model.account.MultisigAccountInfo;
-import io.nem.sdk.model.account.PublicAccount;
-import io.nem.sdk.model.transaction.AggregateTransaction;
-import io.nem.sdk.model.transaction.Transaction;
 import io.reactivex.Observable;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /** Account dao repository. */
 public class MultisigDao implements MultisigRepository {

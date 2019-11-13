@@ -28,10 +28,6 @@ import io.nem.sdk.infrastructure.directconnect.dataaccess.database.common.Catapu
 import io.nem.sdk.infrastructure.directconnect.dataaccess.database.common.Searchable;
 import io.nem.sdk.infrastructure.directconnect.dataaccess.mappers.JsonObjectMapper;
 import io.vertx.core.json.JsonObject;
-import org.bson.Document;
-import org.bson.conversions.Bson;
-import org.bson.types.Binary;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +35,9 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import org.bson.Document;
+import org.bson.conversions.Bson;
+import org.bson.types.Binary;
 
 /**
  * Catapult mongodb collection.

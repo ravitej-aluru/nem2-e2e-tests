@@ -22,7 +22,6 @@ package io.nem.sdk.infrastructure.directconnect.dataaccess.mappers;
 
 import io.nem.sdk.model.blockchain.ChainStatisticInfo;
 import io.vertx.core.json.JsonObject;
-
 import java.math.BigInteger;
 import java.util.function.Function;
 

@@ -23,7 +23,6 @@ package io.nem.sdk.infrastructure.directconnect.network;
 import io.nem.core.crypto.KeyPair;
 import io.nem.core.crypto.PublicKey;
 import io.nem.sdk.model.blockchain.NetworkType;
-
 import java.util.HashMap;
 
 /**

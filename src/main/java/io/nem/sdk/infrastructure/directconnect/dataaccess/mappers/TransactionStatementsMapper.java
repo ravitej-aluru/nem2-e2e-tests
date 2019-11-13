@@ -25,9 +25,16 @@ import io.nem.sdk.model.account.PublicAccount;
 import io.nem.sdk.model.blockchain.NetworkType;
 import io.nem.sdk.model.mosaic.MosaicId;
 import io.nem.sdk.model.namespace.NamespaceId;
-import io.nem.sdk.model.receipt.*;
+import io.nem.sdk.model.receipt.ArtifactExpiryReceipt;
+import io.nem.sdk.model.receipt.BalanceChangeReceipt;
+import io.nem.sdk.model.receipt.BalanceTransferReceipt;
+import io.nem.sdk.model.receipt.InflationReceipt;
+import io.nem.sdk.model.receipt.Receipt;
+import io.nem.sdk.model.receipt.ReceiptSource;
+import io.nem.sdk.model.receipt.ReceiptType;
+import io.nem.sdk.model.receipt.ReceiptVersion;
+import io.nem.sdk.model.receipt.TransactionStatement;
 import io.vertx.core.json.JsonObject;
-
 import java.math.BigInteger;
 import java.util.function.Function;
 import java.util.stream.Collectors;

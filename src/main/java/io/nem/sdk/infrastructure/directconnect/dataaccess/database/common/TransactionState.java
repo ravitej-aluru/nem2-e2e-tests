@@ -21,7 +21,6 @@
 package io.nem.sdk.infrastructure.directconnect.dataaccess.database.common;
 
 import io.nem.sdk.model.transaction.TransactionStatus;
-
 import java.util.Optional;
 
 /** Transaction state. */

@@ -23,7 +23,6 @@ package io.nem.sdk.infrastructure.directconnect.dataaccess.database.mongoDb;
 import io.nem.sdk.infrastructure.directconnect.dataaccess.common.DataAccessContext;
 import io.nem.sdk.infrastructure.directconnect.dataaccess.mappers.MosaicInfoMapper;
 import io.nem.sdk.model.mosaic.MosaicInfo;
-
 import java.util.Optional;
 
 /** Mosaics collection */

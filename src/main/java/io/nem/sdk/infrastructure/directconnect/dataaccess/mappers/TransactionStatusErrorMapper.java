@@ -15,7 +15,6 @@ package io.nem.sdk.infrastructure.directconnect.dataaccess.mappers;
 import io.nem.sdk.model.transaction.Deadline;
 import io.nem.sdk.model.transaction.TransactionStatusError;
 import io.vertx.core.json.JsonObject;
-
 import java.math.BigInteger;
 import java.util.function.Function;
 
