@@ -40,6 +40,7 @@ public class BlocksInfoMapper implements Function<JsonObject, BlockInfo> {
         final JsonObject blockJsonObject = jsonObject.getJsonObject("block");
         final String signature = blockJsonObject.getString("signature");
         final String signer = blockJsonObject.getString("signerPublicKey");
+        final NetworkType networkType = NetworkType.rawValueOf(blockJsonObject.getInteger("network"));
         final int version = blockJsonObject.getInteger("version");
         final int type = blockJsonObject.getInteger("type");
         final BigInteger height = MapperUtils.extractBigInteger(blockJsonObject, "height");
@@ -59,6 +60,7 @@ public class BlocksInfoMapper implements Function<JsonObject, BlockInfo> {
             transactionHashes,
             signature,
             signer,
+            networkType,
             version,
             type,
             height,

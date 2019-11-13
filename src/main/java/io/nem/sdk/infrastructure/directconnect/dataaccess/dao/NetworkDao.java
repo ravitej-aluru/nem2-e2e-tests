@@ -14,13 +14,16 @@ package io.nem.sdk.infrastructure.directconnect.dataaccess.dao;
 
 import io.nem.sdk.api.NetworkRepository;
 import io.nem.sdk.infrastructure.common.CatapultContext;
+import io.nem.sdk.model.blockchain.NetworkInfo;
 import io.nem.sdk.model.blockchain.NetworkType;
 import io.reactivex.Observable;
 import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 
-/** Network Dao repository. */
+/**
+ * Network Dao repository.
+ */
 public class NetworkDao implements NetworkRepository {
 
     /* Hash map of network type. */
@@ -59,5 +62,10 @@ public class NetworkDao implements NetworkRepository {
                 return clientNetworkTypeMap
                     .get(catapultContext.getDataAccessContext().getHostName());
             });
+    }
+
+    @Override
+    public Observable<NetworkInfo> getNetworkInfo() {
+        throw new IllegalStateException("Method not implemented");
     }
 }
