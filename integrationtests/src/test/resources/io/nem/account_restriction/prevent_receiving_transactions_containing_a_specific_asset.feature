@@ -40,7 +40,7 @@ Feature: Prevent receiving transactions containing a specific asset
     Given Bobby blocks receiving transactions containing the following assets:
       | ticket  |
       | voucher |
-    When Bobby unblocks ticket asset
+    When Bobby removes ticket from blocked assets
     And Alex tries to send 1 asset "voucher" to Bobby
     Then Bobby should receive a confirmation message
 #     And receiving voucher assets should remain blocked
@@ -60,7 +60,7 @@ Feature: Prevent receiving transactions containing a specific asset
 
   Scenario: 5. An account unblocks a not blocked asset
     Given Bobby has blocked receiving ticket assets
-    When Bobby tries to unblock receiving voucher assets
+    When Bobby tries to remove voucher from blocked assets
     Then Bobby should receive the error "Failure_RestrictionAccount_Invalid_Modification"
 
   Scenario: 6. An account removes an asset that does not exist in the allowed assets
