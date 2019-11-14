@@ -33,7 +33,7 @@ Feature: Prevent receiving transactions from undesired addresses
     Given Bobby blocked receiving transactions from:
       | Alex  |
       | Carol  |
-    When Bobby unblocks Alex address
+    When Bobby removes Alex from blocked addresses
     And Alex sends 1 asset "cat.currency" to Bobby
     And Carol tries to send 1 asset "cat.currency" to Bobby
     Then Bobby should receive a confirmation message
@@ -56,7 +56,7 @@ Feature: Prevent receiving transactions from undesired addresses
   Scenario: 5. An account unblocks a not blocked address
     Given Bobby blocked receiving transactions from:
       | Alex |
-    When Bobby tries to unblock Carol address
+    When Bobby tries to remove Carol from blocked addresses
     Then Bobby should receive the error "Failure_RestrictionAccount_Modification_Not_Allowed"
 
   Scenario: 6. An account removes an address that does not exist in the allowed addresses
