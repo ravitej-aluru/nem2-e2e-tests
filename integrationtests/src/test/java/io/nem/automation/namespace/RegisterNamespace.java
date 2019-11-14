@@ -145,8 +145,8 @@ public class RegisterNamespace extends BaseTest {
 
 	@And("^(\\w+) should become the owner of the new namespace (\\w+)$")
 	public void verifyNamespaceOwnership(final String userName, final String namespaceName) {
-		String randomName = getTestContext().getScenarioContext().getContext(namespaceName);
-		BigInteger count = getTestContext().getScenarioContext().getContext(namespaceName + "Count");
+		final String randomName = getTestContext().getScenarioContext().getContext(namespaceName);
+		final BigInteger count = getTestContext().getScenarioContext().getContext(namespaceName + "Count");
 		verifyNamespaceInfo(userName, NamespaceId.createFromName(randomName), count);
 	}
 

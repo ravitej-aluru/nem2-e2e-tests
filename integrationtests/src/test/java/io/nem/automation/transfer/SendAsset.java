@@ -66,8 +66,8 @@ public class SendAsset extends BaseTest {
 			final String assetName,
 			final String recipient) {
 		final MosaicId mosaicId = resolveMosaicId(assetName);
-		getTestContext().getLogger().LogInfo(String.format("transferAsset: sender = %s; " +
-				"recipient: %s; mosaicId: %d; amount: %d", sender, recipient, mosaicId.getId(), amount));
+//		getTestContext().getLogger().LogInfo(String.format("transferAsset: sender = %s; " +
+//				"recipient: %s; mosaicId: %d; amount: %d", sender, recipient, mosaicId.getId(), amount));
 		transferAssets(
 				sender, recipient, Arrays.asList(new Mosaic(mosaicId, amount)), PlainMessage.Empty);
 	}
@@ -108,10 +108,10 @@ public class SendAsset extends BaseTest {
 						+ recipientAccountInfoAfter.getAddress()
 						+ ") did not receive Asset mosaic id:"
 						+ mosaicId;
-		getTestContext().getLogger().LogInfo("Recipient Account Info before: %s\n", recipientAccountInfo.toString());
-		getTestContext().getLogger().LogInfo("Mosaic before: %s = %d\n\n", initialMosaic, initialAmount);
-		getTestContext().getLogger().LogInfo("Recipient Account Info AFTER: %s\n", recipientAccountInfoAfter.toString());
-		getTestContext().getLogger().LogInfo("Mosaic AFTER: %s = %d\n\n", mosaicAfter, amountAfter);
+//		getTestContext().getLogger().LogInfo("Recipient Account Info before: %s\n", recipientAccountInfo.toString());
+//		getTestContext().getLogger().LogInfo("Mosaic before: %s = %d\n\n", initialMosaic, initialAmount);
+//		getTestContext().getLogger().LogInfo("Recipient Account Info AFTER: %s\n", recipientAccountInfoAfter.toString());
+//		getTestContext().getLogger().LogInfo("Mosaic AFTER: %s = %d\n\n", mosaicAfter, amountAfter);
     assertEquals(errorMessage, true, mosaicAfter.isPresent());
     assertEquals(
         errorMessage, amount, amountAfter - initialAmount);

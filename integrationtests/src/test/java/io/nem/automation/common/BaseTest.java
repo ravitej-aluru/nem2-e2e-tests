@@ -403,9 +403,9 @@ public abstract class BaseTest {
 		final Address recipientAddress = resolveRecipientAddress(recipient);
 		storeUserInfoInContext(sender);
 		storeUserInfoInContext(recipient, recipientAddress, getTestContext());
-        getTestContext().getLogger().LogInfo("transferAssets: \n");
-        getTestContext().getLogger().LogInfo(String.format("Sender before transfer (stored in context): %s\n", getAccountInfoFromContext(sender).toString()));
-        getTestContext().getLogger().LogInfo(String.format("Recipient before transfer (stored in context): %s\n", getAccountInfoFromContext(recipient).toString()));
+//        getTestContext().getLogger().LogInfo("transferAssets: \n");
+//        getTestContext().getLogger().LogInfo(String.format("Sender before transfer (stored in context): %s\n", getAccountInfoFromContext(sender).toString()));
+//        getTestContext().getLogger().LogInfo(String.format("Recipient before transfer (stored in context): %s\n", getAccountInfoFromContext(recipient).toString()));
       final TransferHelper transferHelper = new TransferHelper(getTestContext());
       TransferTransaction transfer = transferHelper.submitTransferAndWait(senderAccount, recipientAddress, mosaics, message);
     }

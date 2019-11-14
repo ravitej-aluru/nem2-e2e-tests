@@ -37,7 +37,7 @@ public class AccountRestrictionMosaic extends BaseTest {
         assets.parallelStream().forEach(asset -> {
                 assetRegistration.registerAsset(userName, asset);
         });
-        getTestContext().getLogger().LogInfo(getAccountInfoFromContext(userName).toString());
+//        getTestContext().getLogger().LogInfo(getAccountInfoFromContext(userName).toString());
     }
 
     @When("^(\\w+) allows receiving transactions containing the following assets:$")
