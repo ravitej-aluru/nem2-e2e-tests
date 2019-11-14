@@ -46,7 +46,7 @@ Feature: Prevent sending transactions by type
     Given Alex blocks sending transactions of type:
       | TRANSFER           |
       | REGISTER_NAMESPACE |
-    When Alex unblocks "TRANSFER" transaction type
+    When Alex removes TRANSFER from blocked transaction types
     And Alex sends 1 asset "cat.currency" to Bobby
     And Alex tries to register a namespace named "alexexp" for 10 blocks
     Then Bobby should receive a confirmation message
@@ -58,25 +58,25 @@ Feature: Prevent sending transactions by type
     Given Alex only allows sending transactions of type:
       | TRANSFER           |
       | REGISTER_NAMESPACE |
-    When Alex removes "TRANSFER" from the allowed transaction types
+    When Alex removes TRANSFER from allowed transaction types
     And Alex sends 1 asset "cat.currency" to Bobby
     And Alex tries to register a namespace named "alexexp" for 10 blocks
     Then Alex should receive a confirmation message
     And Bobby should receive 1 of asset "cat.currency"
     And Alex "cat.currency" balance should decrease by 1 units
-    And Alex should get should receive the error "FAILURE_RESTRICTIONACCOUNT_OPERATION_TYPE_PROHIBITED"
+    And Alex should receive the error "FAILURE_RESTRICTIONACCOUNT_OPERATION_TYPE_PROHIBITED"
 
 
   Scenario: 5. An account unblocks a not blocked transaction type
     Given Alex blocks sending transactions of type:
       | TRANSFER |
-    When Alex unblocks REGISTER_NAMESPACE transaction type
+    When Alex tries to remove REGISTER_NAMESPACE from blocked transaction types
     Then Alex should receive the error "Failure_RestrictionAccount_Modification_Not_Allowed"
 
   Scenario: 6. An account removes a transaction type that does not exist in the allowed transaction types
     Given Alex only allows sending transactions of type:
       | TRANSFER |
-    When Alex removes REGISTER_NAMESPACE from allowed transaction types
+    When Alex tries to remove REGISTER_NAMESPACE from allowed transaction types
     Then Alex should receive the error "Failure_RestrictionAccount_Modification_Not_Allowed"
 
   Scenario: 7. An account tries to only allow sending transactions of a given type when it has blocked types
