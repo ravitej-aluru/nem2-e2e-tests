@@ -21,20 +21,6 @@ Feature: Edit a multisignature contract
     Then Alice should receive a confirmation message
     And the multisignature contract should be updated
 
-  Scenario: A cosignatory adds another cosignatory to the multisignature contract
-    Given Alice created a 1 of 2 multisignature contract called "tom" with 1 required for removal with cosignatories:
-      | cosignatory |
-      | computer    |
-      | phone       |
-    And "Alice" update the cosignatories of the multisignature:
-      | cosignatory | operation |
-      | tablet      | add       |
-    And Alice published the bonded contract
-    And "tablet" accepted the transaction
-    When "computer" accepts the transaction
-    Then Alice should receive a confirmation message
-    And the multisignature contract should be updated
-
   @bvt
   Scenario: A cosignatory remove cosignatory to the multisignature contract
     Given Alice created a 1 of 2 multisignature contract called "tom" with 1 required for removal with cosignatories:
@@ -131,11 +117,11 @@ Feature: Edit a multisignature contract
     Then she should receive the error "<error>"
 
     Examples:
-      | minimum-approval |minimum-removal | error                                                             |
-      | -1               | 0              | Failure_Multisig_Modify_Min_Setting_Out_Of_Range                  |
-      | 0                | -1             | Failure_Multisig_Modify_Min_Setting_Out_Of_Range                  |
-      | 2                | 0              | Failure_Multisig_Modify_Min_Setting_Larger_Than_Num_Cosignatories |
-      | 1                | 2              | Failure_Multisig_Modify_Min_Setting_Larger_Than_Num_Cosignatories |
+      | minimum-approval |minimum-removal | error                                                      |
+      | -1               | 0              | FAILURE_MULTISIG_MIN_SETTING_OUT_OF_RANGE                  |
+      | 0                | -1             | FAILURE_MULTISIG_MIN_SETTING_OUT_OF_RANGE                  |
+      | 2                | 0              | FAILURE_MULTISIG_MIN_SETTING_LARGER_THAN_NUM_COSIGNATORIES |
+      | 1                | 2              | FAILURE_MULTISIG_MIN_SETTING_LARGER_THAN_NUM_COSIGNATORIES |
 
   Scenario: The last cosignatory tries to remove himself from the multisignature contract without
     Given Alice created a 1 of 1 multisignature contract called "tom" with 1 required for removal with cosignatories:
@@ -146,7 +132,7 @@ Feature: Edit a multisignature contract
       | computer    | remove    |
     When computer publishes the contract
     Then Alice should receive a confirmation message
-    Then she should receive the error "Failure_Multisig_Modify_Min_Setting_Out_Of_Range"
+    Then she should receive the error "FAILURE_MULTISIG_MIN_SETTING_OUT_OF_RANGE"
 
   Scenario: A cosignatory tries adding twice another cosignatory to the multisignature contract
     Given Alice created a 1 of 2 multisignature contract called "tom" with 1 required for removal with cosignatories:
@@ -159,7 +145,7 @@ Feature: Edit a multisignature contract
       | phone       | add       |
     And phone published the bonded contract
     When "phone" accepts the transaction
-    Then she should receive the error "Failure_Multisig_Modify_Already_A_Cosigner"
+    Then she should receive the error "FAILURE_MULTISIG_ALREADY_A_COSIGNATORY"
 
   Scenario: A cosignatory tries to add more than 10 cosignatories to the multisignature contract
     Given Alice created a 1 of 10 multisignature contract called "tom" with 1 required for removal with cosignatories:
@@ -179,7 +165,7 @@ Feature: Edit a multisignature contract
       | phone11     | add       |
     And computer published the bonded contract
     And "phone11" accepts the transaction
-    Then "Alice" should receive the error "Failure_Multisig_Modify_Max_Cosigners"
+    Then "Alice" should receive the error "FAILURE_MULTISIG_MAX_COSIGNATORIES"
 
   Scenario: A cosignatory tries to add the multisignature contract as a cosignatory
     Given Alice created a 1 of 2 multisignature contract called "tom" with 1 required for removal with cosignatories:
@@ -190,7 +176,7 @@ Feature: Edit a multisignature contract
       | cosignatory | operation |
       | tom         | add       |
     When computer publishes the bonded contract
-    Then "Alice" should receive the error "Failure_Multisig_Modify_Loop"
+    Then "Alice" should receive the error "FAILURE_MULTISIG_LOOP"
 
   Scenario: A cosignatory tries to add another cosignatory where the multisignature contract is a cosignatory.
     Given Alice created a 1 of 2 multisignature contract called "tom" with 1 required for removal with cosignatories:
@@ -205,7 +191,7 @@ Feature: Edit a multisignature contract
       | cosignatory | operation |
       | tom         | add       |
     When browser publishes the bonded contract
-    Then "Alice" should receive the error "Failure_Multisig_Modify_Loop"
+    Then "Alice" should receive the error "FAILURE_MULTISIG_MAX_MULTISIG_DEPTH"
 
   Scenario: A cosignatory tries to delete multiple cosignatories
     Given Alice created a 1 of 2 multisignature contract called "tom" with 1 required for removal with cosignatories:
@@ -217,7 +203,7 @@ Feature: Edit a multisignature contract
       | computer    | remove    |
       | phone       | remove    |
     When computer publishes the contract
-    Then "Alice" should receive the error "Failure_Multisig_Modify_Multiple_Deletes"
+    Then "Alice" should receive the error "FAILURE_MULTISIG_MULTIPLE_DELETES"
 
   Scenario: A cosignatory tries to remove a cosignatory that does not exist
     Given Alice created a 1 of 2 multisignature contract called "tom" with 1 required for removal with cosignatories:
@@ -228,7 +214,7 @@ Feature: Edit a multisignature contract
       | cosignatory | operation |
       | tablet      | remove    |
     When computer publishes the contract
-    Then "Alice" should receive the error "Failure_Multisig_Modify_Not_A_Cosigner"
+    Then "Alice" should receive the error "FAILURE_MULTISIG_NOT_A_COSIGNATORY"
 
   Scenario: A cosignatory tries to add and remove the same account as cosignatory at the same time
     Given Alice created a 1 of 2 multisignature contract called "tom" with 1 required for removal with cosignatories:
@@ -241,5 +227,5 @@ Feature: Edit a multisignature contract
       | tablet      | remove    |
     And computer published the bonded contract
     When "tablet" accepts the transaction
-    Then Alice should receive the error "Failure_Multisig_Modify_Account_In_Both_Sets"
+    Then Alice should receive the error "FAILURE_MULTISIG_ACCOUNT_IN_BOTH_SETS"
 

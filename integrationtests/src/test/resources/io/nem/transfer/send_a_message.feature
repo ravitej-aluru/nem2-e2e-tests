@@ -25,10 +25,10 @@ Feature: Send a message
 
     Examples:
       | message | recipient                                      | error                        |
-      | Hello   | NAIBV5-BKEVGJ-IZQ4RP-224TYE-J3ZIUL-WDHUTI-X3H5 | Failure_Core_Invalid_Address |
-      | Hello   | MAIBV5-BKEVGJ-IZQ4RP-224TYE-J3ZIUL-WDHUTI-X3H5 | Failure_Core_Invalid_Address |
+      | Hello   | NAIBV5-BKEVGJ-IZQ4RP-224TYE-J3ZIUL-WDHUTI-X3H5 | FAILURE_CORE_INVALID_ADDRESS |
+      | Hello   | MAIBV5-BKEVGJ-IZQ4RP-224TYE-J3ZIUL-WDHUTI-X3H5 | FAILURE_CORE_INVALID_ADDRESS |
 
   Scenario: An account tries to send a message to another account but the message is too large
 
-    When Alice tries to send a 1025 character message to Bob
+    When Alice tries to send a 1024 character message to Bob
     Then she should receive the error "Failure_Transfer_Message_Too_Large"

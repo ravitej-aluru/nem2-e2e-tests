@@ -30,10 +30,10 @@ import io.nem.automationHelpers.helper.NamespaceHelper;
 import io.nem.automationHelpers.helper.TransferHelper;
 import io.nem.sdk.model.account.Account;
 import io.nem.sdk.model.account.AccountInfo;
+import io.nem.sdk.model.message.PlainMessage;
 import io.nem.sdk.model.mosaic.Mosaic;
 import io.nem.sdk.model.mosaic.MosaicInfo;
 import io.nem.sdk.model.namespace.NamespaceId;
-import io.nem.sdk.model.transaction.PlainMessage;
 
 import java.math.BigInteger;
 import java.util.Arrays;
@@ -130,7 +130,7 @@ public class LinkAddressToNamespace extends BaseTest {
 			final String recipient) {
 		final Account senderAccount = getUser(sender);
 		final String realName = getTestContext().getScenarioContext().getContext(namespaceName);
-		final NamespaceId namespaceId = new NamespaceId(realName);
+		final NamespaceId namespaceId = getNamespaceIdFromName(realName);
 		final MosaicInfo mosaicInfo = getTestContext().getScenarioContext().getContext(assetName);
 		final int amount = 1;
 		final TransferHelper transferHelper = new TransferHelper(getTestContext());

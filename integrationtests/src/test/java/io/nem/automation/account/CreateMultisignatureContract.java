@@ -66,7 +66,7 @@ public class CreateMultisignatureContract extends BaseTest {
 		List<Account> cosigners = new Vector<>();
 		if (multisigAccountInfoOptional.isPresent()) {
 			cosigners = multisigAccountInfoOptional.get().getCosignatories().parallelStream().map(publicAccount ->  {
-				final Account cosignerAccount = getTestContext().getScenarioContext().getContext(publicAccount.getAddress().plain());
+				final Account cosignerAccount = getUserAccountFromContext(publicAccount.getAddress());
 				return getCosignersForAccount(cosignerAccount);
 			}).flatMap(Collection::stream).collect(Collectors.toList());
 		}
@@ -87,18 +87,17 @@ public class CreateMultisignatureContract extends BaseTest {
 		final Account multiSigAccount = getUserWithCurrency(multisigAccountName);
 		getTestContext().getLogger().LogError("MultiSig account " + multisigAccountName + " public key:" + multiSigAccount.getPublicKey());
 		final List<Account> cosignerAccounts = new Vector<>(cosignatories.size());
-		final List<MultisigCosignatoryModification> multisigCosignatoryModifications =
+		final List<PublicAccount> accountsAdditions =
 				cosignatories.parallelStream().map(name -> {
 			final Account account = getUserWithCurrency(name);
 			getTestContext().getLogger().LogError("Cosigner account " + name + " public key:" + account.getPublicKey());
 			final List<Account> cosigners = getCosignersForAccount(account);
 			cosignerAccounts.addAll(cosigners);
-			return new MultisigCosignatoryModification(
-							MultisigCosignatoryModificationType.ADD, account.getPublicAccount());
+			return account.getPublicAccount();
 		}).collect(Collectors.toList());
-		final ModifyMultisigAccountTransaction modifyMultisigAccountTransaction =
-				multisigAccountHelper.createModifyMultisigAccountTransaction(
-						minimumApproval, minimumRemoval, multisigCosignatoryModifications);
+		final MultisigAccountModificationTransaction modifyMultisigAccountTransaction =
+				multisigAccountHelper.createMultisigAccountModificationTransaction(
+						minimumApproval, minimumRemoval, accountsAdditions, new ArrayList<>());
 		getTestContext().addTransaction(modifyMultisigAccountTransaction);
 		final AggregateTransaction aggregateTransaction =
 				new AggregateHelper(getTestContext())
@@ -194,9 +193,9 @@ public class CreateMultisignatureContract extends BaseTest {
 				getTestContext().getScenarioContext().getContext(MULTISIG_ACCOUNT_INFO);
 		final MultisigAccountInfo multisigAccountInfo =
 				new AccountHelper(getTestContext()).getMultisigAccount(multisigAccount.getAddress());
-		final ModifyMultisigAccountTransaction modifyMultisigAccountTransaction =
+		final MultisigAccountModificationTransaction modifyMultisigAccountTransaction =
 				getTestContext()
-						.<ModifyMultisigAccountTransaction>findTransaction(
+						.<MultisigAccountModificationTransaction>findTransaction(
 								TransactionType.MODIFY_MULTISIG_ACCOUNT)
 						.get();
 		final String errorMessage =
@@ -210,18 +209,23 @@ public class CreateMultisignatureContract extends BaseTest {
 				errorMessage,
 				modifyMultisigAccountTransaction.getMinRemovalDelta(),
 				multisigAccountInfo.getMinRemoval());
-		assertEquals(
-				errorMessage,
-				modifyMultisigAccountTransaction.getModifications().size(),
-				multisigAccountInfo.getCosignatories().size());
-		for (final MultisigCosignatoryModification modification :
-				modifyMultisigAccountTransaction.getModifications()) {
+		for (final PublicAccount publicAccount :
+				modifyMultisigAccountTransaction.getPublicAccountsAdditions()) {
 			assertEquals(
 					errorMessage,
 					true,
 					multisigAccountInfo
 							.getCosignatories()
-							.contains(modification.getCosignatoryPublicAccount()));
+							.contains(publicAccount));
+		}
+		for (final PublicAccount publicAccount :
+				modifyMultisigAccountTransaction.getPublicAccountsDeletions()) {
+			assertEquals(
+					errorMessage,
+					false,
+					multisigAccountInfo
+							.getCosignatories()
+							.contains(publicAccount));
 		}
 	}
 
@@ -249,7 +253,8 @@ public class CreateMultisignatureContract extends BaseTest {
 				cosignatories.subList(1, cosignatories.size()));
 		publishBondedTransaction(userName);
 		cosignMultiSignatureAccount();
-		waitForLastTransactionToComplete();
+		final AggregateTransaction aggregateTransaction =  waitForLastTransactionToComplete();
+		getTestContext().addTransaction(aggregateTransaction);
 	}
 
 	@Given("^(\\w+) is cosignatory of (\\d+) multisignature contracts$")

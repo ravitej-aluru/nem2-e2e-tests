@@ -37,7 +37,6 @@ import io.nem.sdk.model.transaction.TransactionType;
 
 import java.math.BigInteger;
 import java.util.Random;
-import java.util.function.Supplier;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -59,13 +58,10 @@ public class AssetRegistration extends BaseTest {
 	}
 
 	private void createMosaicAndSaveAccount(
-			final TestContext testContext,
-			final Account account,
-			final Supplier<SignedTransaction> createMosaicDefinition) {
-		final AccountInfo accountInfo =
-				new AccountHelper(testContext).getAccountInfo(account.getAddress());
-		getTestContext().getScenarioContext().setContext(ACCOUNT_INFO_KEY, accountInfo);
-		createMosaicDefinition.get();
+			final String userName,
+			final Runnable createMosaicDefinition) {
+		storeUserInfoInContext(userName);
+		createMosaicDefinition.run();
 	}
 
 	private void verifyAsset(final Account account, final BigInteger duration) {
@@ -78,25 +74,25 @@ public class AssetRegistration extends BaseTest {
 		final String errorMessage = "Mosaic info check failed for id: " + mosaicId.getIdAsLong();
 		assertEquals(errorMessage, mosaicId.getIdAsLong(), mosaicInfo.getMosaicId().getIdAsLong());
 		assertEquals(
-				errorMessage, account.getPublicKey(), mosaicInfo.getOwner().getPublicKey().toString());
+				errorMessage, account.getPublicKey(), mosaicInfo.getOwner().getPublicKey().toHex());
 		assertEquals(
 				errorMessage,
-				mosaicDefinitionTransaction.getMosaicProperties().getDivisibility(),
+				mosaicDefinitionTransaction.getDivisibility(),
 				mosaicInfo.getDivisibility());
 		assertEquals(
 				errorMessage,
-				mosaicDefinitionTransaction.getMosaicProperties().isSupplyMutable(),
+				mosaicDefinitionTransaction.getMosaicFlags().isSupplyMutable(),
 				mosaicInfo.isSupplyMutable());
 		assertEquals(
 				errorMessage,
-				mosaicDefinitionTransaction.getMosaicProperties().isTransferable(),
+				mosaicDefinitionTransaction.getMosaicFlags().isTransferable(),
 				mosaicInfo.isTransferable());
 		assertEquals(
 				errorMessage,
 				mosaicDefinitionTransaction.getMosaicId().getIdAsLong(),
 				mosaicInfo.getMosaicId().getIdAsLong());
 		assertEquals(errorMessage, 0, mosaicInfo.getSupply().longValue());
-		assertTrue(errorMessage, mosaicInfo.getHeight().longValue() > 1);
+		assertTrue(errorMessage, mosaicInfo.getStartHeight().longValue() > 1);
 		assertEquals(
 				errorMessage, duration.longValue(), mosaicInfo.getDuration().longValue());
 	}
@@ -116,33 +112,30 @@ public class AssetRegistration extends BaseTest {
 						.findAny()
 						.get();
 		assertEquals(mosaicBefore.getId(), mosaicAfter.getId());
-		final Mosaic networkCurrencyMosaic = NetworkCurrencyMosaic.createRelative(BigInteger.valueOf(amountChange));
+
 		assertEquals(
+				amountChange,
 				mosaicBefore.getAmount().longValue()
-						- networkCurrencyMosaic
-						.getAmount()
-						.longValue(),
-				mosaicAfter.getAmount().longValue());
+						- mosaicAfter.getAmount().longValue());
 	}
 
 	@When("^(\\w+) registers (\\w+), supply (\\w+) with divisibility (\\d+) asset for (\\d+) in blocks$")
 	public void registerAssestForDuration(
-			final String username,
+			final String userName,
 			final AssetTransferableType assetTransferableType,
 			final AssetSupplyType assetSupplyType,
 			final int divisibility,
 			final int duration) {
-		final Account userAccount = getUser(username);
+		final Account userAccount = getUser(userName);
 		final boolean supplyMutable = assetSupplyType == AssetSupplyType.MUTABLE;
 		final boolean transferable = assetTransferableType == AssetTransferableType.TRANSFERABLE;
+		final MosaicFlags mosaicFlags = MosaicFlags.create(supplyMutable, transferable);
 		createMosaicAndSaveAccount(
-				getTestContext(),
-				userAccount,
+				userName,
 				() ->
-						mosaicHelper.createExpiringMosaicDefinitionTransactionAndAnnounce(
+						mosaicHelper.submitExpiringMosaicDefinitionAndWait(
 								userAccount,
-								supplyMutable,
-								transferable,
+								mosaicFlags,
 								divisibility,
 								BigInteger.valueOf(duration)));
 		waitForLastTransactionToComplete();
@@ -154,24 +147,23 @@ public class AssetRegistration extends BaseTest {
 		verifyAsset(userAccount, duration);
 	}
 
-	@And("(\\w+) \"cat.currency\" balance should decrease in (\\d+) units")
-	public void verifyAccountBalance(final String username, final int change) {
-		final AccountInfo accountInfoBefore =
-				getTestContext().getScenarioContext().getContext(ACCOUNT_INFO_KEY);
-		verifyAccountBalance(accountInfoBefore, change);
+	@And("(\\w+) pays fee in (\\d+) units")
+	public void verifyAccountBalanceDueToFee(final String userName, final int change) {
+		final AccountInfo accountInfoBefore = getAccountInfoFromContext(userName);
+		final BigInteger actualAmountChange = getCalculatedDynamicFee(change);
+		verifyAccountBalance(accountInfoBefore, actualAmountChange.longValue());
 	}
 
 	@When("^(\\w+) registers a non-expiring asset$")
-	public void registerAssestNonExpiring(final String username) {
-		final Account userAccount = getUser(username);
+	public void registerAssestNonExpiring(final String userName) {
+		final Account userAccount = getUser(userName);
+		final MosaicFlags mosaicFlags = MosaicFlags.create(CommonHelper.getRandomNextBoolean(), CommonHelper.getRandomNextBoolean());
 		createMosaicAndSaveAccount(
-				getTestContext(),
-				userAccount,
+				userName,
 				() ->
-						mosaicHelper.createMosaicDefinitionTransactionAndAnnounce(
+						mosaicHelper.submitMosaicDefinitionAndWait(
 								userAccount,
-								CommonHelper.getRandomNextBoolean(),
-								CommonHelper.getRandomNextBoolean(),
+								mosaicFlags,
 								CommonHelper.getRandomDivisibility()));
 		waitForLastTransactionToComplete();
 	}
@@ -182,26 +174,24 @@ public class AssetRegistration extends BaseTest {
 		verifyAsset(userAccount, BigInteger.ZERO);
 	}
 
-	@When("^(\\w+) registers an asset for (\\d+) in blocks with (-?\\d+) divisibility$")
+	@When("^(\\w+) registers an asset for (-?\\d+) in blocks with (-?\\d+) divisibility$")
 	public void registerInvalidAssest(
-			final String username, final int duration, final int divisibility) {
-		final Account userAccount = getUser(username);
+			final String userName, final int duration, final int divisibility) {
+		final Account userAccount = getUser(userName);
+		final MosaicFlags mosaicFlags = MosaicFlags.create(CommonHelper.getRandomNextBoolean(), CommonHelper.getRandomNextBoolean());
 		createMosaicAndSaveAccount(
-				getTestContext(),
-				userAccount,
+				userName,
 				() ->
 						mosaicHelper.createExpiringMosaicDefinitionTransactionAndAnnounce(
 								userAccount,
-								CommonHelper.getRandomNextBoolean(),
-								CommonHelper.getRandomNextBoolean(),
+mosaicFlags,
 								divisibility,
 								BigInteger.valueOf(duration)));
 	}
 
 	@And("(\\w+) \"cat.currency\" balance should remain intact")
-	public void verifyAccountBalanceIsTheSame(final String username) {
-		final AccountInfo accountInfoBefore =
-				getTestContext().getScenarioContext().getContext(ACCOUNT_INFO_KEY);
+	public void verifyAccountBalanceIsTheSame(final String userName) {
+		final AccountInfo accountInfoBefore = getAccountInfoFromContext(userName);
 		verifyAccountBalance(accountInfoBefore, 0);
 	}
 
@@ -211,12 +201,12 @@ public class AssetRegistration extends BaseTest {
 	}
 
 	@When("^(\\w+) registers an asset$")
-	public void registerAssetZeroBalance(final String username) {
-		final Account account = getUser(username);
+	public void registerAssetZeroBalance(final String userName) {
+		final Account account = getUser(userName);
+		final MosaicFlags mosaicFlags = MosaicFlags.create(true, true);
 		createMosaicAndSaveAccount(
-				getTestContext(),
-				account,
-				() -> mosaicHelper.createMosaicDefinitionTransactionAndAnnounce(account, true, true, 0));
+				userName,
+				() -> mosaicHelper.createMosaicDefinitionTransactionAndAnnounce(account, mosaicFlags, 0));
 	}
 
 	@Given("^(\\w+) has registered a supply (.*) asset with an initial supply of (\\d+) units$")
@@ -227,26 +217,27 @@ public class AssetRegistration extends BaseTest {
 		final int divisibility = CommonHelper.getRandomDivisibility();
 		final BigInteger initialSupply = amount;
 		final boolean supplyMutable = supplyMutableType == AssetSupplyType.MUTABLE;
+		final MosaicFlags mosaicFlags = MosaicFlags.create(supplyMutable, transferable);
 		final MosaicInfo mosaicInfo =
 				new MosaicHelper(getTestContext())
-						.createMosaic(account, supplyMutable, transferable, divisibility, initialSupply);
-		getTestContext().getScenarioContext().setContext(MOSAIC_INFO_KEY, mosaicInfo);
+						.createMosaic(account, mosaicFlags, divisibility, initialSupply);
+		storeMosaicInfo(MOSAIC_INFO_KEY, mosaicInfo);
 	}
 
 	@When("^(\\w+) decides to (\\w+) the asset supply in (\\d+) units$")
 	public void changeAssetAmountSucceed(
-			final String username, final MosaicSupplyType direction, final BigInteger amount) {
+			final String username, final MosaicSupplyChangeActionType direction, final BigInteger amount) {
 		final Account account = getUser(username);
-		final MosaicInfo mosaicInfo = getTestContext().getScenarioContext().getContext(MOSAIC_INFO_KEY);
+		final MosaicInfo mosaicInfo = getMosaicInfo(MOSAIC_INFO_KEY);
 		new MosaicHelper(getTestContext())
 				.submitMosaicSupplyChangeAndWait(account, mosaicInfo.getMosaicId(), direction, amount);
 	}
 
 	@Then("^the balance of the asset in her account should (\\w+) in (\\d+) units$")
-	public void verifyChangeAssetAmount(final MosaicSupplyType direction, final BigInteger amount) {
-		final MosaicInfo mosaicInfo = getTestContext().getScenarioContext().getContext(MOSAIC_INFO_KEY);
+	public void verifyChangeAssetAmount(final MosaicSupplyChangeActionType direction, final BigInteger amount) {
+		final MosaicInfo mosaicInfo = getMosaicInfo(MOSAIC_INFO_KEY);
 		final BigInteger newSupply =
-				MosaicSupplyType.INCREASE == direction
+				MosaicSupplyChangeActionType.INCREASE == direction
 						? mosaicInfo.getSupply().add(amount)
 						: mosaicInfo.getSupply().subtract(amount);
 		final MosaicInfo updateMosaicInfo =
@@ -254,31 +245,30 @@ public class AssetRegistration extends BaseTest {
 		assertEquals(newSupply.longValue(), updateMosaicInfo.getSupply().longValue());
 	}
 
-	@Given("^Alice has registered an asset with an initial supply of (\\w+) units$")
-	public void registerNonSupplyMutableAsset(final int amount) {
+	@Given("^(\\w+) has registered an asset with an initial supply of (\\w+) units$")
+	public void registerNonSupplyMutableAsset(final String userName, final int amount) {
+		final Account account = getUser(userName);
 		final boolean transferable = new Random(System.currentTimeMillis()).nextBoolean();
 		final boolean supplyMutable = new Random(System.currentTimeMillis()).nextBoolean();
 		final int divisibility = CommonHelper.getRandomDivisibility();
 		final BigInteger initialSupply = BigInteger.valueOf(amount);
+		final MosaicFlags mosaicFlags = MosaicFlags.create(supplyMutable, transferable);
 		final MosaicInfo mosaicInfo =
 				new MosaicHelper(getTestContext())
 						.createMosaic(
-								getTestContext().getDefaultSignerAccount(),
-								supplyMutable,
-								transferable,
+								account,
+								mosaicFlags,
 								divisibility,
 								initialSupply);
-		getTestContext().getScenarioContext().setContext(MOSAIC_INFO_KEY, mosaicInfo);
-		getTestContext()
-				.getScenarioContext()
-				.setContext(ACCOUNT_INFO_KEY, getTestContext().getDefaultSignerAccount());
+		storeMosaicInfo(MOSAIC_INFO_KEY, mosaicInfo);
+		storeUserInfoInContext(userName);
 	}
 
 	@When("^(\\w+) accidentally (\\w+) the asset supply in (\\d+) units$")
 	public void changeAssetAmountFailed(
-			final String username, final MosaicSupplyType direction, final BigInteger amount) {
+			final String username, final MosaicSupplyChangeActionType direction, final BigInteger amount) {
 		final Account account = getUser(username);
-		final MosaicInfo mosaicInfo = getTestContext().getScenarioContext().getContext(MOSAIC_INFO_KEY);
+		final MosaicInfo mosaicInfo = getMosaicInfo(MOSAIC_INFO_KEY);
 		final SignedTransaction signedTransaction =
 				new MosaicHelper(getTestContext())
 						.createMosaicSupplyChangeAndAnnounce(
@@ -288,37 +278,37 @@ public class AssetRegistration extends BaseTest {
 
 	@And("^she transfer (\\d+) units to another account$")
 	public void transferSupplyImmutable(final BigInteger amount) {
-		final MosaicInfo mosaicInfo = getTestContext().getScenarioContext().getContext(MOSAIC_INFO_KEY);
+		final MosaicInfo mosaicInfo = getMosaicInfo(MOSAIC_INFO_KEY);
 		final Account account =
 				new AccountHelper(getTestContext())
 						.createAccountWithAsset(mosaicInfo.getMosaicId(), amount);
-		getTestContext().getScenarioContext().setContext(ACCOUNT_INFO_KEY, account);
 	}
 
 	@When("^(\\w+) tries to (\\w+) the asset supply in (\\d+) units$")
 	public void changedSupplyImmutableFailed(
-			final String username, final MosaicSupplyType direction, final BigInteger amount) {
+			final String username, final MosaicSupplyChangeActionType direction, final BigInteger amount) {
 		changeAssetAmountFailed(username, direction, amount);
 	}
 
-	@Given("^(\\w+) has registered expiring asset for (\\d+) blocks?$")
-	public void registerExpiringAsset(final String userName, final BigInteger duration) {
+	@Given("^(\\w+) has registered expiring asset \"(\\w+)\" for (\\d+) blocks?$")
+	public void registerExpiringAsset(final String userName, final String assetName, final BigInteger duration) {
 		final Account account = getUser(userName);
 		final boolean supplyMutable = CommonHelper.getRandomNextBoolean();
 		final boolean transferable = CommonHelper.getRandomNextBoolean();
 		final int divisibility = CommonHelper.getRandomDivisibility();
+		final MosaicFlags mosaicFlags = MosaicFlags.create(supplyMutable, transferable);
 		createMosaicAndSaveAccount(
-				getTestContext(),
-				account,
+				userName,
 				() ->
 						mosaicHelper.createExpiringMosaicDefinitionTransactionAndAnnounce(
-								account, supplyMutable, transferable, divisibility, duration));
+								account, mosaicFlags, divisibility, duration));
 		SignedTransaction signedTransaction = getTestContext().getSignedTransaction();
 		final MosaicDefinitionTransaction mosaicDefinitionTransaction =
 				new TransactionHelper(getTestContext()).waitForTransactionToComplete(signedTransaction);
 		final MosaicInfo mosaicInfo =
 				new MosaicHelper(getTestContext()).getMosaic(mosaicDefinitionTransaction.getMosaicId());
-		getTestContext().getScenarioContext().setContext(MOSAIC_INFO_KEY, mosaicInfo);
+		storeMosaicInfo(MOSAIC_INFO_KEY, mosaicInfo);
+		storeMosaicInfo(assetName, mosaicInfo);
 	}
 
 	@And("^(\\w+) registered the asset \"(\\w+)\"$")
@@ -328,22 +318,22 @@ public class AssetRegistration extends BaseTest {
 		final boolean transferable = CommonHelper.getRandomNextBoolean();
 		final int divisibility = CommonHelper.getRandomDivisibility();
 		final BigInteger initialSuppy = BigInteger.valueOf(10);
+		final MosaicFlags mosaicFlags = MosaicFlags.create(supplyMutable, transferable);
 		final MosaicInfo mosaicInfo =
-				mosaicHelper.createMosaic(account, supplyMutable, transferable, divisibility, initialSuppy);
-		getTestContext().getScenarioContext().setContext(assetName, mosaicInfo);
+				mosaicHelper.createMosaic(account, mosaicFlags, divisibility, initialSuppy);
+		storeMosaicInfo(assetName, mosaicInfo);
 	}
 
 
 	@And("^the asset is now expired$")
 	public void waitForMosaicToExpire() {
-		final MosaicInfo mosaicInfo =
-				getTestContext().getScenarioContext().getContext(MOSAIC_INFO_KEY);
+		final MosaicInfo mosaicInfo = getMosaicInfo(MOSAIC_INFO_KEY);
 		final BlockChainHelper blockchainDao = new BlockChainHelper(getTestContext());
 		if (0 == mosaicInfo.getDuration().longValue()) {
 			final String errorMessage = "Mosaicid " + mosaicInfo.getMosaicId() + " does not expire.";
 			throw new IllegalStateException(errorMessage);
 		}
-		final long endHeight = mosaicInfo.getHeight().longValue() + mosaicInfo.getDuration().longValue();
+		final long endHeight = mosaicInfo.getStartHeight().longValue() + mosaicInfo.getDuration().longValue();
 		while (blockchainDao.getBlockchainHeight().longValue() <= endHeight) {
 			ExceptionUtils.propagateVoid(() -> Thread.sleep(1000));
 		}

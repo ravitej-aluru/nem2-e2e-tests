@@ -32,6 +32,7 @@ import io.nem.core.utils.RetryCommand;
 import io.nem.sdk.model.account.Account;
 import io.nem.sdk.model.account.Address;
 import io.nem.sdk.model.blockchain.NetworkType;
+import io.nem.sdk.model.message.PlainMessage;
 import io.nem.sdk.model.transaction.*;
 
 import java.math.BigInteger;
@@ -123,7 +124,7 @@ public class SendTransaction extends BaseTest {
 				transactionHelper.signTransaction(
 						transferTransaction,
 						signingAccount,
-						getTestContext().getConfigFileReader().getGenerationHash().replace('0', '1'));
+						getTestContext().getGenerationHash().replace('0', '1'));
 		transactionHelper.announceTransaction(signedInvalidTransaction);
 		final SignedTransaction signedTransaction =
 				transactionHelper.signTransaction(transferTransaction, signingAccount);
@@ -149,7 +150,7 @@ public class SendTransaction extends BaseTest {
 	@Then("^(.*) should receive the error \"(\\w+)\"$")
 	public void verifyTransactionError(final String userName, final String error) {
 		final SignedTransaction signedTransaction = getTestContext().getSignedTransaction();
-		final int maxTries = 15;
+		final int maxTries = 20;
 		final int waitTimeInMilliseconds = 1000;
 		final TransactionStatus status =
 				new RetryCommand<TransactionStatus>(maxTries, waitTimeInMilliseconds, Optional.empty())
@@ -160,7 +161,7 @@ public class SendTransaction extends BaseTest {
 									if (current.getStatus().toUpperCase().startsWith("FAILURE_")) {
 										return current;
 									}
-									throw new RuntimeException("Test as not fail yet - " + current.toString());
+									throw new RuntimeException("Transaction has not failed yet. TransactionStatus: " + current.toString());
 								});
 		assertEquals(
 				"Transaction " + signedTransaction.toString() + " did not fail.",
