@@ -30,7 +30,7 @@ import io.nem.sdk.model.account.MultisigAccountInfo;
 import io.nem.sdk.model.blockchain.NetworkType;
 import io.nem.sdk.model.mosaic.Mosaic;
 import io.nem.sdk.model.mosaic.MosaicId;
-import io.nem.sdk.model.transaction.PlainMessage;
+import io.nem.sdk.model.message.PlainMessage;
 
 import java.math.BigInteger;
 import java.util.Arrays;

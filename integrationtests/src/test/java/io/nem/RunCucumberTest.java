@@ -26,7 +26,7 @@ import org.junit.runner.RunWith;
 
 @RunWith(Cucumber.class)
 @CucumberOptions(plugin = {"pretty"}
-		//, tags = "@Testing100"
+		//, tags = "@bvt"
 )
 public class RunCucumberTest {
 }

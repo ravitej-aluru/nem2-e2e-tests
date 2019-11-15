@@ -12,7 +12,7 @@ Background: Create assets for transfer.
     When Alice sends <amount> asset "<asset>" to Bob
     Then she should receive a confirmation message
     And Bob should receive <amount> of asset "<asset>"
-    And Alice "<asset>" balance should decrease in <amount> unit
+    And Alice "<asset>" balance should decrease by <amount> unit
 
     Examples:
       | amount | asset |
@@ -53,10 +53,9 @@ Background: Create assets for transfer.
     Then she should receive a confirmation message
     And Bob should receive 1 of asset "X"
     And Bob should receive 2 of asset "Y"
-    And Alice "X" balance should decrease in 1 unit
-    And Alice "Y" balance should decrease in 2 units
+    And Alice "X" balance should decrease by 1 unit
+    And Alice "Y" balance should decrease by 2 units
 
-  @bvt
   Scenario Outline: An account tries to send multiple assets to another account but at least one of the attached assets can't be sent
     When Alice tries to send <amount> asset "<asset>" and 1 asset "Y" to "Bob"
     Then she should receive the error "<error>"
@@ -72,7 +71,7 @@ Background: Create assets for transfer.
   Scenario: An account sends a non-transferable asset to the account that registered the asset
     Given Alice registers a non transferable asset which she transfer 10 asset to Sue
     When Sue transfer 1 asset to Alice
-    Then 1 asset transfered successfully
+    Then 1 asset transferred successfully
 
   @bvt
   Scenario: An account tries to send a non-transferable asset to another account
@@ -84,11 +83,11 @@ Background: Create assets for transfer.
   Scenario: An account transfer a transferable asset to another account
     Given Alice registers a transferable asset which she transfer asset to Bob
     When Bob transfer 10 asset to Sue
-    Then 10 asset transfered successfully
+    Then 10 asset transferred successfully
 
   @bvt
   Scenario: An account tries to send an expired asset
-  Given Alice has registered expiring asset for 2 blocks
+  Given Alice has registered expiring asset "A" for 2 blocks
   And the asset is now expired
   When Alice transfer 1 asset to Bob
   Then she should receive the error "Failure_Core_Insufficient_Balance"

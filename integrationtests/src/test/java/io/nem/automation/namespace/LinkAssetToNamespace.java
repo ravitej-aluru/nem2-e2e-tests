@@ -30,12 +30,12 @@ import io.nem.automationHelpers.helper.NamespaceHelper;
 import io.nem.automationHelpers.helper.TransferHelper;
 import io.nem.sdk.model.account.Account;
 import io.nem.sdk.model.account.AccountInfo;
+import io.nem.sdk.model.message.PlainMessage;
 import io.nem.sdk.model.mosaic.Mosaic;
 import io.nem.sdk.model.mosaic.MosaicId;
 import io.nem.sdk.model.mosaic.MosaicInfo;
 import io.nem.sdk.model.mosaic.MosaicNonce;
 import io.nem.sdk.model.namespace.NamespaceId;
-import io.nem.sdk.model.transaction.PlainMessage;
 
 import java.math.BigInteger;
 import java.util.Arrays;

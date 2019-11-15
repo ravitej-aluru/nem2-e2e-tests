@@ -52,17 +52,16 @@ public class BalanceTransfers extends BaseTest {
 
 	private BigInteger getBalanceTransferCost(final PublicAccount publicAccount, final BigInteger height, final ReceiptType receiptType) {
 		final Statement statement = new BlockChainHelper(getTestContext()).getBlockReceipts(height);
-		final Optional<BalanceTransferReceipt<Address>> receiptCost =
+		final Optional<BalanceTransferReceipt> receiptCost =
 				statement.getTransactionStatements().stream().map(s -> s.getReceipts()).flatMap(Collection::stream).filter(receipt -> {
 					if (receipt.getType() == receiptType) {
-						final BalanceTransferReceipt<Address> balanceTransferReceipt = (BalanceTransferReceipt<Address>) receipt;
+						final BalanceTransferReceipt balanceTransferReceipt = (BalanceTransferReceipt) receipt;
 						if (balanceTransferReceipt.getSender().equals(publicAccount)) {
 							return true;
 						}
-						;
 					}
 					return false;
-				}).findAny().map(f -> (BalanceTransferReceipt<Address>) f);
+				}).findAny().map(f -> (BalanceTransferReceipt) f);
 		assertTrue("Transaction statement was not found", receiptCost.isPresent());
 		return receiptCost.get().getAmount();
 	}
@@ -85,7 +84,7 @@ public class BalanceTransfers extends BaseTest {
 	@Then("^(\\w+) should get that registering the asset \"(.*)\" cost \"(\\d+)\" cat.currency$")
 	public void verifyAssetCost(final String userName, final String assetName, final BigInteger cost) {
 		final Account account = getUser(userName);
-		final MosaicInfo mosaicInfo = getTestContext().getScenarioContext().getContext(assetName);
+		final MosaicInfo mosaicInfo = getMosaicInfo(assetName);
 		final BigInteger actualCost = getBalanceTransferCost(account.getPublicAccount(), mosaicInfo.getStartHeight(),
 				ReceiptType.MOSAIC_RENTAL_FEE);
 		final BigInteger exceptedCost = getCalculatedDynamicFee(cost.longValue());

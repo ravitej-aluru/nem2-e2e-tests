@@ -283,7 +283,7 @@ public class MosaicHelper {
 	 * @param initialSupply Initial amount.
 	 * @return Mosaic info.
 	 */
-	public MosaicInfo createMosaic(
+	public MosaicInfo 	createMosaic(
 			final Account account,
 			final MosaicFlags mosaicFlags,
 			final int divisibility,

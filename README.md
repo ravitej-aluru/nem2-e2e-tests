@@ -22,7 +22,8 @@ git clone --recursive https://github.com/nemtech/nem2-e2e-tests.git
 4. Update the following properties under the ``integrationtests/src/test/resources/configs/config-default.properties`` file to match your bootstrap environment.
     - ``apiServerPublicKey``: Public key of the API server. You can find it in ``build/catapult-config/api-node-0/userconfig/resources/peers-api.json``.
     - ``userPrivateKey``: Private key of the user which will be use to sign each transaction. You can find a list of users in ``build/generated-addresses/addresses.yaml`` file under the ``nemesis_addresses`` section.
-    - ``mosaicId``: Network currency mosaic identifier. You can find the network mosaic id going to ``http://localhost:3000/#/account/<public_key_of_the_user>``
+    - ``automationPrivateKey``: If automation is running on the same host as the api server(i.e. same IP) then the set to api server boot private key.  Otherwise it can be any private key.
+	- ``harvesterPublicKey``: Hasvester's public key of the specified Hasvester in the config-harvesting.properties file.
 
 
 ## Running the tests
