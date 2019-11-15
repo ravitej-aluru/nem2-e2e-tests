@@ -33,21 +33,21 @@ Following table describes the status attributions for each of the icons that wil
 
 | feature | Testing |
 | :-: |:-: |
-| consensus update PoS+ | :stop_sign:  |
-| enhanced delegated harvesting | :stop_sign: |
-| metadata key-value | :o: |
-| restriction account| :o: |
+| consensus update PoS+ | :o:  |
+| enhanced delegated harvesting | :o: |
+| metadata key-value | :white_check_mark: |
+| restriction account| :white_check_mark: |
 | restriction mosaic | :o: |
 
 ### Dragon: [Protocol v0.4.?.?](https://github.com/nemtech/catapult-server/milestone/5)
 
 | feature | Testing |
 | :-: |:-: |
-| hashlock with alias |:stop_sign: |
-| optin cosigners | :stop_sign: |
-| lightning network | :stop_sign: |
-| consensus PoS+ | :stop_sign: |
-| generation hash | :white_check_mark:  |
+| hashlock with alias | :white_check_mark: |
+| optin cosigners | :white_check_mark: |
+| lightning network | :white_check_mark: |
+| consensus PoS+ | :white_check_mark:  |
+| generation hash | :white_check_mark: |
 
 ### Cow: [Protocol v0.3.0.2](https://github.com/nemtech/catapult-server/milestone/3)
 
@@ -56,11 +56,11 @@ Following table describes the status attributions for each of the icons that wil
 | catbuffer | :white_check_mark:  |
 | mosaic/namespace split | :white_check_mark: |
 | aliases | :white_check_mark: |
-| receipts | :o: |
+| receipts | :white_check_mark: |
 | escrow | :white_check_mark: |
 | fees | :o: |
-| delegated harvesting | :stop_sign: |
-| secret locks hash algos | :stop_sign: |
+| delegated harvesting | :o: |
+| secret locks hash algos | :white_check_mark: |
 | hashlock | :white_check_mark: |
 | merkle proofs | :stop_sign: |
 | rollback | :o: |

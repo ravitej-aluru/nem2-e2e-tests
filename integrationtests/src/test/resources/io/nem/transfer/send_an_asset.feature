@@ -71,7 +71,7 @@ Background: Create assets for transfer.
   Scenario: An account sends a non-transferable asset to the account that registered the asset
     Given Alice registers a non transferable asset which she transfer 10 asset to Sue
     When Sue transfer 1 asset to Alice
-    Then 1 asset transfered successfully
+    Then 1 asset transferred successfully
 
   @bvt
   Scenario: An account tries to send a non-transferable asset to another account
@@ -83,7 +83,7 @@ Background: Create assets for transfer.
   Scenario: An account transfer a transferable asset to another account
     Given Alice registers a transferable asset which she transfer asset to Bob
     When Bob transfer 10 asset to Sue
-    Then 10 asset transfered successfully
+    Then 10 asset transferred successfully
 
   @bvt
   Scenario: An account tries to send an expired asset

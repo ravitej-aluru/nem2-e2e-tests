@@ -88,7 +88,7 @@ Feature: Create an escrow contract
     When the hash lock expires
     Then Bob balance should remain intact
     And Sue balance should remain intact
-    And Alice "cat.currency" balance should decrease in 10 units
+    And Alice "cat.currency" balance should decrease by 10 units
 
   Scenario: An account creates an escrow contract where one participant have insufficient balance
     Given Alice defined the following bonded escrow contract:

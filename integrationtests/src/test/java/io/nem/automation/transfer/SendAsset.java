@@ -239,7 +239,7 @@ public class SendAsset extends BaseTest {
     storeMosaicInfo(MOSAIC_INFO_KEY, mosaicInfo);
   }
 
-	@Then("^(\\d+) asset transfered successfully$")
+	@Then("^(\\d+) asset transferred successfully$")
 	public void TransferableAssetSucceed(final int amount) {
 		final SignedTransaction signedTransaction = getTestContext().getSignedTransaction();
 		TransferTransaction transferTransaction =
