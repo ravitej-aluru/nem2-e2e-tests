@@ -174,42 +174,6 @@ public class AccountRestrictionHelper {
 */
 
 	/**
-	 * Create an account mosaic restriction
-	 * @param accountRestrictionModificationAction type of the modification
-	 * @param mosaicId id of the mosaic to apply the restriction to
-	 * @return An object of AccountRestrictionModification
-	 */
-	public AccountRestrictionModification createMosaicRestriction(
-			final AccountRestrictionModificationAction accountRestrictionModificationAction,
-																  final MosaicId mosaicId) {
-		return AccountRestrictionModification.createForMosaic(accountRestrictionModificationAction, mosaicId);
-	}
-
-	/**
-	 * Create an account address restriction
-	 * @param accountRestrictionModificationAction type of the modification
-	 * @param address address of the account to restrict
-	 * @return AccountRestrictionModification object
-	 */
-	public AccountRestrictionModification createAddressRestriction(
-			final AccountRestrictionModificationAction accountRestrictionModificationAction,
-			final Address address) {
-		return AccountRestrictionModification.createForAddress(accountRestrictionModificationAction, address);
-	}
-
-	/**
-	 *
-	 * @param accountRestrictionModificationAction
-	 * @param transactionType
-	 * @return
-	 */
-	public AccountRestrictionModification createTransactionTypeRestriction(
-			final AccountRestrictionModificationAction accountRestrictionModificationAction,
-			final TransactionType transactionType) {
-		return AccountRestrictionModification.createForTransactionType(accountRestrictionModificationAction, transactionType);
-	}
-
-	/**
 	 *
 	 * @param account
 	 * @param restrictionType
