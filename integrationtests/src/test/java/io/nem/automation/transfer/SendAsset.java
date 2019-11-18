@@ -34,6 +34,7 @@ import io.nem.sdk.model.mosaic.Mosaic;
 import io.nem.sdk.model.mosaic.MosaicFlags;
 import io.nem.sdk.model.mosaic.MosaicId;
 import io.nem.sdk.model.mosaic.MosaicInfo;
+import io.nem.sdk.model.namespace.NamespaceId;
 import io.nem.sdk.model.transaction.SignedTransaction;
 import io.nem.sdk.model.transaction.TransferTransaction;
 
@@ -42,6 +43,7 @@ import java.util.Arrays;
 import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Send asset tests.
@@ -68,18 +70,20 @@ public class SendAsset extends BaseTest {
 		final MosaicId mosaicId = resolveMosaicId(assetName);
 //		getTestContext().getLogger().LogInfo(String.format("transferAsset: sender = %s; " +
 //				"recipient: %s; mosaicId: %d; amount: %d", sender, recipient, mosaicId.getId(), amount));
+		final BigInteger actualAmount = getActualMosaicQuantity(getNamespaceIdFromName(assetName), amount);
 		transferAssets(
-				sender, recipient, Arrays.asList(new Mosaic(mosaicId, amount)), PlainMessage.Empty);
+				sender, recipient, Arrays.asList(new Mosaic(mosaicId, actualAmount)), PlainMessage.Empty);
 	}
 
-	@When("^(\\w+) sends (-?\\d+) asset \"(\\w+)\" and (-?\\d+) asset \"(\\w+)\" to (.*)$")
-	public void transferMultiAsset(
-			final String sender,
-			final BigInteger firstAmount,
-			final String firstAssetName,
-			final BigInteger secondAmount,
-			final String secondAssetName,
-			final String recipient) {
+  @When(
+      "^(\\w+) sends multiple assets to \"(.*)\": (-?\\d+) asset \"(.*)\", (-?\\d+) asset \"(.*)\"$")
+  public void transferMultiAsset(
+      final String sender,
+	  final String recipient,
+      final BigInteger firstAmount,
+      final String firstAssetName,
+      final BigInteger secondAmount,
+      final String secondAssetName) {
 		final MosaicId firstMosaicId = resolveMosaicId(firstAssetName);
 		final MosaicId secondMosaicId = resolveMosaicId(secondAssetName);
 		transferAssets(
@@ -92,7 +96,7 @@ public class SendAsset extends BaseTest {
 
 	@And("^(\\w+) should receive (\\d+) of asset \"(.*)\"$")
 	public void verifyRecipientAsset(
-			final String recipient, final int amount, final String assetName) {
+			final String recipient, final BigInteger amount, final String assetName) {
 		final AccountInfo recipientAccountInfo =
 				getTestContext().getScenarioContext().getContext(recipient);
 		final MosaicId mosaicId = resolveMosaicId(assetName);
@@ -102,6 +106,8 @@ public class SendAsset extends BaseTest {
     final AccountInfo recipientAccountInfoAfter =
         new AccountHelper(getTestContext()).getAccountInfo(recipientAccountInfo.getAddress());
     final Optional<Mosaic> mosaicAfter = getMosaic(recipientAccountInfoAfter, mosaicId);
+    assertTrue("Mosaic id " + mosaicId.getIdAsLong() + " was not found in account: " +
+					recipientAccountInfoAfter.getAddress().pretty(), mosaicAfter.isPresent());
     final long amountAfter = mosaicAfter.get().getAmount().longValue();
 		final String errorMessage =
 				"Recipient("
@@ -112,21 +118,23 @@ public class SendAsset extends BaseTest {
 //		getTestContext().getLogger().LogInfo("Mosaic before: %s = %d\n\n", initialMosaic, initialAmount);
 //		getTestContext().getLogger().LogInfo("Recipient Account Info AFTER: %s\n", recipientAccountInfoAfter.toString());
 //		getTestContext().getLogger().LogInfo("Mosaic AFTER: %s = %d\n\n", mosaicAfter, amountAfter);
+		final BigInteger actualAmount = getActualMosaicQuantity(getNamespaceIdFromName(assetName), amount);
     assertEquals(errorMessage, true, mosaicAfter.isPresent());
     assertEquals(
-        errorMessage, amount, amountAfter - initialAmount);
+        errorMessage, actualAmount.longValue(), amountAfter - initialAmount);
   }
 
   @And("^(\\w+) \"(.*)\" balance should decrease by (\\d+) units?$")
-  public void verifySenderAsset(final String sender, final String assetName, final int amount) {
+  public void verifySenderAsset(final String sender, final String assetName, final BigInteger amount) {
     final AccountInfo senderAccountInfo = getAccountInfoFromContext(sender);
     final MosaicId mosaicId = resolveMosaicId(assetName);
     final Mosaic initialMosaic = getMosaic(senderAccountInfo, mosaicId).get();
     final AccountInfo recipientAccountInfoAfter =
         new AccountHelper(getTestContext()).getAccountInfo(senderAccountInfo.getAddress());
     final Mosaic mosaicAfter = getMosaic(recipientAccountInfoAfter, mosaicId).get();
+    final BigInteger actualAmount = getActualMosaicQuantity(getNamespaceIdFromName(assetName), amount);
     assertEquals(
-        amount, initialMosaic.getAmount().longValue() - mosaicAfter.getAmount().longValue());
+			actualAmount.longValue(), initialMosaic.getAmount().longValue() - mosaicAfter.getAmount().longValue());
   }
 
   @And("^(\\w+) balance should remain intact$")
@@ -157,14 +165,15 @@ public class SendAsset extends BaseTest {
 				sender, recipient, Arrays.asList(new Mosaic(mosaicId, amount)), PlainMessage.Empty);
 	}
 
-	@When("^(\\w+) tries to send (-?\\d+) asset \"(.*)\" and (-?\\d+) asset \"(.*)\" to (.*)$")
-	public void triesToTransferMultiAsset(
-			final String sender,
-			final BigInteger firstAmount,
-			final String firstAssetName,
-			final BigInteger secondAmount,
-			final String secondAssetName,
-			final String recipient) {
+  @When(
+      "^(\\w+) tries to send multiple assets to \"(.*)\": (-?\\d+) asset \"(.*)\", (-?\\d+) asset \"(.*)\"$")
+  public void triesToTransferMultiAsset(
+      final String sender,
+	  final String recipient,
+      final BigInteger firstAmount,
+      final String firstAssetName,
+      final BigInteger secondAmount,
+      final String secondAssetName) {
 		final MosaicId firstMosaicId = resolveMosaicId(firstAssetName);
 		final MosaicId secondMosaicId = resolveMosaicId(secondAssetName);
 		triesToTransferAssets(

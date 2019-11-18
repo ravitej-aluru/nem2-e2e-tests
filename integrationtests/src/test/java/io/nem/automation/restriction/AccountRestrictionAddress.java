@@ -32,8 +32,8 @@ public class AccountRestrictionAddress extends BaseTest {
 
     @Given("^the following accounts exist:$")
     public void theFollowingAccountsExists(final List<String> usernames) {
-        usernames.parallelStream().forEach(username -> getUserWithCurrency(username, 1000000));
-//        usernames.forEach(username -> getTestContext().getLogger().LogInfo(getAccountInfoFromContext(username).toString()));
+        usernames.parallelStream().forEach(username -> getUserWithCurrency(username, 3000));
+        //usernames.forEach(username -> getTestContext().getLogger().LogInfo(getAccountInfoFromContext(username).toString()));
     }
 
     @When("^(\\w+) blocked receiving transactions from:$")
