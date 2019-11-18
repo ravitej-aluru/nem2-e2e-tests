@@ -6,6 +6,7 @@ import io.nem.automation.asset.AssetRegistration;
 import io.nem.automation.common.BaseTest;
 import io.nem.automationHelpers.common.TestContext;
 import io.nem.automationHelpers.helper.AccountRestrictionHelper;
+import io.nem.core.utils.ExceptionUtils;
 import io.nem.sdk.model.account.Account;
 import io.nem.sdk.model.mosaic.MosaicId;
 import io.nem.sdk.model.mosaic.UnresolvedMosaicId;
@@ -15,6 +16,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ForkJoinPool;
 import java.util.stream.Collectors;
 
 public class AccountRestrictionMosaic extends BaseTest {
@@ -34,9 +36,11 @@ public class AccountRestrictionMosaic extends BaseTest {
     public void theFollowingAssetsAreRegisteredAndActive(final String userName, final List<String> assets) {
         final AssetRegistration assetRegistration = new AssetRegistration(getTestContext());
         // Alice already has cat.currency registered to her. What happens if we try to register again?
-        assets.parallelStream().forEach(asset -> {
-                assetRegistration.registerAsset(userName, asset);
-        });
+        ForkJoinPool customThreadPool = new ForkJoinPool(100);
+        ExceptionUtils.propagate( () ->
+                customThreadPool.submit(
+                        () -> assets.parallelStream().forEach(asset ->
+                                assetRegistration.registerAsset(userName, asset))).get());
 //        getTestContext().getLogger().LogInfo(getAccountInfoFromContext(userName).toString());
     }
 

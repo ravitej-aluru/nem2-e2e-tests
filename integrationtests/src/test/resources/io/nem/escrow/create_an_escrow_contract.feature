@@ -132,7 +132,7 @@ Feature: Create an escrow contract
       | send-an-asset  | Bob      | Sue       | 2 cat.currency   |
     And Alice locks 10 "cat.currency" to guarantee that the contract will conclude 5 blocks
     When Alice tries to lock 10 "cat.currency" to guarantee that the contract will conclude 1 blocks
-    Then she should receive the error "Failure_Hash_Lock_Already_Hash_Exists"
+    Then she should receive the error "FAILURE_LOCKHASH_HASH_ALREADY_EXISTS"
 
     Given Alice defined the following bonded escrow contract:
       | type           | sender   | recipient | data             |
@@ -147,7 +147,7 @@ Feature: Create an escrow contract
       | send-an-asset  | Alice    | Bob       | 1 cat.currency   |
       | send-an-asset  | Bob      | Sue       | 2 cat.currency   |
     When Alice tries to lock 10 "tickets" to guarantee that the contract will conclude 6 blocks
-    Then she should receive the error "Failure_Hash_Lock_Invalid_Mosaic_Amount"
+    Then she should receive the error "FAILURE_LOCKHASH_INVALID_MOSAIC_AMOUNT"
     And Alice "cat.currency" balance should remain intact
 
   Scenario Outline: An account tries to create an escrow an escrow but the amount is not equal to 10 cat.currency
@@ -156,7 +156,7 @@ Feature: Create an escrow contract
       | send-an-asset  | Alice    | Bob       | 1 cat.currency   |
       | send-an-asset  | Bob      | Sue       | 2 cat.currency   |
     When Alice tries to lock <amount> "cat.currency" to guarantee that the contract will conclude 6 blocks
-    Then she should receive the error "Failure_Hash_Lock_Invalid_Mosaic_Amount"
+    Then she should receive the error "FAILURE_LOCKHASH_INVALID_MOSAIC_AMOUNT"
     And Alice "cat.currency" balance should remain intact
     Examples:
       | amount |
@@ -170,7 +170,7 @@ Feature: Create an escrow contract
       | send-an-asset  | Alice    | Bob       | 1 cat.currency   |
       | send-an-asset  | Bob      | Sue       | 2 cat.currency   |
     When Alice tries to lock 10 "cat.currency" to guarantee that the contract will conclude <duration> blocks
-    Then she should receive the error "Failure_Hash_Lock_Invalid_Duration"
+    Then she should receive the error "FAILURE_LOCKHASH_INVALID_DURATION"
     And Alice "cat.currency" balance should remain intact
 
     Examples:
@@ -201,7 +201,7 @@ Feature: Create an escrow contract
       | Alice  | Bob       | send-an-asset | 1 cat.currency   |
       | Bob    | Alice     | send-an-asset | 2 cat.currency   |
     When she publishes the contract
-    Then she should receive the error "Failure_Aggregate_Missing_Cosigners"
+    Then she should receive the error "FAILURE_AGGREGATE_MISSING_COSIGNATURES"
 
   Scenario: An account tries to create an escrow already signed but is not signed by every participant (multisig cosignatory)
     Given Alice created a 2 of 2 multisignature contract called "Tom" with 1 required for removal with cosignatories:
@@ -214,7 +214,7 @@ Feature: Create an escrow contract
       | Tom    | Alice     | send-an-asset | 2 cat.currency   |
     And "Phone" accepted the contract
     When Alice publishes the contract
-    Then she should receive the error "Failure_Aggregate_Missing_Cosigners"
+    Then she should receive the error "FAILURE_AGGREGATE_MISSING_COSIGNATURES"
 
   Scenario: An account tries to create an escrow already signed but is not signed by every participant (mlma cosignatory)
     Given Alice created a 2 of 2 multisignature contract called "Computer" with 1 required for removal with cosignatories:
@@ -232,4 +232,4 @@ Feature: Create an escrow contract
     And "Phone" accepts the contract
     And "Browser" accepts the contract
     When she publishes the contract
-    Then she should receive the error "Failure_Aggregate_Missing_Cosigners"
+    Then she should receive the error "FAILURE_AGGREGATE_MISSING_COSIGNATURES"

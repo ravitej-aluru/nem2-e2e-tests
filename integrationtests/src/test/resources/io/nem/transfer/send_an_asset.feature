@@ -49,7 +49,7 @@ Background: Create assets for transfer.
 
   @bvt
   Scenario: An account sends multiple assets to another account
-    When Alice sends 1 asset "X" and 2 asset "Y" to Bob
+    When Alice sends multiple assets to "Bob": 1 asset "X", 2 asset "Y"
     Then she should receive a confirmation message
     And Bob should receive 1 of asset "X"
     And Bob should receive 2 of asset "Y"
@@ -57,7 +57,7 @@ Background: Create assets for transfer.
     And Alice "Y" balance should decrease by 2 units
 
   Scenario Outline: An account tries to send multiple assets to another account but at least one of the attached assets can't be sent
-    When Alice tries to send <amount> asset "<asset>" and 1 asset "Y" to "Bob"
+    When Alice tries to send multiple assets to "Bob": <amount> asset "<asset>", 1 asset "Y"
     Then she should receive the error "<error>"
     And Alice balance should remain intact
 
