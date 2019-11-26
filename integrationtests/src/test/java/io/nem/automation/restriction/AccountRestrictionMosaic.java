@@ -104,6 +104,11 @@ public class AccountRestrictionMosaic extends BaseTest {
         this.allowsReceivingTransactionsContainingTheFollowingAssets(username, new ArrayList<>(Collections.singletonList(asset)));
     }
 
+    @Given("^(\\w+) has only allowed receiving the following assets:$")
+    public void hasOnlyAllowedReceivingFollowingAssets(final String username, final List<String> assets) {
+        this.allowsReceivingTransactionsContainingTheFollowingAssets(username, assets);
+    }
+
     @When("^(\\w+) tries to remove ([^\"]*) from blocked assets$")
     public void triesToUnblockReceivingAssets(final String username, final String asset) {
         final Account signerAccount = getUser(username);
