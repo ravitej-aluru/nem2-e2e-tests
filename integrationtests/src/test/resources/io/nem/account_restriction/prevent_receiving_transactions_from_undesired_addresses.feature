@@ -95,27 +95,27 @@ Feature: Prevent receiving transactions from undesired addresses
 
   Scenario: 12. An account tries to only allow self
     When Alex tries to only allow receiving transactions from herself
-    Then she should receive the error "Failure_RestrictionAccount_Modification_Address_Invalid"
+    Then she should receive the error "FAILURE_RESTRICTIONACCOUNT_MODIFICATION_ADDRESS_INVALID"
 
   Scenario: 13. An account tries to block too many addresses
     Given Alex has blocked receiving transactions from 512 different addresses
     When Alex tries to block receiving transactions from Bobby
-    Then Alex should receive the error "Failure_RestrictionAccount_Values_Count_Exceeded"
+    Then Alex should receive the error "FAILURE_RESTRICTIONACCOUNT_VALUES_COUNT_EXCEEDED"
 
   Scenario: 14. An account tries to only allow too many addresses
     Given Alex has allowed receiving transactions from 512 different addresses
     When Alex tries to only allow receiving transactions from Bobby
-    Then Alex should receive the error "Failure_RestrictionAccount_Values_Count_Exceeded"
+    Then Alex should receive the error "FAILURE_RESTRICTIONACCOUNT_VALUES_COUNT_EXCEEDED"
 
   Scenario: 15. An account tries to block too many addresses in a single transaction
     Given there are at least 515 different addresses registered
     When Alex tries to block receiving transactions from 513 different addresses
-    Then Alex should receive the error "Failure_RestrictionAccount_Modification_Count_Exceeded"
+    Then Alex should receive the error "FAILURE_RESTRICTIONACCOUNT_MODIFICATION_COUNT_EXCEEDED"
 
   Scenario: 16. An account tries to only allow too many addresses in a single transaction
     Given there are at least 515 different addresses registered
     When Alex tries to only allow receiving transactions from 513 different addresses
-    Then Alex should receive the error "Failure_RestrictionAccount_Modification_Count_Exceeded"
+    Then Alex should receive the error "FAILURE_RESTRICTIONACCOUNT_MODIFICATION_COUNT_EXCEEDED"
 
   Scenario Outline: 17. An account tries to block an invalid address
     When Alex tries to block receiving transactions from "<address>"
@@ -123,9 +123,9 @@ Feature: Prevent receiving transactions from undesired addresses
 
     Examples:
       | address                                        | error                        |
-      | SAIBV5-BKEVGJ-IZQ4RP-224TYE-J3ZIUL-WDHUTI-X3H  | Failure_Core_Invalid_Address |
-      | bo                                             | Failure_Core_Invalid_Address |
-      | MAIBV5-BKEVGJ-IZQ4RP-224TYE-J3ZIUL-WDHUTI-X3H5 | Failure_Core_Wrong_Network   |
+      | SAIBV5-BKEVGJ-IZQ4RP-224TYE-J3ZIUL-WDHUTI-X3H  | FAILURE_CORE_INVALID_ADDRESS |
+      | bo                                             | FAILURE_CORE_INVALID_ADDRESS |
+      | MAIBV5-BKEVGJ-IZQ4RP-224TYE-J3ZIUL-WDHUTI-X3H5 | FAILURE_CORE_WRONG_NETWORK   |
 
   Scenario Outline: 18. An account tries only allow transactions from an invalid address
     When Alex tries to only allow receiving transactions from "<address>"
@@ -133,6 +133,6 @@ Feature: Prevent receiving transactions from undesired addresses
 
     Examples:
       | address                                        | error                        |
-      | SAIBV5-BKEVGJ-IZQ4RP-224TYE-J3ZIUL-WDHUTI-X3H  | Failure_Core_Invalid_Address |
-      | bo                                             | Failure_Core_Invalid_Address |
-      | MAIBV5-BKEVGJ-IZQ4RP-224TYE-J3ZIUL-WDHUTI-X3H5 | Failure_Core_Wrong_Network   |
+      | SAIBV5-BKEVGJ-IZQ4RP-224TYE-J3ZIUL-WDHUTI-X3H  | FAILURE_CORE_INVALID_ADDRESS |
+      | bo                                             | FAILURE_CORE_INVALID_ADDRESS |
+      | MAIBV5-BKEVGJ-IZQ4RP-224TYE-J3ZIUL-WDHUTI-X3H5 | FAILURE_CORE_WRONG_NETWORK   |

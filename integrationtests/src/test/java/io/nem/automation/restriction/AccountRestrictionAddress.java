@@ -7,7 +7,9 @@ import io.nem.automation.common.BaseTest;
 import io.nem.automationHelpers.common.TestContext;
 import io.nem.automationHelpers.helper.AccountRestrictionHelper;
 import io.nem.sdk.model.account.Account;
+import io.nem.sdk.model.account.Address;
 import io.nem.sdk.model.account.UnresolvedAddress;
+import io.nem.sdk.model.blockchain.NetworkType;
 import io.nem.sdk.model.transaction.AccountRestrictionType;
 import org.apache.commons.lang3.RandomStringUtils;
 
@@ -97,11 +99,8 @@ public class AccountRestrictionAddress extends BaseTest {
     @When("^(\\w+) tries to only allow receiving transactions from (\\w+)$")
     public void userTriesToOnlyAllowAddress(final String username, String userToAllow) {
         userToAllow = selfPronouns.parallelStream().anyMatch(userToAllow::equalsIgnoreCase) ? username : userToAllow;
-        final Account signerAccount = getUser(userToAllow);
-        final List<UnresolvedAddress> additions = new ArrayList<>();
-        additions.add(getAccountInfoFromContext(userToAllow).getAddress());
-        accountRestrictionHelper.createAccountAddressRestrictionTransactionAndAnnounce(
-                signerAccount, AccountRestrictionType.ALLOW_INCOMING_ADDRESS, additions, new ArrayList<>());
+        this.userTriesToOnlyAllowReceivingTransactionsFrom(username,
+                getAccountInfoFromContext(userToAllow).getAddress());
     }
 
     @When("^(\\w+) tries to block receiving transactions from (\\w+)$")
@@ -167,7 +166,16 @@ public class AccountRestrictionAddress extends BaseTest {
     }
 
     @When("^(\\w+) tries to only allow receiving transactions from \"([^\"]*)\"$")
-    public void userTriesToOnlyAllowReceivingTransactionsFrom(final String username, final String userToAllow) {
-        this.userTriesToOnlyAllowAddress(username, userToAllow);
+    public void userTriesToOnlyAllowReceivingTransactionsFromInvalidAddress(final String username, final String invalidAddressString) {
+        this.userTriesToOnlyAllowReceivingTransactionsFrom(username,
+                new Address(invalidAddressString, NetworkType.MIJIN_TEST));
+    }
+
+    private void userTriesToOnlyAllowReceivingTransactionsFrom(final String username, final UnresolvedAddress address) {
+        final Account signerAccount = getUser(username);
+        final List<UnresolvedAddress> additions = new ArrayList<>();
+        additions.add(address);
+        accountRestrictionHelper.createAccountAddressRestrictionTransactionAndAnnounce(
+                signerAccount, AccountRestrictionType.ALLOW_INCOMING_ADDRESS, additions, new ArrayList<>());
     }
 }
