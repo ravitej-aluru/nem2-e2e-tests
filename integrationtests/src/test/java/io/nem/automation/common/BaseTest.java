@@ -102,7 +102,7 @@ public abstract class BaseTest {
         }
       } else {
         namespaceHelper.createRootNamespaceAndWait(
-                aliceAccount, eurosRandomName, BigInteger.valueOf(1000));
+                aliceAccount, eurosRandomName, BigInteger.valueOf(1000000));
       }
       final MosaicInfo mosaicInfo =
               new MosaicHelper(testContext)
@@ -243,6 +243,7 @@ public abstract class BaseTest {
    * @param mosaicInfo Mosaic info.
    */
   protected void storeMosaicInfo(final String assetName, final MosaicInfo mosaicInfo) {
+      testContext.getLogger().LogInfo("Asset name: %s\n Mosaic info: %s", assetName, mosaicInfo.getMosaicId().toString());
     testContext.getScenarioContext().setContext(assetName, mosaicInfo);
   }
 

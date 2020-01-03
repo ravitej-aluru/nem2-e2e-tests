@@ -68,7 +68,7 @@ public class TransactionHelper {
 	 * @return Max fee.
 	 */
 	public static BigInteger getDefaultMaxFee() {
-		return BigInteger.valueOf(10000);
+        return BigInteger.valueOf(10000000);
 	}
 
 	/**

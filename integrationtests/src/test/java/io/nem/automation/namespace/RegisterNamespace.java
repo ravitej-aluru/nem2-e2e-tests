@@ -101,7 +101,7 @@ public class RegisterNamespace extends BaseTest {
 		assertEquals(errorMessage, false, namespaceInfo.isSubnamespace());
 	}
 
-	@And("^(\\w+) should become the owner of the new namespace (\\w+) for least (\\w+) block$")
+	@And("^(\\w+) should become the owner of the new namespace \"(\\w+)\" for least (\\w+) block$")
 	public void verifyNamespaceOwnerShip(final String userName, final String namespaceName, final BigInteger duration) {
 		verifyNamespaceInfo(userName, NamespaceId.createFromName(namespaceName), duration);
 	}
