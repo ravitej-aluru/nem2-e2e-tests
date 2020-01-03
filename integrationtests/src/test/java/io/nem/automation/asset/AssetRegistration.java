@@ -324,6 +324,21 @@ mosaicFlags,
 		storeMosaicInfo(assetName, mosaicInfo);
 	}
 
+//	@Given("^(\\w+) has the following restrictable assets registered and active:$")
+//	public void registerRestrictableAsset(final String userName, final List<String> assetNames) {
+//		final Account account = getUser(userName);
+//		assetNames.parallelStream().forEach(assetName -> {
+//			final boolean isSupplyMutable = CommonHelper.getRandomNextBoolean();
+//			final boolean isTransferable = CommonHelper.getRandomNextBoolean();
+//			final boolean isRestrictable = true;
+//			final int divisibility = CommonHelper.getRandomDivisibility();
+//			final BigInteger initialSuppy = BigInteger.valueOf(10);
+//			final MosaicFlags mosaicFlags = MosaicFlags.create(isSupplyMutable, isTransferable, isRestrictable);
+//			final MosaicInfo mosaicInfo =
+//					mosaicHelper.createMosaic(account, mosaicFlags, divisibility, initialSuppy);
+//			storeMosaicInfo(assetName, mosaicInfo);
+//		});
+//	}
 
 	@And("^the asset is now expired$")
 	public void waitForMosaicToExpire() {
@@ -338,5 +353,4 @@ mosaicFlags,
 			ExceptionUtils.propagateVoid(() -> Thread.sleep(1000));
 		}
 	}
-
 }
