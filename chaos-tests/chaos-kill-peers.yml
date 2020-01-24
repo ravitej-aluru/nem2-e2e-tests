@@ -1,0 +1,22 @@
+version: "2"
+services:
+  # chaos commands
+  chaos-kill-peer-node-0:
+    image: gaiaadm/pumba
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: "--log-level debug --interval 10m kill --signal SIGTERM docker_peer-node-0_1"
+  chaos-kill-peer-node-1:
+    image: gaiaadm/pumba
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: "--log-level debug --interval 8m kill --signal SIGTERM docker_peer-node-1_1"
+  # recovery:
+  #   build: dockerfiles/catapult
+  #   command: bash -c "/bin-mount/wait /state/api-node-0 && /bin/bash /userconfig/runServerRecover.sh"
+  #   stop_signal: SIGINT
+  #   volumes:
+  #   - ../../build/catapult-config/api-node-0/userconfig/resources/:/userconfig/resources/
+  #   - ../../data/api-node-0:/data:rw
+  #   - ../../bin/bash:/bin-mount
+  #   - ../../build/state:/state
