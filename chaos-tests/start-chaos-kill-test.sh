@@ -4,33 +4,40 @@
 # The variable STOP_TIME will store the seconds since 1970-01-01 00:00:00
 # UTC, according to the date specified by -d "$2".
 
-# $ ./the_script.sh "1 hour 4 minutes 3 seconds"
-# Starting at Fri Jun  2 10:50:28 BRT 2017
-# Finishing at Fri Jun  2 11:54:31 BRT 2017
+# $ ./start-chaos-kill-test.sh "1 hour 4 minutes 3 seconds"
+# Starting test at Fri Jun  2 10:50:28 BRT 2017
+# Expected finish time: Fri Jun  2 11:54:31 BRT 2017
+# Using chaos docker-compose file: chaos-kill-peers.yml
 
-# $ ./the_script.sh "tomorrow 8:00am"
-# Starting at Fri Jun  2 10:50:39 BRT 2017
-# Finishing at Sat Jun  3 08:00:00 BRT 2017
+# $ ./start-chaos-kill-test.sh "tomorrow 8:00am"
+# Starting test at Fri Jun  2 10:50:39 BRT 2017
+# Expected finish time: Sat Jun  3 08:00:00 BRT 2017
+# Using chaos docker-compose file: chaos-kill-peers.yml
 
-# $ ./the_script.sh "monday 8:00am"
-# Starting at Fri Jun  2 10:51:25 BRT 2017
-# Finishing at Mon Jun  5 08:00:00 BRT 2017
+# $ ./start-chaos-kill-test.sh "monday 8:00am"
+# Starting test at Fri Jun  2 10:51:25 BRT 2017
+# Expected finish time: Mon Jun  5 08:00:00 BRT 2017
+# Using chaos docker-compose file: chaos-kill-peers.yml
 
 set -e
 STOP_TIME=$2
 STOP_TIME_EPOCH_SECONDS=$(date -d "$STOP_TIME" "+%s")
 set +e
 KILL_COMPOSE_FILE=$1
-echo -e "Starting at $(date)"
-echo -e "Finishing at $(date -d "$STOP_TIME")"
+echo -e "Starting test at $(date)"
+echo -e "Expected finish time: $(date -d "$STOP_TIME")"
+echo -e "Using chaos docker-compose file: $KILL_COMPOSE_FILE"
 
 # CHAOS_LOG_FILE=chaos-logs/$KILL_COMPOSE_FILE.$(date +"%d.%m.%Y-%H.%M.%S").log
 # Launch the catapult server and pumba containers
-docker-compose -f docker-compose.yml -f ${KILL_COMPOSE_FILE} up -d
+docker-compose -f ../catapult-bootstrap/cmds/docker/docker-compose.yml -f ${KILL_COMPOSE_FILE} up -d
+docker ps
+docker ps --filter NAME=docker_peer-node-0_1 --filter NAME=docker_peer-node-1_1
 
 # Repeat the loop while the current date is less than STOP_TIME_EPOCH_SECONDS
 while [ $(date "+%s") -lt ${STOP_TIME_EPOCH_SECONDS} ]; do
-  # docker ps --filter NAME=docker_peer-node-0_1 --filter NAME=docker_peer-node-1_1
+  sleep 60
+  docker ps --filter NAME=docker_peer-node-0_1 --filter NAME=docker_peer-node-1_1
 
   NODE_0_STATUS=$(docker inspect docker_peer-node-0_1 --format='{{.State.Status}}')
   NODE_0_EXITCODE=$(docker inspect docker_peer-node-1_1 --format='{{.State.ExitCode}}')
@@ -49,4 +56,4 @@ while [ $(date "+%s") -lt ${STOP_TIME_EPOCH_SECONDS} ]; do
   fi
 done
 
-docker-compose -f docker-compose.yml -f ${KILL_COMPOSE_FILE} down --remove-orphans
+docker-compose -f ../catapult-bootstrap/cmds/docker/docker-compose.yml -f ${KILL_COMPOSE_FILE} down --remove-orphans
