@@ -66,7 +66,7 @@ public class RegisterNamespace extends BaseTest {
 				namespaceHelper.createRootNamespaceAndWait(account, namespaceName, duration);
 		final NamespaceInfo namespaceInfo =
 				new NamespaceHelper(getTestContext())
-						.getNamesapceInfo(namespaceRegistrationTransaction.getNamespaceId());
+						.getNamespaceInfoWithRetry(namespaceRegistrationTransaction.getNamespaceId());
 		getTestContext().getScenarioContext().setContext(NAMESPACE_INFO_KEY, namespaceInfo);
 		getTestContext().clearTransaction();
 		getTestContext().addTransaction(namespaceRegistrationTransaction);
@@ -82,7 +82,7 @@ public class RegisterNamespace extends BaseTest {
 
 	void verifyNamespaceInfo(final String userName, final NamespaceId namespaceId, final BigInteger duration) {
 		final NamespaceInfo namespaceInfo =
-				new NamespaceHelper(getTestContext()).getNamesapceInfo(namespaceId);
+				new NamespaceHelper(getTestContext()).getNamespaceInfoWithRetry(namespaceId);
 		final String errorMessage = "Namespace info check failed for id: " + namespaceId.getIdAsLong();
 		assertEquals(errorMessage, namespaceId.getIdAsLong(), namespaceInfo.getId().getIdAsLong());
 		final AccountInfo accountInfo = getAccountInfoFromContext(userName);

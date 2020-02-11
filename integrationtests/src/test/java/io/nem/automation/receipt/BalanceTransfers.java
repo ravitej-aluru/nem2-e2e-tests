@@ -126,7 +126,7 @@ public class BalanceTransfers extends BaseTest {
     final Account account = getUser(userName);
     final NamespaceRegistrationTransaction namespaceRegistrationTransaction =
         getTestContext()
-            .<NamespaceRegistrationTransaction>findTransaction(TransactionType.REGISTER_NAMESPACE)
+            .<NamespaceRegistrationTransaction>findTransaction(TransactionType.NAMESPACE_REGISTRATION)
             .get();
     final BigInteger transactionHeight = namespaceRegistrationTransaction.getTransactionInfo().get().getHeight();
     final BigInteger actualCost =

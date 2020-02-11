@@ -70,7 +70,7 @@ public class ExtendNamespaceRegistration extends BaseTest {
 	@And("^the namespace is now under grace period$")
 	public void waitForNamespaceToExpire() {
 		final NamespaceRegistrationTransaction namespaceRegistrationTransaction =
-				getTestContext().<NamespaceRegistrationTransaction>findTransaction(TransactionType.REGISTER_NAMESPACE).get();
+				getTestContext().<NamespaceRegistrationTransaction>findTransaction(TransactionType.NAMESPACE_REGISTRATION).get();
 		final BigInteger expiredHeight =
 				namespaceRegistrationTransaction.getTransactionInfo().get().getHeight()
 						.add(namespaceRegistrationTransaction.getDuration().get());

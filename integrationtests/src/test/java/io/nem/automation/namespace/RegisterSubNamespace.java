@@ -80,7 +80,7 @@ public class RegisterSubNamespace extends BaseTest {
 	private void verifySubNamespaceInfo(final String userName, final String namespace) {
 		final NamespaceId namespaceId = getNamespaceIdFromName(namespace);
 		final NamespaceInfo namespaceInfo =
-				new NamespaceHelper(getTestContext()).getNamesapceInfo(namespaceId);
+				new NamespaceHelper(getTestContext()).getNamespaceInfoWithRetry(namespaceId);
 		final String errorMessage =
 				"SubNamespace info check failed for id: " + namespaceId.getIdAsLong();
 		assertEquals(errorMessage, namespaceId.getIdAsLong(), namespaceInfo.getId().getIdAsLong());

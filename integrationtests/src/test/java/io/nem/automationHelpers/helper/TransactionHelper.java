@@ -63,7 +63,7 @@ public class TransactionHelper {
    * @return Max fee.
    */
   public static BigInteger getDefaultMaxFee() {
-    return BigInteger.valueOf(50000);
+    return BigInteger.valueOf(1000000);
   }
 
   /**
@@ -141,6 +141,21 @@ public class TransactionHelper {
                 .getTransactionStatus(hash)
                 .toFuture()
                 .get());
+  }
+
+  /**
+   * Gets the transaction status(failed, success)
+   *
+   * @param hash Transaction hash.
+   * @return Transaction status.
+   */
+  public Optional<TransactionStatus> getTransactionStatusNoThrow(final String hash) {
+    try {
+      return Optional.of(getTransactionStatus(hash));
+    } catch (Exception ex) {
+
+    }
+    return Optional.empty();
   }
 
   /**
@@ -250,19 +265,21 @@ public class TransactionHelper {
                 return getTransaction.apply(signedTransaction.getHash());
               } catch (final IllegalArgumentException e) {
                 testContext.getLogger().LogException(e);
-                final TransactionStatus transactionStatus =
-                    getTransactionStatusWithRetry(signedTransaction.getHash(), 1);
-                if (isTransactionDone(transactionStatus.getGroup())) {
+                final Optional<TransactionStatus> transactionStatusOptional =
+                    getTransactionStatusNoThrow(signedTransaction.getHash());
+                if (transactionStatusOptional.isPresent()
+                    && isTransactionDone(transactionStatusOptional.get().getGroup())) {
                   testContext
                       .getLogger()
                       .LogInfo(
-                          "Status is done for hash: " + CommonHelper.toString(transactionStatus));
+                          "Status is done for hash: "
+                              + CommonHelper.toString(transactionStatusOptional.get()));
                   // Transaction was not found.
                   retryCommand.cancelRetry();
                 }
                 throw new RuntimeException(
                     "Status: "
-                        + transactionStatus.getCode()
+                        + (transactionStatusOptional.isPresent() ? transactionStatusOptional.get().getCode() : "unknown")
                         + " "
                         + CommonHelper.toString(signedTransaction),
                     e);

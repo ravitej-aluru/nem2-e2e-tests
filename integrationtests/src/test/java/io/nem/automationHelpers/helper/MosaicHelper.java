@@ -20,6 +20,7 @@
 
 package io.nem.automationHelpers.helper;
 
+import com.sun.javaws.exceptions.InvalidArgumentException;
 import io.nem.automationHelpers.common.TestContext;
 import io.nem.core.utils.ExceptionUtils;
 import io.nem.sdk.api.MosaicRepository;
@@ -300,7 +301,7 @@ public class MosaicHelper {
 										mosaicSupplyChangeTransaction.toAggregate(account.getPublicAccount())));
 		final TransactionHelper transactionHelper = new TransactionHelper(testContext);
 		transactionHelper.signAndAnnounceTransactionAndWait(account, aggregateTransactionSupplier);
-		return getMosaic(mosaicDefinitionTransaction.getMosaicId());
+		return getMosaicWithRetry(mosaicDefinitionTransaction.getMosaicId());
 	}
 
 	/**
@@ -316,6 +317,17 @@ public class MosaicHelper {
 							testContext.getRepositoryFactory().createMosaicRepository();
 					return mosaicRepository.getMosaic(mosaicId).toFuture().get();
 				});
+	}
+
+	/**
+	 * Gets the info for a mosaic id.
+	 *
+	 * @param mosaicId Mosaic id.
+	 * @return Mosaic info.
+	 */
+	public MosaicInfo getMosaicWithRetry(MosaicId mosaicId) {
+		return CommonHelper.executeWithRetry(() -> getMosaic(mosaicId)).orElseThrow(() -> new IllegalArgumentException("Mosaicid not foun" +
+				". id:" + mosaicId.getIdAsLong()));
 	}
 
 	/**

@@ -111,7 +111,7 @@ public class BalanceChanges extends BaseTest {
 	@And("^the hash lock expires$")
 	public void lockExpires() {
 		final HashLockTransaction hashLockTransaction =
-				getTestContext().<HashLockTransaction>findTransaction(TransactionType.LOCK).get();
+				getTestContext().<HashLockTransaction>findTransaction(TransactionType.HASH_LOCK).get();
 		final BigInteger receiptHeight =
 				hashLockTransaction.getTransactionInfo().get().getHeight().add(hashLockTransaction.getDuration());
 		waitForBlockChainHeight(receiptHeight.longValue() + 1);
@@ -122,7 +122,7 @@ public class BalanceChanges extends BaseTest {
 	@When("^she checks if the lock has expired$")
 	public void checkForLockExpired() {
 		final HashLockTransaction hashLockTransaction =
-				getTestContext().<HashLockTransaction>findTransaction(TransactionType.LOCK).get();
+				getTestContext().<HashLockTransaction>findTransaction(TransactionType.HASH_LOCK).get();
 		waitForBlockChainHeight(hashLockTransaction.getTransactionInfo().get().getHeight().longValue());
 	}
 
@@ -138,7 +138,7 @@ public class BalanceChanges extends BaseTest {
 	public void verifyLockHashSentReceipt(final String userName, final BigInteger amount) {
 		final Account account = getUser(userName);
 		final HashLockTransaction hashLockTransaction =
-				getTestContext().<HashLockTransaction>findTransaction(TransactionType.LOCK).get();
+				getTestContext().<HashLockTransaction>findTransaction(TransactionType.HASH_LOCK).get();
 		final BigInteger receiptHeight = hashLockTransaction.getTransactionInfo().get().getHeight();
 
 		verifyBalanceChangeReceipt(receiptHeight, ReceiptType.LOCK_HASH_CREATED, amount, account.getPublicAccount().getPublicKey());

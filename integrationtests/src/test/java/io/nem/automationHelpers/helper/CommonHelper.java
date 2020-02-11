@@ -29,9 +29,9 @@ import io.nem.sdk.model.blockchain.NetworkType;
 import io.nem.sdk.model.mosaic.Mosaic;
 import io.nem.sdk.model.mosaic.MosaicId;
 import io.nem.sdk.model.transaction.*;
+import org.apache.commons.lang3.Validate;
 
 import java.math.BigInteger;
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -227,27 +227,48 @@ public class CommonHelper {
     return factory.deadline(deadline).maxFee(maxFee).build();
   }
 
-  public static <T> Optional<T> executeUntilTimeout(
-      final Callable<T> callable, final int timeoutInSeconds) {
-    final LocalDateTime timeout = LocalDateTime.now().plusSeconds(timeoutInSeconds);
-    do {
-      T value = null;
+  /**
+   * Execute a callable until succeed or max retry is hit.
+   *
+   * @param callable Callable to execute.
+   * @param numOfReties Max number of reties.
+   * @param <T> Result type.
+   * @return Optional result of the callable.
+   */
+  public static <T> Optional<T> executeWithRetry(
+      final Callable<T> callable, final int numOfReties) {
+    Validate.isTrue(numOfReties > 0, "numOfReties should be greater than zero.");
+    T value = null;
+    for (int i = 0; i < numOfReties; i++) {
       try {
         value = callable.call();
       } catch (final Exception ex) {
+        ExceptionUtils.propagateVoid(() -> Thread.sleep(1000));
       }
       if (value != null) {
         return Optional.of(value);
       }
-    } while (timeout.isAfter(LocalDateTime.now()));
+    }
     return Optional.empty();
   }
 
-  public static <T> Optional<T> executeUntilDatabaseTimeout(final Callable<T> callable) {
-    return executeUntilTimeout(
-        callable, testContext.getConfigFileReader().getDatabaseQueryTimeoutInSeconds());
+  /**
+   * Retries a callable for up to 15 tries.
+   *
+   * @param callable Callable.
+   * @param <T> Result type.
+   * @return Optional Result depending on if call is successful.
+   */
+  public static <T> Optional<T> executeWithRetry(final Callable<T> callable) {
+    return executeWithRetry(callable, 15);
   }
 
+  /**
+   * Convert the Signed Transaction to string.
+   *
+   * @param transactionStatus Transaction status.
+   * @return String of TransactionStatus object.
+   */
   public static String toString(final TransactionStatus transactionStatus) {
     return "Hash: "
         + transactionStatus.getHash()
@@ -261,6 +282,12 @@ public class CommonHelper {
         + transactionStatus.getHeight();
   }
 
+  /**
+   * Convert the Signed Transaction to string.
+   *
+   * @param signedTransaction Signed transaction.
+   * @return String of SignedTransaction object.
+   */
   public static String toString(final SignedTransaction signedTransaction) {
     return "Hash: "
         + signedTransaction.getHash()
@@ -272,12 +299,18 @@ public class CommonHelper {
         + signedTransaction.getPayload();
   }
 
+  /**
+   * Convert the Cosignature Signed Transaction to string.
+   *
+   * @param signedTransaction Cosignature signed transaction.
+   * @return String of CosignatureSignedTransaction object.
+   */
   public static String toString(final CosignatureSignedTransaction signedTransaction) {
     return "Parent hash: "
-            + signedTransaction.getParentHash()
-            + " signer: "
-            + signedTransaction.getSigner()
-            + " signature : "
-            + signedTransaction.getSignature();
+        + signedTransaction.getParentHash()
+        + " signer: "
+        + signedTransaction.getSigner()
+        + " signature : "
+        + signedTransaction.getSignature();
   }
 }

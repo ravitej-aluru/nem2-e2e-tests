@@ -215,11 +215,11 @@ public class CreateMultisignatureContract extends BaseTest {
     final Account multisigAccount =
         getTestContext().getScenarioContext().getContext(MULTISIG_ACCOUNT_INFO);
     final MultisigAccountInfo multisigAccountInfo =
-        new AccountHelper(getTestContext()).getMultisigAccount(multisigAccount.getAddress());
+        new AccountHelper(getTestContext()).getMultisigAccountWithRetry(multisigAccount.getAddress());
     final MultisigAccountModificationTransaction modifyMultisigAccountTransaction =
         getTestContext()
             .<MultisigAccountModificationTransaction>findTransaction(
-                TransactionType.MODIFY_MULTISIG_ACCOUNT)
+                TransactionType.MULTISIG_ACCOUNT_MODIFICATION)
             .get();
     final String errorMessage =
         "Multisig Account " + multisigAccount.getAddress().pretty() + " failed to verification.";

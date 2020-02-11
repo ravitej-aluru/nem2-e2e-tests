@@ -58,7 +58,7 @@ public class ArtifactExpiration extends BaseTest {
 	@When("^(\\w+) checks if the previous namespace expired$")
 	public void checkNamespaceExpired(final String userName) {
 		final NamespaceRegistrationTransaction namespaceRegistrationTransaction =
-				getTestContext().<NamespaceRegistrationTransaction>findTransaction(TransactionType.REGISTER_NAMESPACE).get();
+				getTestContext().<NamespaceRegistrationTransaction>findTransaction(TransactionType.NAMESPACE_REGISTRATION).get();
 		final BigInteger expiredHeight =
 				namespaceRegistrationTransaction.getTransactionInfo().get().getHeight()
 						.add(namespaceRegistrationTransaction.getDuration().get());

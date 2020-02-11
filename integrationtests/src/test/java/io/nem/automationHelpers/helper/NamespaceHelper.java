@@ -258,6 +258,17 @@ public class NamespaceHelper {
 	 * Gets the namespace info.
 	 *
 	 * @param namespaceId Namespace id.
+	 * @return Namespace info.
+	 */
+	public NamespaceInfo getNamespaceInfoWithRetry(final NamespaceId namespaceId) {
+		return CommonHelper.executeWithRetry(() -> getNamesapceInfo(namespaceId)).orElseThrow(() -> new IllegalArgumentException(
+				"NamespaceId not found. id:" + namespaceId.getIdAsLong()));
+	}
+
+	/**
+	 * Gets the namespace info.
+	 *
+	 * @param namespaceId Namespace id.
 	 * @return Namespace info if present.
 	 */
 	public Optional<NamespaceInfo> getNamespaceInfoNoThrow(final NamespaceId namespaceId) {

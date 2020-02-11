@@ -124,6 +124,17 @@ public class AccountHelper {
   }
 
   /**
+   * Gets multisig account by address.
+   *
+   * @param address Account address.
+   * @return Multisig account info.
+   */
+  public MultisigAccountInfo getMultisigAccountWithRetry(final Address address) {
+    return CommonHelper.executeWithRetry(() -> getMultisigAccount(address)).orElseThrow(() -> new IllegalArgumentException("Multisig " +
+            "account not found. id:" + address.pretty()));
+  }
+
+  /**
    * Gets aggregate bonded transactions for an account.
    *
    * @param publicAccount Public account.

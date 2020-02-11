@@ -301,7 +301,7 @@ mosaicFlags,
 		final MosaicDefinitionTransaction mosaicDefinitionTransaction =
 				new TransactionHelper(getTestContext()).waitForTransactionToComplete(signedTransaction);
 		final MosaicInfo mosaicInfo =
-				new MosaicHelper(getTestContext()).getMosaic(mosaicDefinitionTransaction.getMosaicId());
+				new MosaicHelper(getTestContext()).getMosaicWithRetry(mosaicDefinitionTransaction.getMosaicId());
 		storeMosaicInfo(MOSAIC_INFO_KEY, mosaicInfo);
 		storeMosaicInfo(assetName, mosaicInfo);
 	}

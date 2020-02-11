@@ -33,7 +33,6 @@ import io.nem.sdk.model.namespace.NamespaceInfo;
 import io.nem.sdk.model.transaction.SignedTransaction;
 import io.nem.sdk.model.transaction.Transaction;
 import io.nem.sdk.model.transaction.TransferTransaction;
-import javafx.collections.transformation.SortedList;
 
 import java.math.BigInteger;
 import java.util.*;
@@ -96,7 +95,7 @@ public abstract class BaseTest {
         final BigInteger chainHeight = new BlockChainHelper(testContext).getBlockchainHeight();
         blockDuration = blockDuration.add(chainHeight.subtract(namespaceInfoOptional.get().getStartHeight()));
       }
-      final NamespaceInfo namespaceInfo = namespaceHelper.getNamesapceInfo(eurosNamespaceId);
+      final NamespaceInfo namespaceInfo = namespaceHelper.getNamespaceInfoWithRetry(eurosNamespaceId);
       if (namespaceInfo.getAlias().getType() != AliasType.NONE) {
         final MosaicId mosaicId = (MosaicId) namespaceInfo.getAlias().getAliasValue();
         namespaceHelper.submitUnlinkMosaicAliasAndWait(aliceAccount, eurosNamespaceId, mosaicId);

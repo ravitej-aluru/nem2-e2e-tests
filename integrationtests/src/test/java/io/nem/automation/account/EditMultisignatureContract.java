@@ -73,7 +73,7 @@ public class EditMultisignatureContract extends BaseTest {
     final MultisigAccountModificationTransaction originalMultisigAccountModificationTransaction =
         getTestContext()
             .<MultisigAccountModificationTransaction>findTransaction(
-                TransactionType.MODIFY_MULTISIG_ACCOUNT)
+                TransactionType.MULTISIG_ACCOUNT_MODIFICATION)
             .get();
     final List<PublicAccount> accountsAdditions =
         originalMultisigAccountModificationTransaction.getPublicKeyAdditions();
