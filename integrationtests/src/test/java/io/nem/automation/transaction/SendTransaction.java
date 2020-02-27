@@ -40,6 +40,7 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Transaction specific tests.
@@ -110,6 +111,20 @@ public class SendTransaction extends BaseTest {
 		announcesTransactionWithInvalid(
 				userName, deadline, TransactionHelper.getDefaultMaxFee(), networkHelper.getNetworkType());
 		ExceptionUtils.propagateVoid(() -> Thread.sleep((timeInSeconds + 3) * 1000));
+	}
+
+	@When("^(\\w+) announce valid transaction and verify in unconfirmed status$")
+	public void announcesTransactionUnconfirmed(final String userName) {
+		final BigInteger blockHeight = new BlockChainHelper(getTestContext()).getBlockchainHeight();
+		final Account sender = getUser(userName);
+		final TransferTransaction transferTransaction =
+				createTransaction(TransactionHelper.getDefaultDeadline(), TransactionHelper.getDefaultMaxFee(), getTestContext().getNetworkType());
+		waitForBlockChainHeight(blockHeight.longValue() + 1);
+		final SignedTransaction signedTransaction = new TransactionHelper(getTestContext()).signAndAnnounceTransaction(sender,
+				() -> transferTransaction);
+		final boolean found = new TransactionHelper(getTestContext()).waitForTransactionStatus(signedTransaction.getHash(),
+				TransactionState.UNCONFIRMED);
+		assertTrue("Transaction was not found in unconfirmed: " + CommonHelper.toString(signedTransaction), found);
 	}
 
 	@When("^(\\w+) announces the transaction with invalid signature$")

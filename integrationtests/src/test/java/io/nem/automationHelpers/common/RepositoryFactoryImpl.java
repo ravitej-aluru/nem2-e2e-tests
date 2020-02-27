@@ -8,6 +8,7 @@ import io.nem.sdk.infrastructure.common.CatapultContext;
 import io.nem.sdk.infrastructure.directconnect.DirectConnectRepositoryFactoryImpl;
 import io.nem.sdk.infrastructure.directconnect.dataaccess.common.DataAccessContext;
 import io.nem.sdk.infrastructure.directconnect.dataaccess.database.mongoDb.BlocksCollection;
+import io.nem.sdk.infrastructure.directconnect.dataaccess.database.mongoDb.FullBlockInfo;
 import io.nem.sdk.infrastructure.directconnect.network.CatapultNodeContext;
 import io.nem.sdk.infrastructure.vertx.RepositoryFactoryVertxImpl;
 import io.nem.sdk.model.account.Account;
@@ -48,7 +49,7 @@ public class RepositoryFactoryImpl {
 						configFileReader.getMongodbHost(),
 						configFileReader.getMongodbPort(),
 						0 /* timeout */);
-		BlockInfo firstBlock =
+		FullBlockInfo firstBlock =
 				ExceptionUtils.propagate(() -> new BlocksCollection(dataAccessContext).find(1).get());
 
 		final PublicKey apiServerPublicKey =
@@ -63,7 +64,6 @@ public class RepositoryFactoryImpl {
 				new CatapultNodeContext(
 						apiServerPublicKey,
 						account.getKeyPair(),
-						firstBlock.getNetworkType(),
 						configFileReader.getApiHost(),
 						configFileReader.getApiPort(),
 						configFileReader.getSocketTimeoutInMilliseconds());

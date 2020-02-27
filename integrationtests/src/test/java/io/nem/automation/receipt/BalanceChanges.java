@@ -20,29 +20,23 @@
 
 package io.nem.automation.receipt;
 
-import cucumber.api.java.en.And;
-import cucumber.api.java.en.Given;
+import cucumber.api.java.en.And;;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import io.nem.automation.common.BaseTest;
 import io.nem.automationHelpers.common.TestContext;
 import io.nem.automationHelpers.helper.*;
 import io.nem.core.crypto.PublicKey;
-import io.nem.core.utils.ExceptionUtils;
 import io.nem.sdk.model.account.Account;
-import io.nem.sdk.model.account.AccountInfo;
 import io.nem.sdk.model.account.PublicAccount;
 import io.nem.sdk.model.mosaic.Mosaic;
-import io.nem.sdk.model.mosaic.NetworkCurrencyMosaic;
 import io.nem.sdk.model.namespace.NamespaceId;
 import io.nem.sdk.model.receipt.BalanceChangeReceipt;
 import io.nem.sdk.model.receipt.ReceiptType;
 import io.nem.sdk.model.receipt.Statement;
 import io.nem.sdk.model.transaction.*;
-import org.bouncycastle.util.encoders.Hex;
 
 import java.math.BigInteger;
-import java.security.SecureRandom;
 import java.util.Collection;
 import java.util.Optional;
 
@@ -76,7 +70,9 @@ public class BalanceChanges extends BaseTest {
 
 	private void verifyBalanceChangeReceipt(final BigInteger receiptHeight, final ReceiptType receiptType, final BigInteger actualAmount,
 											final PublicKey targetPublicKey) {
-		final Mosaic mosaic = new MosaicHelper(getTestContext()).getMosaicFromNamespace(NetworkCurrencyMosaic.NAMESPACEID, actualAmount);
+		final Mosaic mosaic =
+				new MosaicHelper(getTestContext()).getMosaicFromNamespace(getTestContext().getNetworkCurrency().getNamespaceId().get(),
+				actualAmount);
 		verifyBalanceChangeReceipt(receiptHeight, receiptType, mosaic, targetPublicKey);
 	}
 

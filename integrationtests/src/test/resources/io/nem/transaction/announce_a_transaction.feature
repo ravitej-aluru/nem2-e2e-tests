@@ -32,6 +32,10 @@ Feature: Announce a transaction
     Then she should receive a confirmation message
     And  she should receive the error "FAILURE_CORE_PAST_DEADLINE"
 
+  Scenario: Transaction state verification
+    When Alice announce valid transaction and verify in unconfirmed status
+    Then she should receive a confirmation message
+
   Scenario: An account tries to announce a transaction with an invalid signature
     When Alice announces the transaction with invalid signature
     Then Alice balance should remain intact

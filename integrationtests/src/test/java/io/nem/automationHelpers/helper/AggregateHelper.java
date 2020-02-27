@@ -23,7 +23,7 @@ package io.nem.automationHelpers.helper;
 import io.nem.automationHelpers.common.TestContext;
 import io.nem.sdk.model.account.Account;
 import io.nem.sdk.model.mosaic.Mosaic;
-import io.nem.sdk.model.mosaic.NetworkCurrencyMosaic;
+import io.nem.sdk.model.mosaic.NetworkCurrencyBuilder;
 import io.nem.sdk.model.transaction.*;
 
 import java.math.BigInteger;
@@ -170,7 +170,7 @@ public class AggregateHelper {
 	 */
 	public HashLockTransaction submitLockFundForBondedTransaction(final Account account, final SignedTransaction signedTransaction,
 																   final BigInteger duration) {
-		final Mosaic mosaicToLock = NetworkCurrencyMosaic.createRelative(BigInteger.valueOf(10));
+		final Mosaic mosaicToLock = testContext.getNetworkCurrency().createRelative(BigInteger.valueOf(10));
 		return submitHashLockTransactionAndWait(account, mosaicToLock, duration, signedTransaction);
 	}
 
@@ -190,7 +190,8 @@ public class AggregateHelper {
 				transactionHelper.signTransaction(aggregateTransaction, account);
 		final BigInteger duration = BigInteger.valueOf(5);
 		submitLockFundForBondedTransaction(account, signedTransaction, duration);
-		transactionHelper.announceTransaction(signedTransaction);
+		transactionHelper.announceAggregateBonded(signedTransaction);
+		testContext.addTransaction(aggregateTransaction);
 		return signedTransaction;
 	}
 

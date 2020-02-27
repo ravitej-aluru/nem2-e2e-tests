@@ -28,7 +28,7 @@ import io.nem.sdk.model.account.PublicAccount;
 import io.nem.sdk.model.blockchain.BlockInfo;
 import io.nem.sdk.model.blockchain.NetworkType;
 import io.nem.sdk.model.mosaic.MosaicId;
-import io.nem.sdk.model.mosaic.NetworkCurrencyMosaic;
+import io.nem.sdk.model.mosaic.NetworkCurrency;
 import io.nem.sdk.model.mosaic.UnresolvedMosaicId;
 import io.nem.sdk.model.transaction.SignedTransaction;
 import io.nem.sdk.model.transaction.Transaction;
@@ -186,12 +186,12 @@ public class TestContext {
   }
 
   /**
-   * Get the cat currency namespace id.
+   * Get the network currency.
    *
    * @return Namespace id.
    */
-  public BigInteger getCatCurrencyId() {
-    return NetworkCurrencyMosaic.NAMESPACEID.getId();
+  public NetworkCurrency getNetworkCurrency() {
+    return NetworkCurrency.CAT_CURRENCY;
   }
 
   public MosaicId getNetworkCurrencyMosaicId() {
@@ -199,7 +199,7 @@ public class TestContext {
       networkCurrencyMosaicId =
           repositoryFactory
               .createNamespaceRepository()
-              .getLinkedMosaicId(NetworkCurrencyMosaic.NAMESPACEID)
+              .getLinkedMosaicId(getNetworkCurrency().getNamespaceId().get())
               .blockingFirst();
     }
     return networkCurrencyMosaicId;
@@ -232,7 +232,7 @@ public class TestContext {
   public BigInteger getFeesForUser(final PublicAccount publicAccount, final UnresolvedMosaicId id) {
     BigInteger userFee = BigInteger.ZERO;
     boolean isNetworkCurrency = Arrays.asList(
-                NetworkCurrencyMosaic.NAMESPACEID.getId(), getNetworkCurrencyMosaicId().getId())
+                getNetworkCurrency(), getNetworkCurrencyMosaicId().getId())
             .contains(id.getId());
     if (!isNetworkCurrency){
       return userFee;

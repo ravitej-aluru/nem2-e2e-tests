@@ -82,7 +82,7 @@ public abstract class BaseTest {
       final AccountHelper accountHelper = new AccountHelper(testContext);
       final Account accountBob =
           accountHelper.createAccountWithAsset(
-              NetworkCurrencyMosaic.createRelative(BigInteger.valueOf(100)));
+              testContext.getNetworkCurrency().createRelative(BigInteger.valueOf(100)));
       CORE_USER_ACCOUNTS.put(AUTOMATION_USER_BOB, accountBob);
       final NamespaceHelper namespaceHelper = new NamespaceHelper(testContext);
       final String eurosRandomName = MOSAIC_EUROS_KEY;
@@ -310,7 +310,8 @@ public abstract class BaseTest {
     if (CommonHelper.accountExist(username)) {
       return CommonHelper.getAccount(username, getTestContext().getNetworkType());
     }
-    final Mosaic mosaic = NetworkCurrencyMosaic.createRelative(BigInteger.valueOf(amount));
+    final Mosaic mosaic =
+        testContext.getNetworkCurrency().createRelative(BigInteger.valueOf(amount));
     final Account account = new AccountHelper(testContext).createAccountWithAsset(mosaic);
     addUser(username, account);
     storeUserAccountInContext(account);
@@ -358,8 +359,8 @@ public abstract class BaseTest {
    */
   protected BigInteger getActualMosaicQuantity(
       final NamespaceId namespaceId, final BigInteger amount) {
-    return NetworkCurrencyMosaic.NAMESPACEID.getIdAsLong() == namespaceId.getIdAsLong()
-        ? NetworkCurrencyMosaic.createRelative(amount).getAmount()
+    return testContext.getNetworkCurrency().getNamespaceId().get().getIdAsLong() == namespaceId.getIdAsLong()
+        ? NetworkCurrency.CAT_CURRENCY.createRelative(amount).getAmount()
         : amount;
   }
 
@@ -527,11 +528,11 @@ public abstract class BaseTest {
     final BigInteger dynamicFeeMultiplier =
         blockInfos.size() != maxDifficultyBlocks
             ? defaultDynamicFeeMultiplier
-            : calculateDynamicFeeMultipler(blockInfos, defaultDynamicFeeMultiplier);
+            : calculateDynamicFeeMultiplier(blockInfos, defaultDynamicFeeMultiplier);
     return expectedCost.multiply(dynamicFeeMultiplier);
   }
 
-  private BigInteger calculateDynamicFeeMultipler(
+  private BigInteger calculateDynamicFeeMultiplier(
       final List<BlockInfo> blockInfos, final BigInteger defaultFeeMultiplier) {
     final List<Integer> listOfFeeMultipliers = new ArrayList<>();
 

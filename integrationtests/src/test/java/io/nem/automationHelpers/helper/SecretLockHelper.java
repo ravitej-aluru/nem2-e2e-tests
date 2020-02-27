@@ -83,11 +83,11 @@ public class SecretLockHelper {
 			case SHA3_256:
 				return Hashes.sha3_256(inputBytes);
 			case KECCAK_256:
-				return Hashes.keccak256(inputBytes);
+				//return Hashes..keccak256(inputBytes);
 			case HASH_256:
 				return Hashes.hash256(inputBytes);
 			case HASH_160:
-				return Hashes.hash160(inputBytes);
+				return Hashes.ripemd160(inputBytes);
 			default:
 				throw new IllegalArgumentException("Hash type is unknown: " + lockHashAlgorithmType);
 		}

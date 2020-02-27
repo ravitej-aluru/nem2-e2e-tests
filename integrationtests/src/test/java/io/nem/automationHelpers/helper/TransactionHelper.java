@@ -199,7 +199,7 @@ public class TransactionHelper {
     TransactionStatus transactionStatus;
 
     do {
-      transactionStatus = getTransactionStatusWithRetry(hash, 10);
+      transactionStatus = getTransactionStatusWithRetry(hash, 20);
       if (transactionStatus.getGroup() == status) {
         return true;
       }
