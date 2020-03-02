@@ -28,15 +28,18 @@ echo -e "Starting test at $(date)"
 echo -e "Expected finish time: $(date -d "$STOP_TIME")"
 echo -e "Using chaos docker-compose file: $KILL_COMPOSE_FILE"
 
+CATAPULT_COMPOSE_FILE='../catapult-service-bootstrap/cmds/docker/docker-compose-auto-recovery.yml'
 # set -x
 # CHAOS_LOG_FILE=chaos-logs/$KILL_COMPOSE_FILE.$(date +"%d.%m.%Y-%H.%M.%S").log
 # Launch the catapult server and pumba containers
-docker-compose -f ../catapult-bootstrap/cmds/docker/docker-compose.yml -f ${KILL_COMPOSE_FILE} up -d
+docker-compose -f ${CATAPULT_COMPOSE_FILE} -f ${KILL_COMPOSE_FILE} up -d
 # Call the python script and then remove the square braces [] from the output
 DOCKER_CONTAINERS=($(python3 name_parser.py $KILL_COMPOSE_FILE | tr -d '[],'))
 echo "List of containers: ${DOCKER_CONTAINERS[@]}"
 sleep 10
 docker ps
+
+# Start the spammer tool with required args to send transactions at this catapult server
 
 # Repeat the loop while the current date is less than STOP_TIME_EPOCH_SECONDS
 while [ $(date "+%s") -lt ${STOP_TIME_EPOCH_SECONDS} ]; do
@@ -54,4 +57,13 @@ while [ $(date "+%s") -lt ${STOP_TIME_EPOCH_SECONDS} ]; do
     fi
   done
 done
-docker-compose -f ../catapult-bootstrap/cmds/docker/docker-compose.yml -f ${KILL_COMPOSE_FILE} down --remove-orphans
+# Stop catapult
+docker-compose -f ${CATAPULT_COMPOSE_FILE} -f ${KILL_COMPOSE_FILE} down --remove-orphans
+# Delete all data and settings created by catapult for a clean start next time
+# ???how to run the below command without the prompt for password during automated testing???
+#cd ../catapult-service-bootstrap && sudo cmds/clean-all && cd ../chaos-tests
+
+# Now, query the catapult mongo db and check the count of transactions
+# MONGO_DATABASES=($(python3 mongo_query.py | tr -d '[],'))
+# echo "List of databases in mongodb: ${MONGO_DATABASES[@]}"
+python3 mongo_query.py
