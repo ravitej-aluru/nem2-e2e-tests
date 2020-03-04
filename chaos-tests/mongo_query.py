@@ -13,7 +13,7 @@ def connect_mongo_db(host='localhost', port=27017):
     global client
     global db
     client = MongoClient(host, port)
-    print(client.database_names())
+    print(client.list_database_names())
     db = client.catapult
     print(db.list_collection_names())
 
