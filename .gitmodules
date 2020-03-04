@@ -6,3 +6,7 @@
 	path = catapult-service-bootstrap
 	url = https://github.com/tech-bureau/catapult-service-bootstrap.git
 	branch = feature/chaos-tests
+[submodule "catapult-spammer"]
+	path = catapult-spammer
+	url = https://github.com/rich-dtk/debug-symbol-bootstrap.git
+	branch = 931-test
