@@ -57,13 +57,14 @@ while [ $(date "+%s") -lt ${STOP_TIME_EPOCH_SECONDS} ]; do
     fi
   done
 done
-# Stop catapult
-docker-compose -f ${CATAPULT_COMPOSE_FILE} -f ${KILL_COMPOSE_FILE} down --remove-orphans
-# Delete all data and settings created by catapult for a clean start next time
-# ???how to run the below command without the prompt for password during automated testing???
-#cd ../catapult-service-bootstrap && sudo cmds/clean-all && cd ../chaos-tests
 
 # Now, query the catapult mongo db and check the count of transactions
 # MONGO_DATABASES=($(python3 mongo_query.py | tr -d '[],'))
 # echo "List of databases in mongodb: ${MONGO_DATABASES[@]}"
 python3 mongo_query.py
+
+# Stop catapult
+docker-compose -f ${CATAPULT_COMPOSE_FILE} -f ${KILL_COMPOSE_FILE} down --remove-orphans
+# Delete all data and settings created by catapult for a clean start next time
+# ???how to run the below command without the prompt for password during automated testing???
+#cd ../catapult-service-bootstrap && sudo cmds/clean-all && cd ../chaos-tests
