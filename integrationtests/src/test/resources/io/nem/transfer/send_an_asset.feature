@@ -10,8 +10,7 @@ Background: Create assets for transfer.
   @bvt
   Scenario Outline: An account sends an asset to another account
     When Alice sends <amount> asset "<asset>" to Bob
-    Then she should receive a confirmation message
-    And Bob should receive <amount> of asset "<asset>"
+    Then Bob should receive <amount> of asset "<asset>"
     And Alice "<asset>" balance should decrease by <amount> unit
 
     Examples:
@@ -21,8 +20,7 @@ Background: Create assets for transfer.
 
   Scenario: An account sends an asset to itself
     When Alice sends 1 asset "X" to Alice
-    Then she should receive a confirmation message
-    And Alice balance should decrease by transaction fee
+    Then Alice balance should decrease by transaction fee
 
   @bvt
   Scenario Outline: An account tries to send an asset to an invalid account
@@ -50,8 +48,7 @@ Background: Create assets for transfer.
   @bvt
   Scenario: An account sends multiple assets to another account
     When Alice sends multiple assets to "Bob": 1 asset "X", 2 asset "Y"
-    Then she should receive a confirmation message
-    And Bob should receive 1 of asset "X"
+    Then Bob should receive 1 of asset "X"
     And Bob should receive 2 of asset "Y"
     And Alice "X" balance should decrease by 1 unit
     And Alice "Y" balance should decrease by 2 units

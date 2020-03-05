@@ -113,18 +113,23 @@ public class SendTransaction extends BaseTest {
 		ExceptionUtils.propagateVoid(() -> Thread.sleep((timeInSeconds + 3) * 1000));
 	}
 
-	@When("^(\\w+) announce valid transaction and verify in unconfirmed status$")
+	@When("^(\\w+) announce valid transaction$")
 	public void announcesTransactionUnconfirmed(final String userName) {
 		final BigInteger blockHeight = new BlockChainHelper(getTestContext()).getBlockchainHeight();
 		final Account sender = getUser(userName);
 		final TransferTransaction transferTransaction =
 				createTransaction(TransactionHelper.getDefaultDeadline(), TransactionHelper.getDefaultMaxFee(), getTestContext().getNetworkType());
 		waitForBlockChainHeight(blockHeight.longValue() + 1);
-		final SignedTransaction signedTransaction = new TransactionHelper(getTestContext()).signAndAnnounceTransaction(sender,
-				() -> transferTransaction);
+		new TransactionHelper(getTestContext()).signAndAnnounceTransaction(sender, () -> transferTransaction);
+	}
+
+	@Then("^she can verify the transaction (\\w+) state in the DB$")
+	public void verifyTransactionState(final String state) {
+		final SignedTransaction signedTransaction = getTestContext().getSignedTransaction();
+		final TransactionState transactionState = TransactionState.valueOf(state.toUpperCase());
 		final boolean found = new TransactionHelper(getTestContext()).waitForTransactionStatus(signedTransaction.getHash(),
-				TransactionState.UNCONFIRMED);
-		assertTrue("Transaction was not found in unconfirmed: " + CommonHelper.toString(signedTransaction), found);
+				transactionState);
+		assertTrue("Transaction was not found in " + state + ": " + CommonHelper.toString(signedTransaction), found);
 	}
 
 	@When("^(\\w+) announces the transaction with invalid signature$")

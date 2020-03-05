@@ -314,17 +314,6 @@ public class MosaicHelper {
         });
 	}
 
-	/**
-	 * Gets the info for a mosaic id.
-	 *
-	 * @param mosaicId Mosaic id.
-	 * @return Mosaic info.
-	 */
-	public MosaicInfo getMosaicWithRetry(MosaicId mosaicId) {
-		return CommonHelper.executeWithRetry(() -> getMosaic(mosaicId)).orElseThrow(() -> new IllegalArgumentException("Mosaicid not foun" +
-				". id:" + mosaicId.getIdAsLong()));
-  }
-
   /**
    * Gets the info for a mosaic id.
    *
@@ -336,7 +325,7 @@ public class MosaicHelper {
         .orElseThrow(
             () ->
                 new IllegalArgumentException(
-                    "Mosaicid not foun" + ". id:" + mosaicId.getIdAsLong()));
+                    "Mosaicid not found" + ". id:" + mosaicId.getIdAsLong()));
   }
 
   /**

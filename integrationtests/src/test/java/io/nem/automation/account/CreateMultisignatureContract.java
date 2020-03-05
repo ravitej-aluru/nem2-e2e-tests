@@ -32,7 +32,10 @@ import io.nem.sdk.infrastructure.directconnect.dataaccess.mappers.MapperUtils;
 import io.nem.sdk.model.account.Account;
 import io.nem.sdk.model.account.MultisigAccountInfo;
 import io.nem.sdk.model.account.PublicAccount;
-import io.nem.sdk.model.transaction.*;
+import io.nem.sdk.model.transaction.AggregateTransaction;
+import io.nem.sdk.model.transaction.MultisigAccountModificationTransaction;
+import io.nem.sdk.model.transaction.SignedTransaction;
+import io.nem.sdk.model.transaction.TransactionType;
 
 import java.math.BigInteger;
 import java.util.*;
@@ -110,7 +113,9 @@ public class CreateMultisignatureContract extends BaseTest {
                               + " public key:"
                               + account.getPublicKey()
                               + " address: "
-                              + ConvertUtils.toHex(MapperUtils.fromAddressToByteBuffer(account.getAddress()).array()));
+                              + ConvertUtils.toHex(
+                                  MapperUtils.fromAddressToByteBuffer(account.getAddress())
+                                      .array()));
                   final List<Account> cosigners = getCosignersForAccount(account);
                   cosignerAccounts.addAll(cosigners);
                   return account.getPublicAccount();
@@ -170,6 +175,31 @@ public class CreateMultisignatureContract extends BaseTest {
         cosignatories.subList(1, cosignatories.size()));
   }
 
+  private List<String> generateCosignerList(final byte numberOfCosignatory) {
+    final List<String> cosignatories = new ArrayList<>(numberOfCosignatory);
+    for (int i = 0; i < numberOfCosignatory; i++) {
+      cosignatories.add("cosigner" + i);
+    }
+    return cosignatories;
+  }
+
+  @Given("^(\\w+) tries to define a (-?\\d+) of (-?\\d+) multisignature contract called \"(.*)\"$")
+  public void definedMultiSignatureContractWithCosigners(
+      final String userName,
+      final byte minimumApproval,
+      final byte numberOfCosignatory,
+      final String multisigAccountName) {
+    final List<String> cosignatories = generateCosignerList(numberOfCosignatory);
+    final byte minimumRemoval = 1;
+    createMultisigAccount(
+        userName,
+        minimumApproval,
+        numberOfCosignatory,
+        multisigAccountName,
+        minimumRemoval,
+        cosignatories);
+  }
+
   @And("^(\\w+) published the bonded contract")
   @When("^(\\w+) publishes the bonded contract")
   public void publishBondedTransaction(final String userName) {
@@ -189,7 +219,6 @@ public class CreateMultisignatureContract extends BaseTest {
     final SignedTransaction signedTransaction = getTestContext().getSignedTransaction();
     final TransactionHelper transactionHelper = new TransactionHelper(getTestContext());
     transactionHelper.announceTransaction(signedTransaction);
-
   }
 
   @And("^all the required cosignatories sign the transaction$")
@@ -204,7 +233,11 @@ public class CreateMultisignatureContract extends BaseTest {
     cosignatories.forEach(
         (final Account account) -> {
           List<AggregateTransaction> transactions =
-                  getTestContext().getRepositoryFactory().createAccountRepository().aggregateBondedTransactions(account.getPublicAccount()).blockingFirst();
+              getTestContext()
+                  .getRepositoryFactory()
+                  .createAccountRepository()
+                  .aggregateBondedTransactions(account.getPublicAccount())
+                  .blockingFirst();
           aggregateHelper.cosignAggregateBonded(account, aggregateTransaction);
         });
   }
@@ -212,10 +245,10 @@ public class CreateMultisignatureContract extends BaseTest {
   @And("^(\\w+) account is convert to multisig$")
   public void verifyMultiSignatureAccount(final String accountName) {
     waitForLastTransactionToComplete();
-    final Account multisigAccount =
-        getTestContext().getScenarioContext().getContext(MULTISIG_ACCOUNT_INFO);
+    final Account multisigAccount = getUser(accountName);
     final MultisigAccountInfo multisigAccountInfo =
-        new AccountHelper(getTestContext()).getMultisigAccountWithRetry(multisigAccount.getAddress());
+        new AccountHelper(getTestContext())
+            .getMultisigAccountWithRetry(multisigAccount.getAddress());
     final MultisigAccountModificationTransaction modifyMultisigAccountTransaction =
         getTestContext()
             .<MultisigAccountModificationTransaction>findTransaction(
@@ -244,9 +277,9 @@ public class CreateMultisignatureContract extends BaseTest {
     }
   }
 
-  @And("^the multisignature contract should be updated$")
-  public void verifyMultiSignatureAccount() {
-    verifyMultiSignatureAccount("");
+  @And("^(\\w+) multisignature contract should be updated$")
+  public void verifyUpdatedMultiSignatureAccount(final String userName) {
+    verifyMultiSignatureAccount(userName);
   }
 
   @Given(
@@ -266,6 +299,27 @@ public class CreateMultisignatureContract extends BaseTest {
         multisigAccountName,
         minimumRemoval,
         cosignatories.subList(1, cosignatories.size()));
+    publishBondedTransaction(userName);
+    cosignMultiSignatureAccount();
+    final AggregateTransaction aggregateTransaction = waitForLastTransactionToComplete();
+    getTestContext().addTransaction(aggregateTransaction);
+  }
+
+  @Given("^(\\w+) created a (-?\\d+) of (-?\\d+) multisignature contract called \"(.*)\"$")
+  public void createMultiSignatureContractWithCosigners(
+      final String userName,
+      final byte minimumApproval,
+      final byte numberOfCosignatory,
+      final String multisigAccountName) {
+    final byte minimumRemoval = 1;
+    final List<String> cosignatories = generateCosignerList(numberOfCosignatory);
+    createMultisigAccount(
+        userName,
+        minimumApproval,
+        numberOfCosignatory,
+        multisigAccountName,
+        minimumRemoval,
+        cosignatories);
     publishBondedTransaction(userName);
     cosignMultiSignatureAccount();
     final AggregateTransaction aggregateTransaction = waitForLastTransactionToComplete();

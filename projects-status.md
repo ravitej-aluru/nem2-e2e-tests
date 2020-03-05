@@ -62,7 +62,7 @@ Following table describes the status attributions for each of the icons that wil
 | delegated harvesting | :o: |
 | secret locks hash algos | :white_check_mark: |
 | hashlock | :white_check_mark: |
-| merkle proofs | :o: |
+| merkle proofs | :white_check_mark: |
 | rollback | :o: |
 | multiSig account | :white_check_mark: |
 | namespace | :white_check_mark: |

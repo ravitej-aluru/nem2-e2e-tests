@@ -15,7 +15,7 @@ Feature: Create a multisignature contract
     And Alice published the bonded contract
     When all the required cosignatories sign the transaction
     Then she should receive a confirmation message
-    And Alice account is convert to multisig
+    And tom account is convert to multisig
 
     Examples:
       | minimumApproval | minimumRemoval |
@@ -50,29 +50,17 @@ Feature: Create a multisignature contract
     When "phone" accepts the transaction
     Then she should receive the error "FAILURE_MULTISIG_REDUNDANT_MODIFICATION"
 
-  Scenario: An account tries to create a multisignature contract with more than 10 cosignatories
-    Given Alice defined a 1 of 11 multisignature contract called "tom" with 1 required for removal with cosignatories:
-      | cosignatory |
-      | phone1      |
-      | phone2      |
-      | phone3      |
-      | phone4      |
-      | phone5      |
-      | phone6      |
-      | phone7      |
-      | phone8      |
-      | phone9      |
-      | phone10     |
-      | phone11     |
+  Scenario: An account tries to create a multisignature contract with more than 25 cosignatories
+    Given Alice tries to define a 1 of 26 multisignature contract called "tom"
     And Alice published the bonded contract
     When all the required cosignatories sign the transaction
-    Then she should receive the error "FAILURE_MULTISIG_MAX_COSIGNATORIES"
+    Then she should receive the error "FAILURE_AGGREGATE_TOO_MANY_COSIGNATURES"
 
   Scenario: An account tries to add as a cosignatory an account which is already cosignatory of 5 multisignature contracts
-    Given Bob is cosignatory of 5 multisignature contracts
+    Given Dan is cosignatory of 26 multisignature contracts
     And Alice defined a 1 of 2 multisignature contract called "tom5" with 1 required for removal with cosignatories:
       | cosignatory |
-      | Bob         |    
+      | Dan         |
       | phone       |
     And Alice published the bonded contract
     When all the required cosignatories sign the transaction

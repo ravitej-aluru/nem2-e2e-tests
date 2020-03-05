@@ -23,6 +23,7 @@ package io.nem.automation.common;
 import io.nem.automationHelpers.common.TestContext;
 import io.nem.automationHelpers.helper.*;
 import io.nem.core.utils.ExceptionUtils;
+import io.nem.sdk.api.Listener;
 import io.nem.sdk.model.account.*;
 import io.nem.sdk.model.blockchain.BlockInfo;
 import io.nem.sdk.model.message.Message;
@@ -57,6 +58,7 @@ public abstract class BaseTest {
   protected final String SECRET_HASH = "secretHash";
   protected final String SECRET_PROOF = "secretProof";
   protected final String SECRET_HASH_TYPE = "hashType";
+  protected final String LISTENER = "listener";
   protected final int BLOCK_CREATION_TIME_IN_SECONDS = 15;
   private TestContext testContext;
 
@@ -554,5 +556,18 @@ public abstract class BaseTest {
 
   protected BigInteger getUserFee(final PublicAccount publicAccount) {
     return getUserFee(publicAccount, testContext.getNetworkCurrencyMosaicId());
+  }
+
+  protected Listener openListener() {
+    if (!getTestContext().getScenarioContext().isContains(LISTENER)) {
+      final Listener listener = getTestContext().getRepositoryFactory().createListener();
+      ExceptionUtils.propagateVoid(() -> listener.open().get());
+      getTestContext().getScenarioContext().setContext(LISTENER, listener);
+    }
+    return getTestContext().getScenarioContext().getContext(LISTENER);
+  }
+
+  protected Listener getListener() {
+    return openListener();
   }
 }

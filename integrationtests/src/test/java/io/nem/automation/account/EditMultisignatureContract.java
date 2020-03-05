@@ -144,7 +144,14 @@ public class EditMultisignatureContract extends BaseTest {
     final SignedTransaction signedTransaction = getTestContext().getSignedTransaction();
     final AccountHelper accountHelper = new AccountHelper(getTestContext());
     final AggregateTransaction aggregateTransaction =
-        accountHelper.getAggregateBondedTransaction(account.getPublicAccount(), signedTransaction);
+        accountHelper.getAggregateBondedTransaction(
+            PublicAccount.createFromPublicKey(
+                signedTransaction.getSigner().getPublicKey().toHex(),
+                getTestContext().getNetworkType()),
+            signedTransaction);
+    // TODO: update when bug is fix - https://github.com/nemtech/catapult-rest/issues/244
+    //    accountHelper.getAggregateBondedTransaction(account.getPublicAccount(),
+    // signedTransaction);
     final AggregateHelper aggregateHelper = new AggregateHelper(getTestContext());
     aggregateHelper.cosignAggregateBonded(account, aggregateTransaction);
   }
@@ -160,8 +167,10 @@ public class EditMultisignatureContract extends BaseTest {
         multisigAccountInfoOptional.isPresent());
   }
 
-  @And("^(\\w+) created a contract to change approval by (-?\\d+) units and removal by (-?\\d+) units$")
-  @When("^(\\w+) creates a contract to change approval by (-?\\d+) units and removal by (-?\\d+) units$")
+  @And(
+      "^(\\w+) created a contract to change approval by (-?\\d+) units and removal by (-?\\d+) units$")
+  @When(
+      "^(\\w+) creates a contract to change approval by (-?\\d+) units and removal by (-?\\d+) units$")
   public void publishMultisigSettingsUpdate(
       final String userName, final byte approvalDetla, final byte removalDelta) {
     createModifyMultisigAccount(userName, approvalDetla, removalDelta, new HashMap<>());

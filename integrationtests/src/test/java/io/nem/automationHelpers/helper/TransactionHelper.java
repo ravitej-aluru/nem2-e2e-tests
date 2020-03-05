@@ -278,8 +278,8 @@ public class TransactionHelper {
                   retryCommand.cancelRetry();
                 }
                 throw new RuntimeException(
-                    "Status: "
-                        + (transactionStatusOptional.isPresent() ? transactionStatusOptional.get().getCode() : "unknown")
+                    (transactionStatusOptional.isPresent() ? CommonHelper.toString(transactionStatusOptional.get()) :
+                            "Status: unknown")
                         + " "
                         + CommonHelper.toString(signedTransaction),
                     e);

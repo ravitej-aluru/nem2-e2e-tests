@@ -73,12 +73,13 @@ public class ExampleSteps {
 		// hang
 		int ii = 0;
 		do {
-		final MosaicId mosaicId = new NamespaceHelper(testContext).getLinkedMosaicId(NetworkHarvestMosaic.NAMESPACEID);
+		final MosaicId mosaicId =
+				new NamespaceHelper(testContext).getLinkedMosaicId(testContext.getNetworkCurrency().getNamespaceId().get());
 		final Account harvestAccount = Account.createFromPrivateKey("9D3753505B289F238D3B012B3A2EF975C4FBC8A49B687E25F4DC7184B96FC05E",
 				testContext.getNetworkType());
 		final TransferHelper transferHelper = new TransferHelper(testContext);
 		final TransferTransaction tx = transferHelper.submitTransferAndWait(signerAccount, harvestAccount.getAddress(),
-				Arrays.asList(NetworkCurrencyMosaic.createRelative(BigInteger.valueOf(100000))), PlainMessage.Empty);
+				Arrays.asList(testContext.getNetworkCurrency().createRelative(BigInteger.valueOf(100000))), PlainMessage.Empty);
 		final AccountInfo harvestAccountInfo = new AccountHelper(testContext).getAccountInfo(harvestAccount.getAddress());
 		final Mosaic harvest =
 				harvestAccountInfo.getMosaics().stream().filter(m -> m.getId().getIdAsLong() == mosaicId.getIdAsLong()).findFirst().orElseThrow(() -> new IllegalArgumentException("Not found"));
@@ -108,7 +109,7 @@ public class ExampleSteps {
 				new AggregateHelper(testContext).createAggregateCompleteTransaction(Arrays.asList(transferTransaction.toAggregate(harvestAccount.getPublicAccount()),
 						transferTransaction2.toAggregate(harvestAccount.getPublicAccount())));
 			final TransferTransaction tx2 = transferHelper.submitTransferAndWait(signerAccount, recipientAccount1.getAddress(),
-					Arrays.asList(NetworkCurrencyMosaic.createRelative(BigInteger.valueOf(100000))), PlainMessage.Empty);
+					Arrays.asList(testContext.getNetworkCurrency().createRelative(BigInteger.valueOf(100000))), PlainMessage.Empty);
 			new TransactionHelper(testContext).signAndAnnounceTransactionAndWait(harvestAccount, () -> aggregateTransaction);
 		final AccountInfo resAccountInfo = new AccountHelper(testContext).getAccountInfo(recipientAccount1.getAddress());
 		final Mosaic resceop =
@@ -128,7 +129,7 @@ public class ExampleSteps {
 		final SecretLockTransaction secretLockTransaction =
 				secretLockHelper.createSecretLockTransaction(Deadline.create(1, ChronoUnit.MINUTES),
 						BigInteger.TEN,
-						NetworkCurrencyMosaic.createRelative(BigInteger.TEN), BigInteger.valueOf(12000), LockHashAlgorithmType.SHA3_256,
+						testContext.getNetworkCurrency().createRelative(BigInteger.TEN), BigInteger.valueOf(12000), LockHashAlgorithmType.SHA3_256,
 						secretHash,
 						recipientAccount1.getAddress());
 		new TransactionHelper(testContext).signAndAnnounceTransaction(secretLockTransaction, signerAccount);
@@ -396,7 +397,7 @@ public class ExampleSteps {
 		assertEquals(recipientAddress.plain(), accountInfo.getAddress().plain());
 		assertEquals(1, accountInfo.getMosaics().size());
 		assertEquals(
-				testContext.getCatCurrencyId().longValue(),
+				testContext.getNetworkCurrency().getNamespaceId().get().getIdAsLong(),
 				accountInfo.getMosaics().get(0).getId().getId().longValue());
 		assertEquals((long) transferAmount, accountInfo.getMosaics().get(0).getAmount().longValue());
 
@@ -409,7 +410,7 @@ public class ExampleSteps {
 						.filter(
 								mosaic1 ->
 										mosaic1.getId().getId().longValue()
-												== testContext.getCatCurrencyId().longValue())
+												== testContext.getNetworkCurrency().getNamespaceId().get().getIdAsLong())
 						.findFirst()
 						.get();
 
@@ -423,7 +424,7 @@ public class ExampleSteps {
 						.filter(
 								mosaic1 ->
 										mosaic1.getId().getId().longValue()
-												== testContext.getCatCurrencyId().longValue())
+												== testContext.getNetworkCurrency().getNamespaceId().get().getIdAsLong())
 						.findFirst()
 						.get();
 		assertEquals(
