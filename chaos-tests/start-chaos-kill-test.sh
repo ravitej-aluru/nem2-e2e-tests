@@ -27,7 +27,7 @@ KILL_COMPOSE_FILE=$1
 echo -e "Starting test at $(date)"
 echo -e "Expected finish time: $(date -d "$STOP_TIME")"
 echo -e "Using chaos docker-compose file: $KILL_COMPOSE_FILE"
-
+echo -e 'Starting catapult server...'
 CATAPULT_COMPOSE_FILE='../catapult-service-bootstrap/cmds/docker/docker-compose-auto-recovery.yml'
 # set -x
 # CHAOS_LOG_FILE=chaos-logs/$KILL_COMPOSE_FILE.$(date +"%d.%m.%Y-%H.%M.%S").log
@@ -38,8 +38,26 @@ DOCKER_CONTAINERS=($(python3 name_parser.py $KILL_COMPOSE_FILE | tr -d '[],'))
 echo "List of containers: ${DOCKER_CONTAINERS[@]}"
 sleep 10
 docker ps
-
+echo 'Finished starting up catapult server.'
+echo 'Getting private key and generation hash...'
+# Figure out how to get the private key and generation hash
+PRIVATE_KEY="$(python3 utils.py get_private_key | tr -d "[],'[:space:]")" # 957487744B5808B719620946E0B1F2E375A163C5E7007DA63A8F140945A9DE58
+NUM_ACCOUNTS=1000
+TRANSACTIONS_PER_SEC=100
+GEN_HASH="$(python3 utils.py get_generation_hash | tr -d "[],'[:space:]")" # 13A29782C498085AF186E2E93C09DB8E0EA4B130D9CF537181950F6E6344F1CB
 # Start the spammer tool with required args to send transactions at this catapult server
+# Assume that every chaos testing env. is going to have access to private docker images
+cd ../catapult-service-bootstrap/cmds/docker
+docker build -f dockerfiles/nemgen -t chaos-spammer:latest .
+docker run --stop-signal SIGINT \
+  --name docker_chaos-spammer_1
+  -v ../../build/catapult-config/peer-node-0/userconfig/resources/:/userconfig/resources/ \
+  -v ../../bin/bash:/bin-mount \
+  -v ./test:/test \
+  --detach chaos-spammer:latest bash -c "sleep 1000000"
+docker exec --detach docker_chaos-spammer_1 \ 
+  /usr/catapult/bin/catapult.tools.spammer --resources /userconfig --prepare --total ${NUM_ACCOUNTS}; \
+  /usr/catapult/bin/catapult.tools.spammer --resources /userconfig --rate=${TRANSACTIONS_PER_SEC} --total=${NUM_ACCOUNTS} --command=seed --spammingAccountKey=${PRIVATE_KEY} --base=${NUM_ACCOUNTS} --clientPrivateKey=${PRIVATE_KEY} --networkGenerationHash=${GEN_HASH}
 
 # Repeat the loop while the current date is less than STOP_TIME_EPOCH_SECONDS
 while [ $(date "+%s") -lt ${STOP_TIME_EPOCH_SECONDS} ]; do
