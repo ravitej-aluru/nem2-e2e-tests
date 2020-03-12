@@ -9,4 +9,4 @@
 [submodule "catapult-spammer"]
 	path = catapult-spammer
 	url = https://github.com/rich-dtk/debug-symbol-bootstrap.git
-	branch = 931-test
+	branch = feature/chaos-spammer

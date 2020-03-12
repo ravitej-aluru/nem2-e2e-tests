@@ -28,36 +28,36 @@ echo -e "Starting test at $(date)"
 echo -e "Expected finish time: $(date -d "$STOP_TIME")"
 echo -e "Using chaos docker-compose file: $KILL_COMPOSE_FILE"
 echo -e 'Starting catapult server...'
-CATAPULT_COMPOSE_FILE='../catapult-service-bootstrap/cmds/docker/docker-compose-auto-recovery.yml'
+CATAPULT_COMPOSE_FILE=$(python3 utils.py get_relative_file_path --file_name=docker-compose-auto-recovery.yml)
 # set -x
 # CHAOS_LOG_FILE=chaos-logs/$KILL_COMPOSE_FILE.$(date +"%d.%m.%Y-%H.%M.%S").log
 # Launch the catapult server and pumba containers
 docker-compose -f ${CATAPULT_COMPOSE_FILE} -f ${KILL_COMPOSE_FILE} up -d
 # Call the python script and then remove the square braces [] from the output
-DOCKER_CONTAINERS=($(python3 name_parser.py $KILL_COMPOSE_FILE | tr -d '[],'))
+DOCKER_CONTAINERS=($(python3 utils.py get_docker_container_names --compose_file=$KILL_COMPOSE_FILE))
 echo "List of containers: ${DOCKER_CONTAINERS[@]}"
 sleep 10
 docker ps
 echo 'Finished starting up catapult server.'
 echo 'Getting private key and generation hash...'
 # Figure out how to get the private key and generation hash
-PRIVATE_KEY="$(python3 utils.py get_private_key | tr -d "[],'[:space:]")" # 957487744B5808B719620946E0B1F2E375A163C5E7007DA63A8F140945A9DE58
-NUM_ACCOUNTS=1000
-TRANSACTIONS_PER_SEC=100
-GEN_HASH="$(python3 utils.py get_generation_hash | tr -d "[],'[:space:]")" # 13A29782C498085AF186E2E93C09DB8E0EA4B130D9CF537181950F6E6344F1CB
+PRIVATE_KEY="$(python3 -c "from utils import get_first_user_private_key; get_first_user_private_key()")" # 957487744B5808B719620946E0B1F2E375A163C5E7007DA63A8F140945A9DE58
+TRANSACTIONS_PER_SEC=$3
+NUM_ACCOUNTS=10000 # $(expr $3 * $STOP_TIME_EPOCH_SECONDS)
+GEN_HASH=$(curl localhost:3000/node/info | jq '.networkGenerationHash') # 13A29782C498085AF186E2E93C09DB8E0EA4B130D9CF537181950F6E6344F1CB
 # Start the spammer tool with required args to send transactions at this catapult server
 # Assume that every chaos testing env. is going to have access to private docker images
-cd ../catapult-service-bootstrap/cmds/docker
-docker build -f dockerfiles/nemgen -t chaos-spammer:latest .
-docker run --stop-signal SIGINT \
-  --name docker_chaos-spammer_1
-  -v ../../build/catapult-config/peer-node-0/userconfig/resources/:/userconfig/resources/ \
-  -v ../../bin/bash:/bin-mount \
-  -v ./test:/test \
+cp -rvf ../catapult-spammer/cmds/bootstrap/dockerfiles/nemgen/* ../catapult-service-bootstrap/cmds/bootstrap/dockerfiles/nemgen
+cd ../catapult-service-bootstrap/cmds/bootstrap
+docker build -f dockerfiles/nemgen/Dockerfile -t chaos-spammer:latest dockerfiles/nemgen/
+docker run --rm --stop-signal SIGINT \
+  --name docker_chaos-spammer_1 \
+  -v "`pwd`"/build/catapult-config/peer-node-0/userconfig/resources/:/userconfig/resources/ \
+  -v "`pwd`"/bin/bash:/bin-mount \
   --detach chaos-spammer:latest bash -c "sleep 1000000"
-docker exec --detach docker_chaos-spammer_1 \ 
-  /usr/catapult/bin/catapult.tools.spammer --resources /userconfig --prepare --total ${NUM_ACCOUNTS}; \
-  /usr/catapult/bin/catapult.tools.spammer --resources /userconfig --rate=${TRANSACTIONS_PER_SEC} --total=${NUM_ACCOUNTS} --command=seed --spammingAccountKey=${PRIVATE_KEY} --base=${NUM_ACCOUNTS} --clientPrivateKey=${PRIVATE_KEY} --networkGenerationHash=${GEN_HASH}
+docker exec --detach docker_chaos-spammer_1 /usr/catapult/bin/catapult.tools.spammer --resources /userconfig --prepare --total ${NUM_ACCOUNTS}; /usr/catapult/bin/catapult.tools.spammer --resources /userconfig --rate=${TRANSACTIONS_PER_SEC} --total=${NUM_ACCOUNTS} --command=seed --spammingAccountKey=${PRIVATE_KEY} --base=${NUM_ACCOUNTS} --clientPrivateKey=${PRIVATE_KEY} --networkGenerationHash=${GEN_HASH}
+
+cd ../../../chaos-tests
 
 # Repeat the loop while the current date is less than STOP_TIME_EPOCH_SECONDS
 while [ $(date "+%s") -lt ${STOP_TIME_EPOCH_SECONDS} ]; do
@@ -80,6 +80,9 @@ done
 # MONGO_DATABASES=($(python3 mongo_query.py | tr -d '[],'))
 # echo "List of databases in mongodb: ${MONGO_DATABASES[@]}"
 python3 mongo_query.py
+
+# Stop spammer container and remove it if not automatically removed
+docker stop docker_chaos-spammer_1; docker rm docker_chaos-spammer_1
 
 # Stop catapult
 docker-compose -f ${CATAPULT_COMPOSE_FILE} -f ${KILL_COMPOSE_FILE} down --remove-orphans
