@@ -33,18 +33,22 @@ CATAPULT_COMPOSE_FILE=$(python3 utils.py get_relative_file_path --file_name=dock
 # CHAOS_LOG_FILE=chaos-logs/$KILL_COMPOSE_FILE.$(date +"%d.%m.%Y-%H.%M.%S").log
 # Launch the catapult server and pumba containers
 docker-compose -f ${CATAPULT_COMPOSE_FILE} -f ${KILL_COMPOSE_FILE} up -d
+
 # Call the python script and then remove the square braces [] from the output
 DOCKER_CONTAINERS=($(python3 utils.py get_docker_container_names --compose_file=$KILL_COMPOSE_FILE))
 echo "List of containers: ${DOCKER_CONTAINERS[@]}"
 sleep 10
 docker ps
 echo 'Finished starting up catapult server.'
+
+# Edit the config-node.properties to set the values of trustedHost and localNetworks to empty values
+
 echo 'Getting private key and generation hash...'
-# Figure out how to get the private key and generation hash
+# Get the private key and generation hash
 PRIVATE_KEY="$(python3 -c "from utils import get_first_user_private_key; get_first_user_private_key()")" # 957487744B5808B719620946E0B1F2E375A163C5E7007DA63A8F140945A9DE58
+GEN_HASH=$(curl localhost:3000/node/info | jq '.networkGenerationHash') # 13A29782C498085AF186E2E93C09DB8E0EA4B130D9CF537181950F6E6344F1CB
 TRANSACTIONS_PER_SEC=$3
 NUM_ACCOUNTS=10000 # $(expr $3 * $STOP_TIME_EPOCH_SECONDS)
-GEN_HASH=$(curl localhost:3000/node/info | jq '.networkGenerationHash') # 13A29782C498085AF186E2E93C09DB8E0EA4B130D9CF537181950F6E6344F1CB
 # Start the spammer tool with required args to send transactions at this catapult server
 # Assume that every chaos testing env. is going to have access to private docker images
 cp -rvf ../catapult-spammer/cmds/bootstrap/dockerfiles/nemgen/* ../catapult-service-bootstrap/cmds/bootstrap/dockerfiles/nemgen
