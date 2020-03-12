@@ -45,7 +45,7 @@ echo 'Finished starting up catapult server.'
 
 echo 'Getting private key and generation hash...'
 # Get the private key and generation hash
-PRIVATE_KEY="$(python3 -c "from utils import get_first_user_private_key; get_first_user_private_key()")" # 957487744B5808B719620946E0B1F2E375A163C5E7007DA63A8F140945A9DE58
+PRIVATE_KEY=$(python3 utils.py get_first_user_private_key) # 957487744B5808B719620946E0B1F2E375A163C5E7007DA63A8F140945A9DE58
 GEN_HASH=$(curl localhost:3000/node/info | jq '.networkGenerationHash') # 13A29782C498085AF186E2E93C09DB8E0EA4B130D9CF537181950F6E6344F1CB
 TRANSACTIONS_PER_SEC=$3
 NUM_ACCOUNTS=10000 # $(expr $3 * $STOP_TIME_EPOCH_SECONDS)
@@ -55,11 +55,11 @@ cp -rvf ../catapult-spammer/cmds/bootstrap/dockerfiles/nemgen/* ../catapult-serv
 cd ../catapult-service-bootstrap/cmds/bootstrap
 docker build -f dockerfiles/nemgen/Dockerfile -t chaos-spammer:latest dockerfiles/nemgen/
 docker run --rm --stop-signal SIGINT \
-  --name docker_chaos-spammer_1 \
+  --name chaos-spammer_1 \
   -v "`pwd`"/build/catapult-config/peer-node-0/userconfig/resources/:/userconfig/resources/ \
   -v "`pwd`"/bin/bash:/bin-mount \
   --detach chaos-spammer:latest bash -c "sleep 1000000"
-docker exec --detach docker_chaos-spammer_1 /usr/catapult/bin/catapult.tools.spammer --resources /userconfig --prepare --total ${NUM_ACCOUNTS}; /usr/catapult/bin/catapult.tools.spammer --resources /userconfig --rate=${TRANSACTIONS_PER_SEC} --total=${NUM_ACCOUNTS} --command=seed --spammingAccountKey=${PRIVATE_KEY} --base=${NUM_ACCOUNTS} --clientPrivateKey=${PRIVATE_KEY} --networkGenerationHash=${GEN_HASH}
+docker exec --detach chaos-spammer_1 /usr/catapult/bin/catapult.tools.spammer --resources /userconfig --prepare --total ${NUM_ACCOUNTS}; /usr/catapult/bin/catapult.tools.spammer --resources /userconfig --rate=${TRANSACTIONS_PER_SEC} --total=${NUM_ACCOUNTS} --command=seed --spammingAccountKey=${PRIVATE_KEY} --base=${NUM_ACCOUNTS} --clientPrivateKey=${PRIVATE_KEY} --networkGenerationHash=${GEN_HASH}
 
 cd ../../../chaos-tests
 
@@ -86,7 +86,7 @@ done
 python3 mongo_query.py
 
 # Stop spammer container and remove it if not automatically removed
-docker stop docker_chaos-spammer_1; docker rm docker_chaos-spammer_1
+docker stop chaos-spammer_1; docker rm chaos-spammer_1
 
 # Stop catapult
 docker-compose -f ${CATAPULT_COMPOSE_FILE} -f ${KILL_COMPOSE_FILE} down --remove-orphans
