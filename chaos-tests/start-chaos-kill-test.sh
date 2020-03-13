@@ -59,7 +59,7 @@ docker run --rm --stop-signal SIGINT \
   -v "`pwd`"/build/catapult-config/peer-node-0/userconfig/resources/:/userconfig/resources/ \
   -v "`pwd`"/bin/bash:/bin-mount \
   --detach chaos-spammer:latest bash -c "sleep 1000000"
-docker exec --detach chaos-spammer_1 /usr/catapult/bin/catapult.tools.spammer --resources /userconfig --prepare --total ${NUM_ACCOUNTS}; /usr/catapult/bin/catapult.tools.spammer --resources /userconfig --rate=${TRANSACTIONS_PER_SEC} --total=${NUM_ACCOUNTS} --command=seed --spammingAccountKey=${PRIVATE_KEY} --base=${NUM_ACCOUNTS} --clientPrivateKey=${PRIVATE_KEY} --networkGenerationHash=${GEN_HASH}
+docker exec --detach chaos-spammer_1 "/usr/catapult/bin/catapult.tools.spammer --resources /userconfig --prepare --total ${NUM_ACCOUNTS}; /usr/catapult/bin/catapult.tools.spammer --resources /userconfig --rate=${TRANSACTIONS_PER_SEC} --total=${NUM_ACCOUNTS} --command=seed --spammingAccountKey=${PRIVATE_KEY} --base=${NUM_ACCOUNTS} --clientPrivateKey=${PRIVATE_KEY} --networkGenerationHash=${GEN_HASH}"
 
 cd ../../../chaos-tests
 
