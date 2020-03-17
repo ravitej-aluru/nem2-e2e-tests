@@ -29,6 +29,7 @@ echo -e "Expected finish time: $(date -d "$STOP_TIME")"
 echo -e "Using chaos docker-compose file: $KILL_COMPOSE_FILE"
 echo -e 'Starting catapult server...'
 CATAPULT_COMPOSE_FILE=$(python3 utils.py get_relative_file_path --file_name=docker-compose-auto-recovery.yml)
+SPAMMER_COMPOSE_FILE="../catapult-service-bootstrap/cmds/bootstrap/docker-compose-spammer.yml"
 # set -x
 # CHAOS_LOG_FILE=chaos-logs/$KILL_COMPOSE_FILE.$(date +"%d.%m.%Y-%H.%M.%S").log
 # Launch the catapult server and pumba containers
@@ -46,22 +47,29 @@ echo 'Finished starting up catapult server.'
 echo 'Getting private key and generation hash...'
 # Get the private key and generation hash
 PRIVATE_KEY=$(python3 utils.py get_first_user_private_key) # 957487744B5808B719620946E0B1F2E375A163C5E7007DA63A8F140945A9DE58
-GEN_HASH=$(curl localhost:3000/node/info | jq '.networkGenerationHash') # 13A29782C498085AF186E2E93C09DB8E0EA4B130D9CF537181950F6E6344F1CB
+GEN_HASH=$(curl localhost:3000/node/info | jq --raw-output '.networkGenerationHash') # 13A29782C498085AF186E2E93C09DB8E0EA4B130D9CF537181950F6E6344F1CB
 TRANSACTIONS_PER_SEC=$3
 NUM_ACCOUNTS=10000 # $(expr $3 * $STOP_TIME_EPOCH_SECONDS)
+echo "generation hash = $GEN_HASH"
+echo "private key = $PRIVATE_KEY"
+echo "transactions per second = $TRANSACTIONS_PER_SEC"
+echo "number of accounts = $NUM_ACCOUNTS"
+echo "setting env vars with the above values..."
+export PRIVATE_KEY=$PRIVATE_KEY
+export GENERATION_HASH=$GEN_HASH
+export NUM_OF_ACCOUNTS=$NUM_ACCOUNTS
+export TRANSACTIONS_PER_SEC=$TRANSACTIONS_PER_SEC
 # Start the spammer tool with required args to send transactions at this catapult server
 # Assume that every chaos testing env. is going to have access to private docker images
 cp -rvf ../catapult-spammer/cmds/bootstrap/dockerfiles/nemgen/* ../catapult-service-bootstrap/cmds/bootstrap/dockerfiles/nemgen
-cd ../catapult-service-bootstrap/cmds/bootstrap
-docker build -f dockerfiles/nemgen/Dockerfile -t chaos-spammer:latest dockerfiles/nemgen/
-docker run --rm --stop-signal SIGINT \
-  --name chaos-spammer_1 \
-  -v "`pwd`"/build/catapult-config/peer-node-0/userconfig/resources/:/userconfig/resources/ \
-  -v "`pwd`"/bin/bash:/bin-mount \
-  --detach chaos-spammer:latest bash -c "sleep 1000000"
-docker exec --detach chaos-spammer_1 "/usr/catapult/bin/catapult.tools.spammer --resources /userconfig --prepare --total ${NUM_ACCOUNTS}; /usr/catapult/bin/catapult.tools.spammer --resources /userconfig --rate=${TRANSACTIONS_PER_SEC} --total=${NUM_ACCOUNTS} --command=seed --spammingAccountKey=${PRIVATE_KEY} --base=${NUM_ACCOUNTS} --clientPrivateKey=${PRIVATE_KEY} --networkGenerationHash=${GEN_HASH}"
-
-cd ../../../chaos-tests
+cp -rvf ../catapult-spammer/cmds/bootstrap/spammer/* ../catapult-service-bootstrap/cmds/bootstrap/spammer
+cp -rvf ../catapult-spammer/cmds/bootstrap/docker-compose-spammer.yml $SPAMMER_COMPOSE_FILE
+docker-compose -f ${SPAMMER_COMPOSE_FILE} up -d
+docker inspect chaos-spammer_1
+# docker-compose -f ${SPAMMER_COMPOSE_FILE} exec spammer printenv
+docker exec -e PRIVATE_KEY=$PRIVATE_KEY -e GENERATION_HASH=$GEN_HASH -e NUM_OF_ACCOUNTS=$NUM_ACCOUNTS -e TRANSACTIONS_PER_SECOND=$TRANSACTIONS_PER_SEC chaos-spammer_1 printenv
+# docker-compose -f ${SPAMMER_COMPOSE_FILE} exec -e PRIVATE_KEY=$PRIVATE_KEY -e GENERATION_HASH=$GEN_HASH -e NUM_OF_ACCOUNTS=$NUM_ACCOUNTS -e TRANSACTIONS_PER_SECOND=$TRANSACTIONS_PER_SEC spammer "chmod +x /spammer/spammer.sh && /spammer/spammer.sh"
+docker exec -d -e PRIVATE_KEY=$PRIVATE_KEY -e GENERATION_HASH=$GEN_HASH -e NUM_OF_ACCOUNTS=$NUM_ACCOUNTS -e TRANSACTIONS_PER_SECOND=$TRANSACTIONS_PER_SEC chaos-spammer_1 spammer/spammer.sh
 
 # Repeat the loop while the current date is less than STOP_TIME_EPOCH_SECONDS
 while [ $(date "+%s") -lt ${STOP_TIME_EPOCH_SECONDS} ]; do
@@ -86,7 +94,7 @@ done
 python3 mongo_query.py
 
 # Stop spammer container and remove it if not automatically removed
-docker stop chaos-spammer_1; docker rm chaos-spammer_1
+docker-compose -f ${SPAMMER_COMPOSE_FILE} down --remove-orphans
 
 # Stop catapult
 docker-compose -f ${CATAPULT_COMPOSE_FILE} -f ${KILL_COMPOSE_FILE} down --remove-orphans
