@@ -1,6 +1,6 @@
-# nem2-e2e-tests
+# symbol-e2e-tests
 
-Integration and e2e tests for the catapult project.
+Integration and e2e tests for the synbol project.
 
 ## Prerequisites
 
@@ -12,7 +12,7 @@ Integration and e2e tests for the catapult project.
 1. Clone this repository:
 
 ```bash
-git clone --recursive https://github.com/nemtech/nem2-e2e-tests.git
+git clone --recursive https://github.com/nemtech/symbol-e2e-tests.git
 ```
 
 2. Install the [Cucumber-JVM](https://docs.cucumber.io/installation/java/). You can install the [Cucumber plugin](https://plugins.jetbrains.com/plugin/7212-cucumber-for-java) for IntelliJ if you want to run the test from the IDE.
@@ -25,7 +25,7 @@ git clone --recursive https://github.com/nemtech/nem2-e2e-tests.git
     - ``automationPrivateKey``: If automation is running on the same host as the api server(i.e. same IP) then the set to api server boot private key.  Otherwise it can be any private key.
 	- ``harvesterPublicKey``: Hasvester's public key of the specified Hasvester in the config-harvesting.properties file.
 	- ``restGatewayUrl`` : Restway url. The default is http://localhost:3000
-	- ``RepositoryFactoryType`` : This specify how automation communicates with the catapult server.  ``Direct`` tranactions are sent directly to the server.  ``Vertx`` uses the restway to submit transactions to the catapult server. 
+	- ``RepositoryFactoryType`` : This specify how automation communicates with the symbol server.  ``Direct`` tranactions are sent directly to the server.  ``Vertx`` uses the restway to submit transactions to the symbol server. 
 
 ## Running the tests
 
@@ -52,11 +52,11 @@ Before contributing please [read this](CONTRIBUTING.md).
 
 The file structure of the automation tests is as follows:
 
-* Feature files: ``integrationtests/src/test/resources/io/nem``.
-* Cucumber steps files: ``integrationtests/src/test/java/io/nem/automation``.
+* Feature files: ``integrationtests/src/test/resources/io/nem/symbol``.
+* Cucumber steps files: ``integrationtests/src/test/java/io/nem/symbol/automation``.
 
 In each of these folders, there is an example folder which has a feature and cucumber steps file respectively.
   
-Before adding tests, check the [nem2-scenarios repository](https://github.com/nemtech/nem2-scenarios) for a list of Cucumber feature files already defined. This repository gathers the set of scenarios that should be automated.
+Before adding tests, check the [symbol-scenarios repository](https://github.com/nemtech/synbol-scenarios) for a list of Cucumber feature files already defined. This repository gathers the set of scenarios that should be automated.
 
-To check if a feature file from the nem2 scenarios is already automated, check if the feature file is present in this repository.
+To check if a feature file from the symbol scenarios is already automated, check if the feature file is present in this repository.
