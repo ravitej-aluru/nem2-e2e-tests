@@ -9,20 +9,19 @@ from pyjavaproperties import Properties
 
 def update_properties_file(properties_file, new_properties):
     p = Properties()
+    logging.debug('Opening file %s', properties_file)
     p.load(open(properties_file))
     # for name, value in [('ENABLEPRINTER', 'y'), ('PRINTERLIST', 'PRNT3')]:
     for name, value in new_properties:
+        logging.info('Setting new value of %s to %s', name, value)
         p[name] = value
+    logging.debug('Saving file %s with new values', properties_file)
     p.store(open(properties_file, 'w'))
 
 
 def avoid_banning(symbol_server_dir):
-    nodes_props_files = [
-        os.path.join(dirpath, filename) 
-        for dirpath, _, filenames
-        in os.walk(os.path.join('..', symbol_server_dir, 'build'))
-        for filename in filenames
-        if filename is 'config-node.properties']
+    nodes_props_files = find_all_occurances_of_file(
+        'config-node.properties.mt', ['..', symbol_server_dir])
     for node_props_file in nodes_props_files:
         update_properties_file(
             node_props_file, 
@@ -42,18 +41,34 @@ def get_docker_container_names(compose_file):
     return docker_containers
 
 
-def get_relative_file_path(file_name):
-    logging.debug('Looking for file %s', file_name)
-    relative_file_path = [os.path.join(dirpath, filename) for dirpath, _, filenames in os.walk('..') for filename in filenames if filename.endswith(file_name)]
+def get_relative_file_path(file_name, target_dir=None):
+    if target_dir is not None:
+        logging.debug('Looking for file %s under %s directory', file_name, target_dir)
+        relative_file_path = find_all_occurances_of_file(file_name, ['..', target_dir])
+    else:
+        logging.debug('Looking for file %s', file_name)
+        relative_file_path = [os.path.join(dirpath, filename)
+                              for dirpath, _, filenames in os.walk('..')
+                              for filename in filenames if filename.endswith(file_name)
+                              ]
     if len(relative_file_path) > 1:
-        logging.warning("More than one docker-compose file with the same name found in sub-directories %s. Returning the first one.", relative_file_path)
+        logging.warning("More than one file with the same name found in sub-directories %s. Returning the first one.", relative_file_path)
         # print(relative_file_path[0])
         return relative_file_path[0]
     elif len(relative_file_path) == 0:
-        logging.error("docker-compose file '%s' not found!", file_name)
+        logging.error("File '%s' not found!", file_name)
     else:
         # print(relative_file_path[0])
         return relative_file_path[0]
+
+
+def find_all_occurances_of_file(file_name, target_dir):
+    logging.debug('Looking for file %s under %s directory', file_name, '/'.join(target_dir))
+    file_paths = [os.path.join(dirpath, filename)
+                  for dirpath, _, filenames in os.walk(*target_dir)
+                  for filename in filenames if filename.endswith(file_name)
+                  ]
+    return file_paths
 
 
 def get_first_user_private_key():
