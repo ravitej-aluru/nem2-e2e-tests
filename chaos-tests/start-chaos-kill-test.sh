@@ -33,7 +33,7 @@ SPAMMER_COMPOSE_FILE="../catapult-service-bootstrap/cmds/bootstrap/docker-compos
 
 # Edit the ruby/catapult-templates/api_node/resources/config-node.properties.mt to set the values of trustedHost and localNetworks to empty values
 # Edit the ruby/catapult-templates/peer_node/resources/config-node.properties.mt to set the values of trustedHost and localNetworks to empty values
-python3 utils.py avoid_banning --symbol_server_dir=catapult-service-bootstrap
+# python3 utils.py avoid_banning --symbol_server_dir=catapult-service-bootstrap
 
 # set -x
 # CHAOS_LOG_FILE=chaos-logs/$KILL_COMPOSE_FILE.$(date +"%d.%m.%Y-%H.%M.%S").log
@@ -62,22 +62,22 @@ echo "setting env vars with the above values..."
 export PRIVATE_KEY=$PRIVATE_KEY
 export GENERATION_HASH=$GEN_HASH
 export NUM_OF_ACCOUNTS=$NUM_ACCOUNTS
-export TRANSACTIONS_PER_SEC=$TRANSACTIONS_PER_SEC
+export TRANSACTIONS_PER_SECOND=$TRANSACTIONS_PER_SEC
 # Start the spammer tool with required args to send transactions at this catapult server
 # Assume that every chaos testing env. is going to have access to private docker images
-cp -rvf ../catapult-spammer/cmds/bootstrap/dockerfiles/nemgen/* ../catapult-service-bootstrap/cmds/bootstrap/dockerfiles/nemgen
-cp -rvf ../catapult-spammer/cmds/bootstrap/spammer/* ../catapult-service-bootstrap/cmds/bootstrap/spammer
+cp -rvf ../catapult-spammer/cmds/bootstrap/dockerfiles/nemgen ../catapult-service-bootstrap/cmds/bootstrap/dockerfiles/
+sudo cp -rvf ../catapult-spammer/cmds/bootstrap/spammer ../catapult-service-bootstrap/cmds/bootstrap/spammer/
 cp -rvf ../catapult-spammer/cmds/bootstrap/docker-compose-spammer.yml $SPAMMER_COMPOSE_FILE
 docker-compose -f ${SPAMMER_COMPOSE_FILE} up -d
-docker inspect chaos-spammer_1
-# docker-compose -f ${SPAMMER_COMPOSE_FILE} exec spammer printenv
-docker exec -e PRIVATE_KEY=$PRIVATE_KEY -e GENERATION_HASH=$GEN_HASH -e NUM_OF_ACCOUNTS=$NUM_ACCOUNTS -e TRANSACTIONS_PER_SECOND=$TRANSACTIONS_PER_SEC chaos-spammer_1 printenv
+# docker inspect chaos-spammer_1
 # docker-compose -f ${SPAMMER_COMPOSE_FILE} exec -e PRIVATE_KEY=$PRIVATE_KEY -e GENERATION_HASH=$GEN_HASH -e NUM_OF_ACCOUNTS=$NUM_ACCOUNTS -e TRANSACTIONS_PER_SECOND=$TRANSACTIONS_PER_SEC spammer "chmod +x /spammer/spammer.sh && /spammer/spammer.sh"
-docker exec -d -e PRIVATE_KEY=$PRIVATE_KEY -e GENERATION_HASH=$GEN_HASH -e NUM_OF_ACCOUNTS=$NUM_ACCOUNTS -e TRANSACTIONS_PER_SECOND=$TRANSACTIONS_PER_SEC chaos-spammer_1 spammer/spammer.sh
-
+docker exec -e PRIVATE_KEY=$PRIVATE_KEY -e GENERATION_HASH=$GENERATION_HASH -e NUM_OF_ACCOUNTS=$NUM_OF_ACCOUNTS -e TRANSACTIONS_PER_SECOND=$TRANSACTIONS_PER_SECOND chaos-spammer_1 printenv
+docker exec chaos-spammer_1 chmod +x /spammer/spammer.sh
+docker exec -d -e PRIVATE_KEY=$PRIVATE_KEY -e GENERATION_HASH=$GENERATION_HASH -e NUM_OF_ACCOUNTS=$NUM_OF_ACCOUNTS -e TRANSACTIONS_PER_SECOND=$TRANSACTIONS_PER_SECOND chaos-spammer_1 /spammer/spammer.sh
+docker logs chaos-spammer_1
+echo "Spammer started; entering peer containers monitoring loop..."
 # Repeat the loop while the current date is less than STOP_TIME_EPOCH_SECONDS
 while [ $(date "+%s") -lt ${STOP_TIME_EPOCH_SECONDS} ]; do
-  echo "Entering container monitoring loop..."
   sleep 60
   for container in "${DOCKER_CONTAINERS[@]}"; do
     # Remove the single quotes from the container name string (it was returned by python with '')
@@ -99,10 +99,10 @@ done
 python3 mongo_query.py
 
 # Stop spammer container and remove it if not automatically removed
-docker-compose -f ${SPAMMER_COMPOSE_FILE} down --remove-orphans
+docker-compose -f ${SPAMMER_COMPOSE_FILE} down
 
 # Stop catapult
 docker-compose -f ${CATAPULT_COMPOSE_FILE} -f ${KILL_COMPOSE_FILE} down --remove-orphans
 # Delete all data and settings created by catapult for a clean start next time
 # ???how to run the below command without the prompt for password during automated testing???
-#cd ../catapult-service-bootstrap && sudo cmds/clean-all && cd ../chaos-tests
+# cd ../catapult-service-bootstrap && sudo cmds/clean-all && sudo rm -rf cmds/bootstrap/spammer && rm -f cmds/bootstrap/docker-compose-spammer.yml && git checkout cmds/bootstrap/dockerfiles/nemgen/ && cd ../chaos-tests
