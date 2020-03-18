@@ -30,6 +30,11 @@ echo -e "Using chaos docker-compose file: $KILL_COMPOSE_FILE"
 echo -e 'Starting catapult server...'
 CATAPULT_COMPOSE_FILE=$(python3 utils.py get_relative_file_path --file_name=docker-compose-auto-recovery.yml)
 SPAMMER_COMPOSE_FILE="../catapult-service-bootstrap/cmds/bootstrap/docker-compose-spammer.yml"
+
+# Edit the ruby/catapult-templates/api_node/resources/config-node.properties.mt to set the values of trustedHost and localNetworks to empty values
+# Edit the ruby/catapult-templates/peer_node/resources/config-node.properties.mt to set the values of trustedHost and localNetworks to empty values
+python3 utils.py avoid_banning --symbol_server_dir=catapult-service-bootstrap
+
 # set -x
 # CHAOS_LOG_FILE=chaos-logs/$KILL_COMPOSE_FILE.$(date +"%d.%m.%Y-%H.%M.%S").log
 # Launch the catapult server and pumba containers
@@ -42,7 +47,6 @@ sleep 10
 docker ps
 echo 'Finished starting up catapult server.'
 
-# Edit the config-node.properties to set the values of trustedHost and localNetworks to empty values
 
 echo 'Getting private key and generation hash...'
 # Get the private key and generation hash
@@ -73,6 +77,7 @@ docker exec -d -e PRIVATE_KEY=$PRIVATE_KEY -e GENERATION_HASH=$GEN_HASH -e NUM_O
 
 # Repeat the loop while the current date is less than STOP_TIME_EPOCH_SECONDS
 while [ $(date "+%s") -lt ${STOP_TIME_EPOCH_SECONDS} ]; do
+  echo "Entering container monitoring loop..."
   sleep 60
   for container in "${DOCKER_CONTAINERS[@]}"; do
     # Remove the single quotes from the container name string (it was returned by python with '')
