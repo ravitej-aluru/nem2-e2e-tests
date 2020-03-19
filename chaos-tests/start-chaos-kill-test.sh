@@ -61,19 +61,19 @@ echo "number of accounts = $NUM_ACCOUNTS"
 echo "setting env vars with the above values..."
 export PRIVATE_KEY=$PRIVATE_KEY
 export GENERATION_HASH=$GEN_HASH
-export NUM_OF_ACCOUNTS=$NUM_ACCOUNTS
+export NUMBER_OF_ACCOUNTS=$NUM_ACCOUNTS
 export TRANSACTIONS_PER_SECOND=$TRANSACTIONS_PER_SEC
 # Start the spammer tool with required args to send transactions at this catapult server
 # Assume that every chaos testing env. is going to have access to private docker images
 cp -rvf ../catapult-spammer/cmds/bootstrap/dockerfiles/nemgen ../catapult-service-bootstrap/cmds/bootstrap/dockerfiles/
 sudo cp -rvf ../catapult-spammer/cmds/bootstrap/spammer ../catapult-service-bootstrap/cmds/bootstrap/spammer/
+sudo chmod +x ../catapult-service-bootstrap/cmds/bootstrap/spammer/spammer.sh
 cp -rvf ../catapult-spammer/cmds/bootstrap/docker-compose-spammer.yml $SPAMMER_COMPOSE_FILE
 docker-compose -f ${SPAMMER_COMPOSE_FILE} up -d
 # docker inspect chaos-spammer_1
-# docker-compose -f ${SPAMMER_COMPOSE_FILE} exec -e PRIVATE_KEY=$PRIVATE_KEY -e GENERATION_HASH=$GEN_HASH -e NUM_OF_ACCOUNTS=$NUM_ACCOUNTS -e TRANSACTIONS_PER_SECOND=$TRANSACTIONS_PER_SEC spammer "chmod +x /spammer/spammer.sh && /spammer/spammer.sh"
-docker exec -e PRIVATE_KEY=$PRIVATE_KEY -e GENERATION_HASH=$GENERATION_HASH -e NUM_OF_ACCOUNTS=$NUM_OF_ACCOUNTS -e TRANSACTIONS_PER_SECOND=$TRANSACTIONS_PER_SECOND chaos-spammer_1 printenv
-docker exec chaos-spammer_1 chmod +x /spammer/spammer.sh
-docker exec -d -e PRIVATE_KEY=$PRIVATE_KEY -e GENERATION_HASH=$GENERATION_HASH -e NUM_OF_ACCOUNTS=$NUM_OF_ACCOUNTS -e TRANSACTIONS_PER_SECOND=$TRANSACTIONS_PER_SECOND chaos-spammer_1 /spammer/spammer.sh
+docker-compose -f ${SPAMMER_COMPOSE_FILE} exec spammer printenv
+# docker exec -e PRIVATE_KEY=$PRIVATE_KEY -e GENERATION_HASH=$GENERATION_HASH -e NUMBER_OF_ACCOUNTS=$NUMBER_OF_ACCOUNTS -e TRANSACTIONS_PER_SECOND=$TRANSACTIONS_PER_SECOND chaos-spammer_1 printenv
+# docker exec -d -e PRIVATE_KEY=$PRIVATE_KEY -e GENERATION_HASH=$GENERATION_HASH -e NUMBER_OF_ACCOUNTS=$NUMBER_OF_ACCOUNTS -e TRANSACTIONS_PER_SECOND=$TRANSACTIONS_PER_SECOND chaos-spammer_1 /spammer/spammer.sh
 docker logs chaos-spammer_1
 echo "Spammer started; entering peer containers monitoring loop..."
 # Repeat the loop while the current date is less than STOP_TIME_EPOCH_SECONDS
