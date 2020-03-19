@@ -63,6 +63,10 @@ export PRIVATE_KEY=$PRIVATE_KEY
 export GENERATION_HASH=$GEN_HASH
 export NUMBER_OF_ACCOUNTS=$NUM_ACCOUNTS
 export TRANSACTIONS_PER_SECOND=$TRANSACTIONS_PER_SEC
+echo "PRIVATE_KEY value set to $PRIVATE_KEY"
+echo "GENERATION_HASH value set to $GENERATION_HASH"
+echo "NUMBER_OF_ACCOUNTS value set to $NUMBER_OF_ACCOUNTS"
+echo "TRANSACTIONS_PER_SECOND value set to $TRANSACTIONS_PER_SECOND"
 # Start the spammer tool with required args to send transactions at this catapult server
 # Assume that every chaos testing env. is going to have access to private docker images
 cp -rvf ../catapult-spammer/cmds/bootstrap/dockerfiles/nemgen ../catapult-service-bootstrap/cmds/bootstrap/dockerfiles/
