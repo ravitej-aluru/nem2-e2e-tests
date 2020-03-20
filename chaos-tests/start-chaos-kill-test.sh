@@ -75,9 +75,8 @@ sudo chmod +x ../catapult-service-bootstrap/cmds/bootstrap/spammer/spammer.sh
 cp -rvf ../catapult-spammer/cmds/bootstrap/docker-compose-spammer.yml $SPAMMER_COMPOSE_FILE
 docker-compose -f ${SPAMMER_COMPOSE_FILE} up -d
 # docker inspect chaos-spammer_1
-docker-compose -f ${SPAMMER_COMPOSE_FILE} exec spammer printenv
-# docker exec -e PRIVATE_KEY=$PRIVATE_KEY -e GENERATION_HASH=$GENERATION_HASH -e NUMBER_OF_ACCOUNTS=$NUMBER_OF_ACCOUNTS -e TRANSACTIONS_PER_SECOND=$TRANSACTIONS_PER_SECOND chaos-spammer_1 printenv
-# docker exec -d -e PRIVATE_KEY=$PRIVATE_KEY -e GENERATION_HASH=$GENERATION_HASH -e NUMBER_OF_ACCOUNTS=$NUMBER_OF_ACCOUNTS -e TRANSACTIONS_PER_SECOND=$TRANSACTIONS_PER_SECOND chaos-spammer_1 /spammer/spammer.sh
+docker exec -e PRIVATE_KEY=$PRIVATE_KEY -e GENERATION_HASH=$GENERATION_HASH -e NUMBER_OF_ACCOUNTS=$NUMBER_OF_ACCOUNTS -e TRANSACTIONS_PER_SECOND=$TRANSACTIONS_PER_SECOND chaos-spammer_1 printenv
+docker exec -e PRIVATE_KEY=$PRIVATE_KEY -e GENERATION_HASH=$GENERATION_HASH -e NUMBER_OF_ACCOUNTS=$NUMBER_OF_ACCOUNTS -e TRANSACTIONS_PER_SECOND=$TRANSACTIONS_PER_SECOND chaos-spammer_1 /spammer/spammer.sh
 docker logs chaos-spammer_1
 echo "Spammer started; entering peer containers monitoring loop..."
 # Repeat the loop while the current date is less than STOP_TIME_EPOCH_SECONDS
