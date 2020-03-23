@@ -29,7 +29,7 @@ echo -e "Expected finish time: $(date -d "$STOP_TIME")"
 echo -e "Using chaos docker-compose file: $KILL_COMPOSE_FILE"
 echo -e 'Starting catapult server...'
 CATAPULT_COMPOSE_FILE=$(python3 utils.py get_relative_file_path --file_name=docker-compose-auto-recovery.yml)
-SPAMMER_COMPOSE_FILE="../catapult-service-bootstrap/cmds/bootstrap/docker-compose-spammer.yml"
+SPAMMER_COMPOSE_FILE="../catapult-spammer/cmds/bootstrap/docker-compose-spammer.yml"
 
 # Edit the ruby/catapult-templates/api_node/resources/config-node.properties.mt to set the values of trustedHost and localNetworks to empty values
 # Edit the ruby/catapult-templates/peer_node/resources/config-node.properties.mt to set the values of trustedHost and localNetworks to empty values
@@ -83,8 +83,8 @@ docker-compose -f ${SPAMMER_COMPOSE_FILE} up -d --build
 # docker exec -e PRIVATE_KEY=$PRIVATE_KEY -e GENERATION_HASH=$GENERATION_HASH -e NUMBER_OF_ACCOUNTS=$NUMBER_OF_ACCOUNTS -e TRANSACTIONS_PER_SECOND=$TRANSACTIONS_PER_SECOND chaos-spammer_1 printenv
 # echo "Starting spammer container in detached mode..."
 # docker exec -d -e PRIVATE_KEY=$PRIVATE_KEY -e GENERATION_HASH=$GENERATION_HASH -e NUMBER_OF_ACCOUNTS=$NUMBER_OF_ACCOUNTS -e TRANSACTIONS_PER_SECOND=$TRANSACTIONS_PER_SECOND chaos-spammer_1 /spammer/spammer.sh
-sleep 20 && echo "Printing spammer container logs so far (for sanity)..."
-docker logs chaos-spammer_1
+echo "Printing spammer container logs..." && sleep 10
+docker-compose -f ${SPAMMER_COMPOSE_FILE} logs spammer
 # Properly check if spammer container started and is actually sending transactions. 
 # If not, exit, since there is no point in continuing
 # Also, could improve this by monitoring the spammer container too to check it has not exited
