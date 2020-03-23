@@ -47,13 +47,13 @@ sleep 10
 docker ps
 echo 'Finished starting up catapult server.'
 
-
 echo 'Getting private key and generation hash...'
 # Get the private key and generation hash
 PRIVATE_KEY=$(python3 utils.py get_first_user_private_key) # 957487744B5808B719620946E0B1F2E375A163C5E7007DA63A8F140945A9DE58
 GEN_HASH=$(curl localhost:3000/node/info | jq --raw-output '.networkGenerationHash') # 13A29782C498085AF186E2E93C09DB8E0EA4B130D9CF537181950F6E6344F1CB
-TRANSACTIONS_PER_SEC=$3
+TRANS_PER_SEC=$3
 NUM_ACCOUNTS=10000 # $(expr $3 * $STOP_TIME_EPOCH_SECONDS)
+
 echo "generation hash = $GEN_HASH"
 echo "private key = $PRIVATE_KEY"
 echo "transactions per second = $TRANSACTIONS_PER_SEC"
@@ -62,22 +62,32 @@ echo "setting env vars with the above values..."
 export PRIVATE_KEY=$PRIVATE_KEY
 export GENERATION_HASH=$GEN_HASH
 export NUMBER_OF_ACCOUNTS=$NUM_ACCOUNTS
-export TRANSACTIONS_PER_SECOND=$TRANSACTIONS_PER_SEC
-echo "PRIVATE_KEY value set to $PRIVATE_KEY"
-echo "GENERATION_HASH value set to $GENERATION_HASH"
-echo "NUMBER_OF_ACCOUNTS value set to $NUMBER_OF_ACCOUNTS"
-echo "TRANSACTIONS_PER_SECOND value set to $TRANSACTIONS_PER_SECOND"
+export TRANSACTIONS_PER_SECOND=$TRANS_PER_SEC
+echo 'Creating .env file with private key and generation hash from the catapult config...'
+envsubst < ../catapult-spammer/cmds/bootstrap/spammer/spammer.env > ../catapult-spammer/cmds/bootstrap/.env
+echo 'printing ../catapult-spammer/cmds/bootstrap/.env file contents...'
+cat ../catapult-spammer/cmds/bootstrap/.env
 # Start the spammer tool with required args to send transactions at this catapult server
 # Assume that every chaos testing env. is going to have access to private docker images
-cp -rvf ../catapult-spammer/cmds/bootstrap/dockerfiles/nemgen ../catapult-service-bootstrap/cmds/bootstrap/dockerfiles/
-sudo cp -rvf ../catapult-spammer/cmds/bootstrap/spammer ../catapult-service-bootstrap/cmds/bootstrap/spammer/
-sudo chmod +x ../catapult-service-bootstrap/cmds/bootstrap/spammer/spammer.sh
-cp -rvf ../catapult-spammer/cmds/bootstrap/docker-compose-spammer.yml $SPAMMER_COMPOSE_FILE
-docker-compose -f ${SPAMMER_COMPOSE_FILE} up -d
+# cp -rvf ../catapult-spammer/cmds/bootstrap/dockerfiles/nemgen ../catapult-service-bootstrap/cmds/bootstrap/dockerfiles/
+# sudo cp -rvf ../catapult-spammer/cmds/bootstrap/spammer ../catapult-service-bootstrap/cmds/bootstrap/spammer/
+# sudo chmod +x ../catapult-service-bootstrap/cmds/bootstrap/spammer/spammer.sh
+# cp -rvf ../catapult-spammer/cmds/bootstrap/docker-compose-spammer.yml $SPAMMER_COMPOSE_FILE
+
+echo 'Printing the number of transactions in the db before starting spammer...'
+python3 mongo_query.py
+
+docker-compose -f ${SPAMMER_COMPOSE_FILE} up -d --build
 # docker inspect chaos-spammer_1
-docker exec -e PRIVATE_KEY=$PRIVATE_KEY -e GENERATION_HASH=$GENERATION_HASH -e NUMBER_OF_ACCOUNTS=$NUMBER_OF_ACCOUNTS -e TRANSACTIONS_PER_SECOND=$TRANSACTIONS_PER_SECOND chaos-spammer_1 printenv
-docker exec -e PRIVATE_KEY=$PRIVATE_KEY -e GENERATION_HASH=$GENERATION_HASH -e NUMBER_OF_ACCOUNTS=$NUMBER_OF_ACCOUNTS -e TRANSACTIONS_PER_SECOND=$TRANSACTIONS_PER_SECOND chaos-spammer_1 /spammer/spammer.sh
+# echo "Printing env vars in spammer container..."
+# docker exec -e PRIVATE_KEY=$PRIVATE_KEY -e GENERATION_HASH=$GENERATION_HASH -e NUMBER_OF_ACCOUNTS=$NUMBER_OF_ACCOUNTS -e TRANSACTIONS_PER_SECOND=$TRANSACTIONS_PER_SECOND chaos-spammer_1 printenv
+# echo "Starting spammer container in detached mode..."
+# docker exec -d -e PRIVATE_KEY=$PRIVATE_KEY -e GENERATION_HASH=$GENERATION_HASH -e NUMBER_OF_ACCOUNTS=$NUMBER_OF_ACCOUNTS -e TRANSACTIONS_PER_SECOND=$TRANSACTIONS_PER_SECOND chaos-spammer_1 /spammer/spammer.sh
+sleep 20 && echo "Printing spammer container logs so far (for sanity)..."
 docker logs chaos-spammer_1
+# Properly check if spammer container started and is actually sending transactions. 
+# If not, exit, since there is no point in continuing
+# Also, could improve this by monitoring the spammer container too to check it has not exited
 echo "Spammer started; entering peer containers monitoring loop..."
 # Repeat the loop while the current date is less than STOP_TIME_EPOCH_SECONDS
 while [ $(date "+%s") -lt ${STOP_TIME_EPOCH_SECONDS} ]; do
