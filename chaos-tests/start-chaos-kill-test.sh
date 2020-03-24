@@ -19,10 +19,6 @@
 # Expected finish time: Mon Jun  5 08:00:00 BRT 2017
 # Using chaos docker-compose file: chaos-kill-peers.yml
 
-set -e
-STOP_TIME=$2
-STOP_TIME_EPOCH_SECONDS=$(date -d "$STOP_TIME" "+%s")
-set +e
 KILL_COMPOSE_FILE=$1
 echo -e "Starting test at $(date)"
 echo -e "Expected finish time: $(date -d "$STOP_TIME")"
@@ -89,6 +85,11 @@ docker-compose -f ${SPAMMER_COMPOSE_FILE} logs spammer
 # If not, exit, since there is no point in continuing
 # Also, could improve this by monitoring the spammer container too to check it has not exited
 echo "Spammer started; entering peer containers monitoring loop..."
+
+set -e
+STOP_TIME=$2
+STOP_TIME_EPOCH_SECONDS=$(date -d "$STOP_TIME" "+%s")
+set +e
 # Repeat the loop while the current date is less than STOP_TIME_EPOCH_SECONDS
 while [ $(date "+%s") -lt ${STOP_TIME_EPOCH_SECONDS} ]; do
   sleep 60
