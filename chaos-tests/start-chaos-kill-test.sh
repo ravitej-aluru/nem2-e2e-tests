@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# https://stackoverflow.com/questions/11176284/time-condition-loop-in-shell
 # set -e to exit if the time provided by argument 2 is not valid for date.
 # The variable STOP_TIME will store the seconds since 1970-01-01 00:00:00
 # UTC, according to the date specified by -d "$2".
