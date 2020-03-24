@@ -1,6 +1,20 @@
 # nem2-e2e-tests / chaos-tests
 
-Resilience testing for the NEM Symbol project.
+Resilience testing for the NEM Symbol project. This is achieved by utilising an open-source tool called [pumba](https://github.com/alexei-led/pumba) for performing resilience testing for dockerised applications.
+
+Scenarios currently available:
+1. Randomly kill peer nodes
+
+Scenarios partly completed:
+1. Randomly kill mongo db node
+2. Slow traffic to/from peer and api nodes
+3. Delayed packets to/from peer nodes and mongo db
+
+Scenarios on the roadmap:
+1. Randomly kill peer and api nodes
+2. Random packet corruption to/from peer nodes
+3. Randon packet corruption to/from peer and api nodes
+4. Random packet corruption to/from api and db nodes
 
 ## Pre-requisites
 
@@ -29,46 +43,30 @@ git submodule update --init --recursive
         localNetworks =
         ```
    4. Do the same in `peer_node/resources/config-node.properties.mt`
-        
-
-
-4. Update the following properties under the ``integrationtests/src/test/resources/configs/config-default.properties`` file to match your bootstrap environment.
-    - ``apiServerPublicKey``: Public key of the API server. You can find it in ``build/catapult-config/api-node-0/userconfig/resources/peers-api.json``.
-    - ``userPrivateKey``: Private key of the user which will be use to sign each transaction. You can find a list of users in ``build/generated-addresses/addresses.yaml`` file under the ``nemesis_addresses`` section.
-    - ``automationPrivateKey``: If automation is running on the same host as the api server(i.e. same IP) then the set to api server boot private key.  Otherwise it can be any private key.
-	- ``harvesterPublicKey``: Hasvester's public key of the specified Hasvester in the config-harvesting.properties file.
-
 
 ## Running the tests
 
 1. Open the folder where you have cloned this repository.
-2. Move to the ``integrationtests`` folder.
+2. Move to the ``chaos-tests`` folder.
 
 ```bash
-cd integrationtests
+cd chaos-tests
 ```
 
-3) Build and runt the tests.
+3) Run the tests.
 
 ```bash
-mvn test
+./start-chaos-kill-test.sh 'chaos-kill-peers.yml' '30minutes' '100'
 ```
+The first argument accepts a docker-compose file which is the `pumba` file.
 
-**Note**: If you have installed an IDE, you cnan run the tests and debug them from there.
+The second argument accepts time in a variety of formats. For example,
+`"1 hour 4 minutes 3 seconds"`
+`"Monday 8:00am"`
+`"Tomorrow 3:00pm"`
+
+The third argument is the transaction rate per second
 
 ## Contributing
 
 Before contributing please [read this](CONTRIBUTING.md).
-
-### Adding new tests
-
-The file structure of the automation tests is as follows:
-
-* Feature files: ``integrationtests/src/test/resources/io/nem``.
-* Cucumber steps files: ``integrationtests/src/test/java/io/nem/automation``.
-
-In each of these folders, there is an example folder which has a feature and cucumber steps file respectively.
-  
-Before adding tests, check the [nem2-scenarios repository](https://github.com/nemtech/nem2-scenarios) for a list of Cucumber feature files already defined. This repository gathers the set of scenarios that should be automated.
-
-To check if a feature file from the nem2 scenarios is already automated, check if the feature file is present in this repository.
