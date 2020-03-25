@@ -20,12 +20,9 @@
 # Expected finish time: Mon Jun  5 08:00:00 BRT 2017
 # Using chaos docker-compose file: chaos-kill-peers.yml
 
-KILL_COMPOSE_FILE=$1
-echo -e "Starting test at $(date)"
-echo -e "Expected finish time: $(date -d "$STOP_TIME")"
-echo -e "Using chaos docker-compose file: $KILL_COMPOSE_FILE"
-echo -e 'Starting catapult server...'
-CATAPULT_COMPOSE_FILE=$(python3 utils.py get_relative_file_path --file_name=docker-compose-auto-recovery.yml)
+CHAOS_COMPOSE_FILE=$1
+echo -e "Using chaos docker-compose file: $CHAOS_COMPOSE_FILE"
+SYMBOL_COMPOSE_FILE=$(python3 utils.py get_relative_file_path --file_name=docker-compose-auto-recovery.yml)
 SPAMMER_COMPOSE_FILE="../catapult-spammer/cmds/bootstrap/docker-compose-spammer.yml"
 
 # Edit the ruby/catapult-templates/api_node/resources/config-node.properties.mt to set the values of trustedHost and localNetworks to empty values
@@ -33,12 +30,13 @@ SPAMMER_COMPOSE_FILE="../catapult-spammer/cmds/bootstrap/docker-compose-spammer.
 # python3 utils.py avoid_banning --symbol_server_dir=catapult-service-bootstrap
 
 # set -x
-# CHAOS_LOG_FILE=chaos-logs/$KILL_COMPOSE_FILE.$(date +"%d.%m.%Y-%H.%M.%S").log
+# CHAOS_LOG_FILE=chaos-logs/$CHAOS_COMPOSE_FILE.$(date +"%d.%m.%Y-%H.%M.%S").log
 # Launch the catapult server and pumba containers
-docker-compose -f ${CATAPULT_COMPOSE_FILE} -f ${KILL_COMPOSE_FILE} up -d
+echo -e 'Starting Symbol server...'
+docker-compose -f ${SYMBOL_COMPOSE_FILE} -f ${CHAOS_COMPOSE_FILE} up -d
 
 # Call the python script and then remove the square braces [] from the output
-DOCKER_CONTAINERS=($(python3 utils.py get_docker_container_names --compose_file=$KILL_COMPOSE_FILE))
+DOCKER_CONTAINERS=($(python3 utils.py get_docker_container_names --compose_file=$CHAOS_COMPOSE_FILE))
 echo "List of containers: ${DOCKER_CONTAINERS[@]}"
 sleep 10
 docker ps
@@ -90,6 +88,8 @@ echo "Spammer started; entering peer containers monitoring loop..."
 set -e
 STOP_TIME=$2
 STOP_TIME_EPOCH_SECONDS=$(date -d "$STOP_TIME" "+%s")
+echo -e "Starting at $(date)"
+echo -e "Expected finish time: $(date -d "$STOP_TIME")"
 set +e
 # Repeat the loop while the current date is less than STOP_TIME_EPOCH_SECONDS
 while [ $(date "+%s") -lt ${STOP_TIME_EPOCH_SECONDS} ]; do
@@ -117,7 +117,7 @@ python3 mongo_query.py
 docker-compose -f ${SPAMMER_COMPOSE_FILE} down
 
 # Stop catapult
-docker-compose -f ${CATAPULT_COMPOSE_FILE} -f ${KILL_COMPOSE_FILE} down --remove-orphans
+docker-compose -f ${SYMBOL_COMPOSE_FILE} -f ${CHAOS_COMPOSE_FILE} down --remove-orphans
 # Delete all data and settings created by catapult for a clean start next time
 # ???how to run the below command without the prompt for password during automated testing???
 # cd ../catapult-service-bootstrap && sudo cmds/clean-all && sudo rm -rf cmds/bootstrap/spammer && rm -f cmds/bootstrap/docker-compose-spammer.yml && git checkout cmds/bootstrap/dockerfiles/nemgen/ && cd ../chaos-tests
