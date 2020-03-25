@@ -16,7 +16,6 @@ set +e
 CHAOS_COMPOSE_FILE=$1
 echo -e "Using chaos docker-compose file: $CHAOS_COMPOSE_FILE"
 SYMBOL_COMPOSE_FILE=$(python3 utils.py get_relative_file_path --file_name=docker-compose-auto-recovery.yml --target_dir=catapult-service-bootstrap)
-SPAMMER_COMPOSE_FILE="../catapult-spammer/cmds/bootstrap/docker-compose-spammer.yml"
 SPAMMER_COMPOSE_FILE=$(python3 utils.py get_relative_file_path --file_name=docker-compose-spammer.yml --target_dir=catapult-spammer)
 
 # set -x
