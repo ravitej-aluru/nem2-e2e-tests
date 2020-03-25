@@ -1,24 +1,17 @@
 #!/bin/bash
 
 # https://stackoverflow.com/questions/11176284/time-condition-loop-in-shell
-# set -e to exit if the time provided by argument 2 is not valid for date.
 # The variable STOP_TIME will store the seconds since 1970-01-01 00:00:00
 # UTC, according to the date specified by -d "$2".
 
-# $ ./start-chaos-kill-test.sh "1 hour 4 minutes 3 seconds"
-# Starting test at Fri Jun  2 10:50:28 BRT 2017
-# Expected finish time: Fri Jun  2 11:54:31 BRT 2017
-# Using chaos docker-compose file: chaos-kill-peers.yml
+# $ ./start-chaos-kill-test.sh ... "1 hour 4 minutes 3 seconds" ...
+# $ ./start-chaos-kill-test.sh ... "tomorrow 8:00am" ...
+# $ ./start-chaos-kill-test.sh ... "monday 8:00am" ...
 
-# $ ./start-chaos-kill-test.sh "tomorrow 8:00am"
-# Starting test at Fri Jun  2 10:50:39 BRT 2017
-# Expected finish time: Sat Jun  3 08:00:00 BRT 2017
-# Using chaos docker-compose file: chaos-kill-peers.yml
-
-# $ ./start-chaos-kill-test.sh "monday 8:00am"
-# Starting test at Fri Jun  2 10:51:25 BRT 2017
-# Expected finish time: Mon Jun  5 08:00:00 BRT 2017
-# Using chaos docker-compose file: chaos-kill-peers.yml
+# set -e to exit if the time provided by argument 2 is not valid for date.
+set -e
+STOP_TIME=$2
+set +e
 
 CHAOS_COMPOSE_FILE=$1
 echo -e "Using chaos docker-compose file: $CHAOS_COMPOSE_FILE"
@@ -33,7 +26,7 @@ docker-compose -f ${SYMBOL_COMPOSE_FILE} -f ${CHAOS_COMPOSE_FILE} up -d
 
 # Call the python script
 DOCKER_CONTAINERS=($(python3 utils.py get_docker_container_names --compose_file=$CHAOS_COMPOSE_FILE))
-echo "List of containers: ${DOCKER_CONTAINERS[@]}"
+printf "\nList of containers: ${DOCKER_CONTAINERS[@]}"
 sleep 10
 docker ps
 echo 'Finished starting up catapult server.'
@@ -52,7 +45,7 @@ envsubst < ../catapult-spammer/cmds/bootstrap/spammer/spammer.env > ../catapult-
 echo 'printing ../catapult-spammer/cmds/bootstrap/.env file contents...'
 cat ../catapult-spammer/cmds/bootstrap/.env
 
-echo 'Number of transactions in mongodb before starting spammer...'
+printf '\n\nNumber of transactions in mongodb before starting spammer...'
 python3 mongo_query.py
 
 docker-compose -f ${SPAMMER_COMPOSE_FILE} up -d --build
@@ -63,12 +56,8 @@ docker-compose -f ${SPAMMER_COMPOSE_FILE} logs spammer
 # Also, could improve this by monitoring the spammer container too to check it has not exited
 echo "Spammer started; entering peer containers monitoring loop..."
 
-set -e
-STOP_TIME=$2
 STOP_TIME_EPOCH_SECONDS=$(date -d "$STOP_TIME" "+%s")
-echo -e "Starting at $(date)"
 echo -e "Expected finish time: $(date -d "$STOP_TIME")"
-set +e
 
 # Repeat the loop while the current date is less than STOP_TIME_EPOCH_SECONDS
 while [ $(date "+%s") -lt ${STOP_TIME_EPOCH_SECONDS} ]; do
@@ -88,13 +77,15 @@ while [ $(date "+%s") -lt ${STOP_TIME_EPOCH_SECONDS} ]; do
 done
 
 # Now, query the catapult mongo db and check the count of transactions
+printf '\n\nNumber of transactions in mongodb after the test...'
 python3 mongo_query.py
 
 # Stop spammer
 docker-compose -f ${SPAMMER_COMPOSE_FILE} down
 
-# Stop symbol
+# Stop symbol and pumba
 docker-compose -f ${SYMBOL_COMPOSE_FILE} -f ${CHAOS_COMPOSE_FILE} down --remove-orphans
+
 # Delete all data and settings created by symbol for a clean start next time
-# ???how to run the below command without the prompt for password during automated testing???
-# cd ../catapult-service-bootstrap && sudo cmds/clean-all && sudo rm -rf cmds/bootstrap/spammer && rm -f cmds/bootstrap/docker-compose-spammer.yml && git checkout cmds/bootstrap/dockerfiles/nemgen/ && cd ../chaos-tests
+# passwordless sudo user will be created on the chaos net instances for below to work
+cd ../catapult-service-bootstrap && sudo ./cmds/clean-all && cd ../chaos-tests
