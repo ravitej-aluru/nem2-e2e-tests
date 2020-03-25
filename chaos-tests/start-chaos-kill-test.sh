@@ -15,8 +15,9 @@ set +e
 
 CHAOS_COMPOSE_FILE=$1
 echo -e "Using chaos docker-compose file: $CHAOS_COMPOSE_FILE"
-SYMBOL_COMPOSE_FILE=$(python3 utils.py get_relative_file_path --file_name=docker-compose-auto-recovery.yml)
+SYMBOL_COMPOSE_FILE=$(python3 utils.py get_relative_file_path --file_name=docker-compose-auto-recovery.yml --target_dir=catapult-service-bootstrap)
 SPAMMER_COMPOSE_FILE="../catapult-spammer/cmds/bootstrap/docker-compose-spammer.yml"
+SPAMMER_COMPOSE_FILE=$(python3 utils.py get_relative_file_path --file_name=docker-compose-spammer.yml --target_dir=catapult-spammer)
 
 # set -x
 # CHAOS_LOG_FILE=chaos-logs/$CHAOS_COMPOSE_FILE.$(date +"%d.%m.%Y-%H.%M.%S").log
@@ -26,7 +27,7 @@ docker-compose -f ${SYMBOL_COMPOSE_FILE} -f ${CHAOS_COMPOSE_FILE} up -d
 
 # Call the python script
 DOCKER_CONTAINERS=($(python3 utils.py get_docker_container_names --compose_file=$CHAOS_COMPOSE_FILE))
-printf "\nList of containers: ${DOCKER_CONTAINERS[@]}"
+echo "List of containers: ${DOCKER_CONTAINERS[@]}"
 sleep 10
 docker ps
 echo 'Finished starting up catapult server.'

@@ -53,19 +53,17 @@ def get_relative_file_path(file_name, target_dir=None):
                               ]
     if len(relative_file_path) > 1:
         logging.warning("More than one file with the same name found in sub-directories %s. Returning the first one.", relative_file_path)
-        # print(relative_file_path[0])
         return relative_file_path[0]
     elif len(relative_file_path) == 0:
         logging.error("File '%s' not found!", file_name)
     else:
-        # print(relative_file_path[0])
         return relative_file_path[0]
 
 
 def find_all_occurances_of_file(file_name, target_dir):
     logging.debug('Looking for file %s under %s directory', file_name, '/'.join(target_dir))
     file_paths = [os.path.join(dirpath, filename)
-                  for dirpath, _, filenames in os.walk(*target_dir)
+                  for dirpath, _, filenames in os.walk(os.path.join(*target_dir))
                   for filename in filenames if filename.endswith(file_name)
                   ]
     return file_paths
@@ -88,6 +86,6 @@ if __name__ == "__main__":
     # avoid_banning('catapult-service-bootstrap')
     # compose_file = sys.argv[1]
     # logging.debug('docker-compose file name: {}'.format(compose_file))
-    # file_path = get_relative_file_path(compose_file)
-    # logging.debug('Path of the compose file: {}'.format(file_path))
+    # file_path = get_relative_file_path('docker-compose-auto-recovery.yml', 'catapult-service-bootstrap')
+    # logging.info('Path of the compose file: {}'.format(file_path))
     # get_docker_container_names(file_path)
