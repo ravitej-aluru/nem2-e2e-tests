@@ -76,7 +76,7 @@ while [ $(date "+%s") -lt ${STOP_TIME_EPOCH_SECONDS} ]; do
   done
 done
 
-# Now, query the catapult mongo db and check the count of transactions
+# Now query the catapult mongo db and check the count of transactions
 printf '\n\nNumber of transactions in mongodb after the test...'
 python3 mongo_query.py
 
@@ -88,4 +88,4 @@ docker-compose -f ${SYMBOL_COMPOSE_FILE} -f ${CHAOS_COMPOSE_FILE} down --remove-
 
 # Delete all data and settings created by symbol for a clean start next time
 # passwordless sudo user will be created on the chaos net instances for below to work
-cd ../catapult-service-bootstrap && sudo ./cmds/clean-all && cd ../chaos-tests
+# cd ../catapult-service-bootstrap && sudo ./cmds/clean-all && cd ../chaos-tests
