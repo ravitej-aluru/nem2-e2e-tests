@@ -35,7 +35,7 @@ Feature: Apply global restrictions on mosaics
     And Alex gives Bobby the following restriction keys
       | Mosaic                 | restriction key | restriction value |
       | MyCompanySharesPrivate | can_hold        | 1                 |
-    And Alex gives Carol the following restriction keys
+    And Carol gives Bobby the following restriction keys
       | Mosaic                 | restriction key | restriction value |
       | MyCompanySharesPrivate | can_hold        | 1                 |
     When Bobby sends 1 asset "MyCompanySharesPrivate" to Carol
@@ -159,7 +159,7 @@ Feature: Apply global restrictions on mosaics
     And Alex gives Bobby the following restriction keys
       | Mosaic                 | Restriction key | Restriction value |
       | MyCompanySharesPrivate | Is_Verified     | 4                 |
-    And Alex gives Carol the following restriction keys
+    And EligibilityProvider gives Carol the following restriction keys
       | Mosaic                 | Restriction key | Restriction value |
       | MyCompanySharesPrivate | Is_Verified     | 4                 |
     When Bobby sends 1 asset "MyCompanySharesPrivate" to Carol
