@@ -20,6 +20,7 @@
 
 package io.nem.symbol.automationHelpers.common;
 
+import io.nem.sdk.infrastructure.directconnect.dataaccess.common.DataAccessContext;
 import io.nem.symbol.automationHelpers.config.ConfigFileReader;
 import io.nem.symbol.core.crypto.PublicKey;
 import io.nem.symbol.core.utils.ExceptionUtils;
