@@ -56,7 +56,7 @@ Feature: Prevent receiving transactions containing a specific asset
     Then Bobby should receive a confirmation message
     And Bobby should receive 1 of asset "ticket"
 
-  Scenario: 4. An account removes an asset from the allowed assets
+  Scenario: An account removes an asset from the allowed assets
     Given Bobby has only allowed receiving the following assets:
       | ticket  |
       | voucher |

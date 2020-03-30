@@ -100,28 +100,28 @@ Feature: Prevent sending transactions by type
       | REGISTER_NAMESPACE |
     Then Alex should receive the error "Failure_RestrictionAccount_Modification_Not_Allowed"
 
-  Scenario: 8. An account tries to block sending transactions with a given type when it has allowed types
+  Scenario: An account tries to block sending transactions with a given type when it has allowed types
     Given Alex only allows sending transactions of type:
       | TRANSFER |
     When Alex tries to block sending transactions of type:
       | REGISTER_NAMESPACE |
     Then Alex should receive the error "Failure_RestrictionAccount_Modification_Not_Allowed"
 
-  Scenario: 9. An account tries to block a transaction type twice
+  Scenario: An account tries to block a transaction type twice
     Given Alex blocks sending transactions of type:
       | TRANSFER |
     When Alex tries to block sending transactions of type:
       | TRANSFER |
     Then Alex should receive the error "Failure_RestrictionAccount_Modification_Redundant"
 
-  Scenario: 10. An account tries to allow a transaction type twice
+  Scenario: An account tries to allow a transaction type twice
     Given Alex only allows sending transactions of type:
       | TRANSFER |
     When Alex tries to only allow sending transactions of type:
       | TRANSFER |
     Then Alex should receive the error "Failure_RestrictionAccount_Modification_Redundant"
 
-  Scenario: 11. An account tries to block a transaction with "ACCOUNT_PROPERTIES_ENTITY_TYPE" type
+  Scenario: An account tries to block a transaction with "ACCOUNT_PROPERTIES_ENTITY_TYPE" type
     When Alex blocks sending transactions of type:
       | ACCOUNT_PROPERTIES_ENTITY_TYPE |
     Then Alex should receive the error "Failure_RestrictionAccount_Modification_Not_Allowed"
