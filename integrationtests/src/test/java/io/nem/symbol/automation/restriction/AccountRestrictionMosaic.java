@@ -214,7 +214,8 @@ public class AccountRestrictionMosaic extends BaseTest {
     // TODO: assuming that at least count + 1 assets are registered. May be better to check and
     // throw if not.
     List<UnresolvedMosaicId> modifications =
-        assets.stream.limit(count + 1).parallelStream().map(asset -> resolveMosaicId(asset)).collect(Collectors.toList());
+        assets.stream().limit(count + 1).collect(Collectors.toList())
+                .parallelStream().map(asset -> resolveMosaicId(asset)).collect(Collectors.toList());
     if (addOrDelete.equalsIgnoreCase("add")) {
       accountRestrictionHelper.createAccountMosaicRestrictionTransactionAndAnnounce(
           signerAccount, AccountRestrictionFlags.BLOCK_MOSAIC, modifications, new ArrayList<>());
