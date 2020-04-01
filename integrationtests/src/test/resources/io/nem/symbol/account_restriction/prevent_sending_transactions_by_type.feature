@@ -10,7 +10,7 @@ Feature: Prevent sending transactions by type
       | Carol |
     Given the following transaction types are available:
       | TRANSFER                       |
-      | REGISTER_NAMESPACE             |
+      | NAMESPACE_REGISTRATION         |
       | ACCOUNT_PROPERTIES_ENTITY_TYPE |
 
     # We are using three transaction types for better comprehension.
@@ -19,7 +19,7 @@ Feature: Prevent sending transactions by type
   Scenario: An account blocks sending transactions of a given transaction type
     Given Alex blocks sending transactions of type:
       | TRANSFER           |
-      | REGISTER_NAMESPACE |
+      | NAMESPACE_REGISTRATION |
     When Alex tries to send 1 asset "cat.currency" to Bobby
     And Alex tries to register a new namespace
     Then Alex should receive the error "FAILURE_RESTRICTIONACCOUNT_OPERATION_TYPE_PROHIBITED"
@@ -32,7 +32,7 @@ Feature: Prevent sending transactions by type
   Scenario: An account only allows sending transactions of a given transaction type
     Given Alex only allows sending transactions of type:
       | TRANSFER           |
-      | REGISTER_NAMESPACE |
+      | NAMESPACE_REGISTRATION |
     When Alex sends 1 asset "cat.currency" to Bobby
     And Alex registers new namespace alexexp
     Then Alex should receive a confirmation message
@@ -45,7 +45,7 @@ Feature: Prevent sending transactions by type
   Scenario: An account unblocks a transaction type
     Given Alex blocks sending transactions of type:
       | TRANSFER           |
-      | REGISTER_NAMESPACE |
+      | NAMESPACE_REGISTRATION |
     When Alex removes TRANSFER from blocked transaction types
     And Alex sends 1 asset "cat.currency" to Bobby
     And Alex tries to register a namespace named "alexexp" for 10 blocks
@@ -57,7 +57,7 @@ Feature: Prevent sending transactions by type
   Scenario: An account removes a transaction type from the allowed transaction types
     Given Alex only allows sending transactions of type:
       | TRANSFER           |
-      | REGISTER_NAMESPACE |
+      | NAMESPACE_REGISTRATION |
     When Alex removes TRANSFER from allowed transaction types
     And Alex sends 1 asset "cat.currency" to Bobby
     And Alex tries to register a namespace named "alexexp" for 10 blocks
@@ -77,34 +77,34 @@ Feature: Prevent sending transactions by type
   Scenario: An account tries to register an asset but has blocked sending "MOSAIC_DEFINITION" transactions
     Given Alex blocks sending transactions of type:
       | MOSAIC_DEFINITION  |
-      | REGISTER_NAMESPACE |
+      | NAMESPACE_REGISTRATION |
     When Alex tries to register an asset for 2 seconds
     Then Alex should receive the error "FAILURE_RESTRICTIONACCOUNT_TRANSACTION_TYPE_NOT_ALLOWED"
 
   Scenario: An account unblocks a not blocked transaction type
     Given Alex blocks sending transactions of type:
       | TRANSFER |
-    When Alex tries to remove REGISTER_NAMESPACE from blocked transaction types
+    When Alex tries to remove NAMESPACE_REGISTRATION from blocked transaction types
     Then Alex should receive the error "Failure_RestrictionAccount_Modification_Not_Allowed"
 
   Scenario: An account removes a transaction type that does not exist in the allowed transaction types
     Given Alex only allows sending transactions of type:
       | TRANSFER |
-    When Alex tries to remove REGISTER_NAMESPACE from allowed transaction types
+    When Alex tries to remove NAMESPACE_REGISTRATION from allowed transaction types
     Then Alex should receive the error "Failure_RestrictionAccount_Modification_Not_Allowed"
 
   Scenario: An account tries to only allow sending transactions of a given type when it has blocked types
     Given Alex blocks sending transactions of type:
       | TRANSFER |
     When Alex tries to only allow sending transactions of type:
-      | REGISTER_NAMESPACE |
+      | NAMESPACE_REGISTRATION |
     Then Alex should receive the error "Failure_RestrictionAccount_Modification_Not_Allowed"
 
   Scenario: An account tries to block sending transactions with a given type when it has allowed types
     Given Alex only allows sending transactions of type:
       | TRANSFER |
     When Alex tries to block sending transactions of type:
-      | REGISTER_NAMESPACE |
+      | NAMESPACE_REGISTRATION |
     Then Alex should receive the error "Failure_RestrictionAccount_Modification_Not_Allowed"
 
   Scenario: An account tries to block a transaction type twice
