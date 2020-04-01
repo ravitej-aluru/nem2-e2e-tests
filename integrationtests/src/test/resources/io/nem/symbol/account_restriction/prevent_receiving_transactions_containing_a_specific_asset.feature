@@ -52,7 +52,7 @@ Feature: Prevent receiving transactions containing a specific asset
       | ticket  |
       | voucher |
     And Bobby removes ticket from blocked assets
-    When Alex tries to send 1 asset "ticket" to Bobby
+    When Alex sends 1 asset "ticket" to Bobby
     Then Bobby should receive a confirmation message
     And Bobby should receive 1 of asset "ticket"
 
