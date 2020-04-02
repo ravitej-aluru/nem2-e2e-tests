@@ -94,21 +94,21 @@ Feature: Prevent receiving transactions from undesired addresses
     Given Alex blocked receiving transactions from:
       | Bobby |
     When Alex tries to block receiving transactions from Bobby
-    Then Alex should receive the error "FAILURE_RESTRICTIONACCOUNT_MODIFICATION_REDUNDANT"
+    Then Alex should receive the error "FAILURE_RESTRICTIONACCOUNT_INVALID_MODIFICATION"
 
   Scenario: An account tries to allow an address twice
     Given Alex only allowed receiving transactions from:
       | Bobby |
     When Alex tries to only allow receiving transactions from Bobby
-    Then Alex should receive the error "FAILURE_RESTRICTIONACCOUNT_MODIFICATION_REDUNDANT"
+    Then Alex should receive the error "FAILURE_RESTRICTIONACCOUNT_INVALID_MODIFICATION"
 
   Scenario: An account tries to block self
     When Alex tries to block receiving transactions from herself
-    Then Alex should receive the error "FAILURE_RESTRICTIONACCOUNT_MODIFICATION_ADDRESS_INVALID"
+    Then Alex should receive the error "FAILURE_RESTRICTIONACCOUNT_INVALID_MODIFICATION_ADDRESS"
 
   Scenario: An account tries to only allow self
     When Alex tries to only allow receiving transactions from herself
-    Then she should receive the error "FAILURE_RESTRICTIONACCOUNT_MODIFICATION_ADDRESS_INVALID"
+    Then she should receive the error "FAILURE_RESTRICTIONACCOUNT_INVALID_MODIFICATION_ADDRESS"
 
   Scenario: An account tries to block too many addresses
     Given Alex has blocked receiving transactions from 512 different addresses
