@@ -6,12 +6,21 @@ import sys
 import logging
 import fire
 from pyjavaproperties import Properties
+from symbol_data import SymbolDataMongo as sdm
 
 
-def calculate_total_transactions(transaction_rate: int,
-                                 start_epoch: int,
-                                 end_epoch: int,
-                                 time_offset: int=0) -> int:
+def assert_total_transactions(before: int, injected: int, after: int):
+    try:
+        assert (before + injected) == after
+        return 0
+    except AssertionError:
+        return 1
+
+
+def injected_transactions(transaction_rate: int,
+                          start_epoch: int,
+                          end_epoch: int,
+                          time_offset: int=0) -> int:
     duration = end_epoch - start_epoch - time_offset
     total_transactions = duration * transaction_rate
     return  total_transactions

@@ -43,7 +43,7 @@ echo -e "\nStart time: $(date)"
 echo -e "End time: $(date -d "$STOP_TIME")\n"
 
 # Calculate number of accounts based on end time and transaction rate. 
-NUM_ACCOUNTS=$(python3 utils.py calculate_total_transactions --start-epoch=$START_TIME_EPOCH_SECONDS --end-epoch=$STOP_TIME_EPOCH_SECONDS --transaction-rate=$3 --time-offset=30)
+NUM_ACCOUNTS=$(python3 utils.py injected-transactions --start-epoch=$START_TIME_EPOCH_SECONDS --end-epoch=$STOP_TIME_EPOCH_SECONDS --transaction-rate=$3 --time-offset=30)
 export NUMBER_OF_ACCOUNTS=$NUM_ACCOUNTS
 
 echo 'Creating .env file with private key and generation hash from the catapult config...'
@@ -52,7 +52,7 @@ echo 'printing ../catapult-spammer/cmds/bootstrap/.env file contents...'
 cat ../catapult-spammer/cmds/bootstrap/.env
 
 TRANSACTION_COUNT_BEFORE=$(python3 symbol_data.py count-transactions)
-printf "\n\nNumber of transactions in Symbol mongo db before the test: $TRANSACTION_COUNT_BEFORE"
+printf "\n\nNumber of transactions in Symbol mongo db before the test: $TRANSACTION_COUNT_BEFORE\n"
 
 docker-compose -f ${SPAMMER_COMPOSE_FILE} up -d --build
 echo "Printing spammer container logs..." && sleep 10
@@ -65,7 +65,7 @@ echo "Spammer started; entering peer containers monitoring loop..."
 
 # Repeat the loop while the current date is less than STOP_TIME_EPOCH_SECONDS
 while [ $(date "+%s") -lt ${STOP_TIME_EPOCH_SECONDS} ]; do
-  echo "\n"
+  printf "\n"
   sleep 60
   for container in "${DOCKER_CONTAINERS[@]}"; do
     # Remove the single quotes from the container name string (it was returned by python with '')
@@ -83,8 +83,9 @@ done
 
 # Now query the catapult mongo db and check the count of transactions
 TRANSACTION_COUNT_AFTER=$(python3 symbol_data.py count-transactions)
-printf "\n\nNumber of transactions in Symbol mongo db after the test: $TRANSACTION_COUNT_AFTER"
+printf "\n\nNumber of transactions in Symbol mongo db after the test: $TRANSACTION_COUNT_AFTER\n"
 
+EXIT_CODE=$(python3 utils.py assert-total-transactions --before=$TRANSACTION_COUNT_BEFORE --injected=$NUM_ACCOUNTS --after=$TRANSACTION_COUNT_AFTER)
 
 # Stop spammer
 docker-compose -f ${SPAMMER_COMPOSE_FILE} down
@@ -95,3 +96,16 @@ docker-compose -f ${SYMBOL_COMPOSE_FILE} -f ${CHAOS_COMPOSE_FILE} down --remove-
 # Delete all data and settings created by symbol for a clean start next time
 # passwordless sudo user will be created on the chaos net instances for below to work
 # cd ../catapult-service-bootstrap && sudo ./cmds/clean-all && cd ../chaos-tests
+
+printf "\nTransactions before = $TRANSACTION_COUNT_BEFORE\n"
+printf "Transactions injected = $NUM_ACCOUNTS\n"
+printf "Transactions after = $TRANSACTION_COUNT_AFTER\n\n"
+
+if [ $EXIT_CODE -eq 0 ]
+then
+  printf "\nWoohoo! Hurray!! Test passed!!!\n"
+else
+  printf "\nOh dear! Not sure what went wrong, but the test failed.\n\n"
+fi
+
+exit $EXIT_CODE
