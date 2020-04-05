@@ -12,14 +12,8 @@ def calculate_total_transactions(transaction_rate: int,
                                  start_epoch: int,
                                  end_epoch: int,
                                  time_offset: int=0) -> int:
-    print("start epoch seconds: ", start_epoch)
-    print("end epoch seconds: ", end_epoch)
-    print("offset seconds: ", time_offset)
     duration = end_epoch - start_epoch - time_offset
-    print("duration: ", duration)
-    print("transaction rate per second: ", transaction_rate)
     total_transactions = duration * transaction_rate
-    print('total transactions: ', total_transactions)
     return  total_transactions
 
 
@@ -27,7 +21,6 @@ def update_properties_file(properties_file, new_properties):
     p = Properties()
     logging.debug('Opening file %s', properties_file)
     p.load(open(properties_file))
-    # for name, value in [('ENABLEPRINTER', 'y'), ('PRINTERLIST', 'PRNT3')]:
     for name, value in new_properties:
         logging.info('Setting new value of %s to %s', name, value)
         p[name] = value
