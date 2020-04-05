@@ -254,10 +254,7 @@ public abstract class BaseTest {
    * @param mosaicInfo Mosaic info.
    */
   protected void storeMosaicInfo(final String assetName, final MosaicInfo mosaicInfo) {
-    testContext
-        .getLogger()
-        .LogInfo(
-            "Asset name: %s\n Mosaic info: %s", assetName, mosaicInfo.getMosaicId().toString());
+    testContext.getLogger().LogInfo("Asset name: %s\n Mosaic info: %s", assetName, mosaicInfo.getMosaicId().toString());
     testContext.getScenarioContext().setContext(assetName, mosaicInfo);
   }
 

@@ -105,8 +105,7 @@ public class AssetRegistration extends BaseTest {
         mosaicBefore.getAmount().longValue() - mosaicAfter.getAmount().longValue() - exceptedFee);
   }
 
-  @When(
-      "^(\\w+) registers (\\w+), supply (\\w+) with divisibility (\\d+) asset for (\\d+) in blocks$")
+  @When("^(\\w+) registers (\\w+), supply (\\w+) with divisibility (\\d+) asset for (\\d+) in blocks$")
   public void registerAssestForDuration(
       final String userName,
       final AssetTransferableType assetTransferableType,

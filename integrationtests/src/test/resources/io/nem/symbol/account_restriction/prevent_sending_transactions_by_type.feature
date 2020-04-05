@@ -25,75 +25,66 @@ Feature: Prevent sending transactions by type
     And Alex balance should remain intact
     And Bobby balance should remain intact
 
-  Scenario: An account blocks sending namespace transactions
+  Scenario: An account blocks sending namespace registration transaction
     Given Alex blocks sending transactions of type:
-      | TRANSFER               |
+      | TRANSFER           |
       | NAMESPACE_REGISTRATION |
     When Alex tries to register a new namespace alextest
     Then Alex should receive the error "FAILURE_RESTRICTIONACCOUNT_OPERATION_TYPE_PROHIBITED"
     And Alex balance should remain intact
-
- #      We must try some other transaction type like REGISTER_MOSAIC etc. here and expect a pass
+ #   We must try some other transaction type like REGISTER_MOSAIC etc. here and expect a pass
  #   And sending transactions with the stated transaction types should be blocked
 
-  Scenario: An account only allows sending transactions of a given transaction type
+  Scenario: An account only allows transfer and other transaction types
     Given Alex only allows sending transactions of type:
-      | TRANSFER               |
+      | TRANSFER                      |
       | ACCOUNT_OPERATION_RESTRICTION |
-      | NAMESPACE_REGISTRATION |
+      | NAMESPACE_REGISTRATION        |
     When Alex sends 1 asset "cat.currency" to Bobby
     Then Bobby should receive 1 of asset "cat.currency"
     And Alex "cat.currency" balance should decrease by 1 units
 
-  Scenario: An account only allows sending transactions of a given transaction type
+  Scenario: An account only allows namespace registration transaction type
     Given Alex only allows sending transactions of type:
-      | TRANSFER           |
-      | NAMESPACE_REGISTRATION |
+      | TRANSFER                      |
+      | NAMESPACE_REGISTRATION        |
     When Alex registers new namespace alexexp
     Then Alex should become the owner of the new namespace alexexp
-    And Alex "cat.currency" balance should decrease by 1 units
-
-#      We must try some other transaction type like REGISTER_MOSAIC etc. here and expect a failure
+#    We must try some other transaction type like REGISTER_MOSAIC etc. here and expect a failure
 #    And  only sending transactions with the stated transaction types should be allowed
 
-  Scenario: An account unblocks transaction type
+  Scenario: An account unblocks a transaction type
     Given Alex blocks sending transactions of type:
-      | TRANSFER           |
-      | NAMESPACE_REGISTRATION |
+      | TRANSFER                |
+      | NAMESPACE_REGISTRATION  |
     And Alex removes TRANSFER from blocked transaction types
     When Alex sends 1 asset "cat.currency" to Bobby
     Then Bobby should receive 1 of asset "cat.currency"
     And Alex "cat.currency" balance should decrease by 1 units
 
-  Scenario: An account unblocks transfer transaction type and the other type still blocks
+  Scenario: An account unblocks a transaction type but remaining should still be blocked
     Given Alex blocks sending transactions of type:
-      | TRANSFER           |
-      | NAMESPACE_REGISTRATION |
+      | TRANSFER                |
+      | NAMESPACE_REGISTRATION  |
     And Alex removes TRANSFER from blocked transaction types
     When Alex tries to register a namespace named "alexexp" for 10 blocks
     Then Alex should receive the error "FAILURE_RESTRICTIONACCOUNT_OPERATION_TYPE_PROHIBITED"
 
   Scenario: An account removes a transaction type from the allowed transaction types
     Given Alex only allows sending transactions of type:
-      | TRANSFER           |
-      | NAMESPACE_REGISTRATION |
-    When Alex removes TRANSFER from allowed transaction types
-    And Alex sends 1 asset "cat.currency" to Bobby
-    Then Bobby should receive 1 of asset "cat.currency"
-    And Alex "cat.currency" balance should decrease by 1 units
-    And Alex should receive the error "FAILURE_RESTRICTIONACCOUNT_OPERATION_TYPE_PROHIBITED"
+      | TRANSFER                |
+      | NAMESPACE_REGISTRATION  |
+    And Alex removes TRANSFER from allowed transaction types
+    When Alex tries to send 1 asset "cat.currency" to Bobby
+    Then Alex should receive the error "FAILURE_RESTRICTIONACCOUNT_OPERATION_TYPE_PROHIBITED"
 
-  Scenario: An account removes a transaction type from the allowed transaction types
+  Scenario: An account removes a transaction type from the allowed transaction types but remaining types should still be allowed
     Given Alex only allows sending transactions of type:
-      | TRANSFER           |
-      | NAMESPACE_REGISTRATION |
-    When Alex removes TRANSFER from allowed transaction types
-    And Alex sends 1 asset "cat.currency" to Bobby
-    And Alex tries to register a namespace named "alexexp" for 10 blocks
-    Then Alex should receive a confirmation message
-    And Bobby should receive 1 of asset "cat.currency"
-    And Alex "cat.currency" balance should decrease by 1 units
-    And Alex should receive the error "FAILURE_RESTRICTIONACCOUNT_OPERATION_TYPE_PROHIBITED"
+      | TRANSFER                |
+      | NAMESPACE_REGISTRATION  |
+    And Alex removes TRANSFER from allowed transaction types
+    When Alex registers new namespace alexexp
+    Then Alex should become the owner of the new namespace alexexp
 
   @not-implemented
   Scenario: An account tries to register an asset but has not allowed sending "MOSAIC_DEFINITION" transactions
