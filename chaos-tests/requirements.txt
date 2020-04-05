@@ -3,3 +3,4 @@ fire
 pylint==2.4.4
 PyYAML==5.3
 pymongo==3.10.1
+pyjavaproperties

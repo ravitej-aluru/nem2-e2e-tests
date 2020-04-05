@@ -7,6 +7,22 @@ import logging
 import fire
 from pyjavaproperties import Properties
 
+
+def calculate_total_transactions(transaction_rate: int,
+                                 start_epoch: int,
+                                 end_epoch: int,
+                                 time_offset: int=0) -> int:
+    print("start epoch seconds: ", start_epoch)
+    print("end epoch seconds: ", end_epoch)
+    print("offset seconds: ", time_offset)
+    duration = end_epoch - start_epoch - time_offset
+    print("duration: ", duration)
+    print("transaction rate per second: ", transaction_rate)
+    total_transactions = duration * transaction_rate
+    print('total transactions: ', total_transactions)
+    return  total_transactions
+
+
 def update_properties_file(properties_file, new_properties):
     p = Properties()
     logging.debug('Opening file %s', properties_file)
@@ -83,9 +99,3 @@ def get_first_user_private_key():
 
 if __name__ == "__main__":
     fire.Fire()
-    # avoid_banning('catapult-service-bootstrap')
-    # compose_file = sys.argv[1]
-    # logging.debug('docker-compose file name: {}'.format(compose_file))
-    # file_path = get_relative_file_path('docker-compose-auto-recovery.yml', 'catapult-service-bootstrap')
-    # logging.info('Path of the compose file: {}'.format(file_path))
-    # get_docker_container_names(file_path)
