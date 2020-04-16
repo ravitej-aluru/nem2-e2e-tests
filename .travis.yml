@@ -1,4 +1,17 @@
 language: java
+jdk:
+  - oraclejdk8
+  - oraclejdk9
+  - oraclejdk10
+  - oraclejdk11
+  - oraclejdk-ea
+  - openjdk8
+  - openjdk11
+  - openjdk-ea
+matrix:
+  allow_failures:
+    - jdk: openjdk-ea
+    - jdk: oraclejdk-ea
 sudo: false
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
