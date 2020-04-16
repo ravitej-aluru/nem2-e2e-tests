@@ -8,7 +8,5 @@ cache:
     - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper/
 script:
-  - gradle --project-dir symbol-direct-java-sdk/ --refresh-dependencies --rerun-tasks assemble
-  - gradle --project-dir symbol-direct-java-sdk/ --refresh-dependencies --rerun-tasks assemble testClasses
-  - gradle --project-dir integrationtests/ --refresh-dependencies --rerun-tasks assemble
-  - gradle --project-dir integrationtests/ --refresh-dependencies --rerun-tasks assemble testClasses
+  - gradle --project-dir symbol-direct-java-sdk/ --refresh-dependencies --rerun-tasks clean classes javadocJar
+  - gradle --project-dir integrationtests/ --refresh-dependencies --rerun-tasks clean testClasses
