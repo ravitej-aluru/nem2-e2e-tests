@@ -1,0 +1,7 @@
+version: "3"
+services:
+  kill-api-nodes-random:
+    image: gaiaadm/pumba
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: "--log-level=debug --json --random  --interval 3m kill --limit 1 --signal SIGKILL 're:^bootstrap_api-node*'"
