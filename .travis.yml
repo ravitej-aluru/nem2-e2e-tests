@@ -23,3 +23,5 @@ cache:
 script:
   - gradle --project-dir symbol-direct-java-sdk/ --refresh-dependencies --rerun-tasks clean classes javadocJar
   - gradle --project-dir integrationtests/ --refresh-dependencies --rerun-tasks clean testClasses
+  # When ready to run tests in CI, uncomment below line
+  # - gradle --project-dir integrationtests/ test
