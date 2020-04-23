@@ -1,6 +1,5 @@
 package io.nem.symbol.automationHelpers.helper;
 
-// import gherkin.lexer.De;
 import io.nem.symbol.automationHelpers.common.TestContext;
 import io.nem.symbol.sdk.model.transaction.Deadline;
 import io.nem.symbol.sdk.model.transaction.Transaction;
