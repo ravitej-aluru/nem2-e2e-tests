@@ -1,11 +1,11 @@
-# symbol-e2e-tests
+# Symbol end-to-end behaviour tests
 
 Integration and e2e tests for the synbol project.
 
 ## Prerequisites
 
 * [Java 8](https://docs.oracle.com/javase/8/docs/technotes/guides/install/install_overview.html)
-* [Maven](https://maven.apache.org/install.html)
+* [Gradle](https://gradle.org/install/)
 
 ## Installation
 
@@ -30,19 +30,15 @@ git clone --recursive https://github.com/nemtech/symbol-e2e-tests.git
 ## Running the tests
 
 1. Open the folder where you have cloned this repository.
-2. Move to the ``integrationtests`` folder.
+
+2. Build and run the tests.
 
 ```bash
-cd integrationtests
+gradle --project-dir symbol-e2e-tests/ clean test
+
 ```
 
-3) Build and runt the tests.
-
-```bash
-mvn test
-```
-
-**Note**: If you have installed an IDE, you cnan run the tests and debug them from there.
+**Note**: If you have installed an IDE, you can run the tests and debug them from there.
 
 ## Contributing
 
@@ -52,8 +48,8 @@ Before contributing please [read this](CONTRIBUTING.md).
 
 The file structure of the automation tests is as follows:
 
-* Feature files: ``integrationtests/src/test/resources/io/nem/symbol``.
-* Cucumber steps files: ``integrationtests/src/test/java/io/nem/symbol/automation``.
+* Feature files: ``symbol-e2e-tests/src/test/resources/io/nem/symbol``.
+* Cucumber steps files: ``symbol-e2e-tests/src/test/java/io/nem/symbol/automation``.
 
 In each of these folders, there is an example folder which has a feature and cucumber steps file respectively.
   
