@@ -5,7 +5,9 @@ Integration and e2e tests for the synbol project.
 ## Prerequisites
 
 * [Java 8](https://docs.oracle.com/javase/8/docs/technotes/guides/install/install_overview.html)
-* [Gradle](https://gradle.org/install/)
+* [Gradle](https://gradle.org/install/) 
+  
+You could use the `install-gradle.sh` script provided at the root of the repository to install gradle from the commandline
 
 ## Installation
 
