@@ -22,6 +22,6 @@ cache:
     - $HOME/.gradle/wrapper/
 script:
   - gradle --project-dir symbol-direct-java-sdk/ --refresh-dependencies --rerun-tasks clean classes javadocJar
-  - gradle --project-dir integrationtests/ --refresh-dependencies --rerun-tasks clean testClasses
+  - gradle --project-dir symbol-e2e-tests/ --refresh-dependencies --rerun-tasks clean testClasses
   # When ready to run tests in CI, uncomment below line
-  # - gradle --project-dir integrationtests/ test
+  # - gradle --project-dir symbol-e2e-tests/ test
