@@ -1,0 +1,63 @@
+/*
+ * Copyright 2018 NEM
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+plugins {
+    id 'java'
+}
+
+group 'io.nem'
+archivesBaseName = "symbol-direct-java-sdk"
+version '0.17.0'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+ext {
+    vertxVersion = "3.5.0"
+    rxjavaVersion = "2.1.7"
+}
+
+dependencies {
+    // Reactive
+    compile "io.vertx:vertx-core:${vertxVersion}"
+    compile "io.vertx:vertx-web-client:${vertxVersion}"
+    compile "io.vertx:vertx-rx-java2:${vertxVersion}"
+    compile "io.reactivex.rxjava2:rxjava:${rxjavaVersion}"
+
+    // https://mvnrepository.com/artifact/io.nem/sdk-core
+    compile group: 'io.nem', name: 'symbol-sdk-core', version: '0.17.0'
+    
+    // Mongodb
+    compile group: 'org.mongodb', name: 'mongo-java-driver', version: '3.10.2'
+    compile group: 'org.mongodb', name: 'bson', version: '3.10.2'
+}
+
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar) {
+    classifier = 'javadoc'
+    from javadoc
+}
+
+artifacts {
+    archives javadocJar, sourcesJar
+}

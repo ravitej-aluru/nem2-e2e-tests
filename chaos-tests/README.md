@@ -1,4 +1,4 @@
-# nem2-e2e-tests / chaos-tests
+# Symbol Tests / Resilience
 
 Resilience testing for the NEM Symbol project. This is achieved by utilising an open-source tool called [pumba](https://github.com/alexei-led/pumba) for performing resilience testing for dockerised applications.
 
@@ -32,7 +32,7 @@ Resilience tests use a combination of bash and python scripts
 1. Clone this repository
 
 ```bash
-git clone --recurse-submodules https://github.com/NEMStudios/nem2-e2e-tests.git
+git clone --recurse-submodules https://github.com/nemtech/nem2-e2e-tests.git
 ```
 2. Update the submodules
 
