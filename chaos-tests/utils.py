@@ -1,5 +1,6 @@
 #!/bin/python
 
+import json
 import yaml
 import os
 import sys
@@ -57,6 +58,18 @@ def get_docker_container_names(compose_file):
     docker_containers = [v['command'].split(' ')[-1] for v in services.values()]
     # print(docker_containers)
     return docker_containers
+
+
+def parse_pumba_logs(filename: str):
+    with open(filename, 'r') as file:
+        lines = file.readlines()
+    killed_containers = []
+    for line in lines:
+        line_json = json.loads(line)
+        if 'killing container' in line_json['msg']:
+            container_name = line_json['name'].lstrip('/')
+            killed_containers.append(container_name)
+    return killed_containers
 
 
 def get_relative_file_path(file_name, target_dir=None):
