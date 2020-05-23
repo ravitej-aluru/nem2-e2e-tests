@@ -1,0 +1,42 @@
+---
+# this playbook is supposed to:
+# 1. copy monitor-containers script onto all peer nodes into ~/symbol-testnet/utilities/bin/bash/monitor-containers.sh
+# 2. Make it executable
+# 3. (rename nohup.out if it exists) 
+# 4. Start it in the background for x+1 hours
+# 5. stop any currently running pumba containers
+# 6. start new pumba container to kill the peer node with an interval of x minutes
+# 7. If possible, set timeout for the pumba container also for x hours
+
+- hosts: peer*,beacon*
+  remote_user: ubuntu
+  tasks:
+    - name: copy container monitoring script
+      copy:
+        src: ./scripts/monitor-containers.sh
+        dest: ~/symbol-testnet/utilities/bin/bash/monitor-containers.sh
+        force: yes
+        owner: ubuntu
+        mode: '0754'
+    - name: start the container monitoring script
+      shell: |
+        cd ~/symbol-testnet/utilities/bin/bash/
+        if [[ -f "nohup.out" ]]; then
+          mv nohup.out nohup_old.out
+        fi
+        nohup ./monitor-containers.sh "{{ DURATION|int + 1 }}" "{{ CONTAINERS_TO_KILL }}" &
+    - name: stop any running pumba containers
+      shell: |
+        docker ps -q --filter ancestor=gaiaadm/pumba | xargs docker stop
+    - name: start pumba
+      docker_container:
+        name: pumba_1
+        state: started
+        image: gaiaadm/pumba
+        detach: yes
+        log_driver: json-file
+        output_logs: yes
+        command: --log-level=debug --interval={{ PUMBA_INTERVAL }} --json kill --signal=SIGKILL {{ CONTAINERS_TO_KILL }}
+        volumes:
+        - /var/run/docker.sock:/var/run/docker.sock:rw
+    
