@@ -11,6 +11,15 @@
 - hosts: peer*,beacon*
   remote_user: ubuntu
   tasks:
+    - name: install python-pip
+      apt:
+        state: latest
+        name: python3-pip
+    become: yes
+    - name: install docker python library required by ansible
+      pip:
+        name:
+        - docker
     - name: copy container monitoring script
       copy:
         src: ./scripts/monitor-containers.sh
