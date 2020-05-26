@@ -24,7 +24,7 @@
         if [[ -f "nohup.out" ]]; then
           mv nohup.out nohup_old.out
         fi
-        nohup ./monitor-containers.sh "{{ DURATION|int + 1 }}" "{{ CONTAINERS_TO_KILL }}" &
+        nohup ./monitor-containers.sh "{{ DURATION|int + 1 }} {{ DURATION_UNIT }}" "{{ CONTAINERS_TO_KILL }}" &
     - name: stop any running pumba containers
       shell: |
         docker ps -q --filter ancestor=gaiaadm/pumba | xargs docker stop
