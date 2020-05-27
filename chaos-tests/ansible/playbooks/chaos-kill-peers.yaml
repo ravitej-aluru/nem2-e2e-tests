@@ -33,7 +33,7 @@
         if [[ -f "nohup.out" ]]; then
           mv nohup.out nohup_old.out
         fi
-        nohup ./monitor-containers.sh "{{ DURATION|int + 1 }} {{ DURATION_UNIT }}" "{{ CONTAINERS_TO_KILL }}" &
+        nohup ./monitor-containers.sh "{{ DURATION_WITH_UNITS }}" "{{ MONITOR_SLEEP_INTERVAL_SECONDS }}" "{{ CONTAINERS_TO_KILL }}" "{{ EXTRA_ARGS }}" &
     - name: stop any running pumba containers
       shell: >
         docker ps --filter ancestor=gaiaadm/pumba | grep -q gaiaadm/pumba
