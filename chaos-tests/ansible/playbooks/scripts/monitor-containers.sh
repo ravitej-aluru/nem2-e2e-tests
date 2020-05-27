@@ -48,7 +48,22 @@ STOP_TIME=$1
 set +e
 SLEEP_INTERVAL=$2
 DOCKER_CONTAINERS=(${@:3})
-DOCKER_CONTAINERS+=("${API_BROKER_CONTAINER_NAME}" "${API_NODE_CONTAINER_NAME}")
+if [[ ! -z "${API_BROKER_CONTAINER_NAME}" ]]
+then
+  echo "$(date)::API broker container to be monitored: ${API_BROKER_CONTAINER_NAME}"
+  DOCKER_CONTAINERS+=("${API_BROKER_CONTAINER_NAME}")
+else
+  echo "$(date)::API broker container not specified"
+fi
+
+if [[ ! -z "${API_NODE_CONTAINER_NAME}" ]]
+then
+  echo "$(date)::API node container to be monitored: ${API_NODE_CONTAINER_NAME}"
+  DOCKER_CONTAINERS+=("${API_NODE_CONTAINER_NAME}")
+else
+  echo "$(date)::API node container not specified"
+fi
+
 echo "$(date)::List of Symbol Docker containers to be monitored: ${DOCKER_CONTAINERS[@]}"
 
 START_TIME_EPOCH_SECONDS=$(date "+%s")
@@ -62,6 +77,7 @@ while [ $(date "+%s") -lt ${STOP_TIME_EPOCH_SECONDS} ]; do
   sleep $SLEEP_INTERVAL
   for container in "${DOCKER_CONTAINERS[@]}"; do
     # Remove the single quotes from the container name string (it was returned by python with '')
+    echo "$(date)::Processing docker container: $container"
     container=$(sed s/\'//g <<<$container)
     echo "$(date)::Processing docker container: $container"
     NODE_STATUS=$(docker inspect $container --format='{{.State.Status}}')
