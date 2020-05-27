@@ -5,4 +5,4 @@ services:
     image: gaiaadm/pumba
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-    command: "--log-level debug --interval 6h kill --limit 1 re2:docker_db"
+    command: "--log-level debug --random --interval 6h kill --limit 1 re2:^bootstrap_db*"
