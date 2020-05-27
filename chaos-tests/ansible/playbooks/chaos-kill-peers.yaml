@@ -15,7 +15,7 @@
       apt:
         state: latest
         name: python3-pip
-    become: yes
+      become: yes
     - name: install docker python library required by ansible
       pip:
         name:
