@@ -35,8 +35,12 @@
         fi
         nohup ./monitor-containers.sh "{{ DURATION|int + 1 }} {{ DURATION_UNIT }}" "{{ CONTAINERS_TO_KILL }}" &
     - name: stop any running pumba containers
-      shell: |
-        docker ps -q --filter ancestor=gaiaadm/pumba | xargs docker stop
+      shell: >
+        docker ps --filter ancestor=gaiaadm/pumba | grep -q gaiaadm/pumba
+        && echo -n "EXISTS" 
+        && docker ps -q --filter ancestor=gaiaadm/pumba | xargs docker stop
+      register: pumba_cont_exists
+      changed_when: pumba_cont_exists.stdout != 'EXISTS'
     - name: start pumba
       docker_container:
         name: pumba_1
