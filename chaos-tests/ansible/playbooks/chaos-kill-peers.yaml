@@ -34,6 +34,10 @@
           mv nohup.out nohup_old_$(date -u +%F-%H-%M-%S).out
         fi
         nohup ./monitor-containers.sh "{{ DURATION_WITH_UNITS }}" "{{ MONITOR_SLEEP_INTERVAL_SECONDS }}" "{{ CONTAINERS_TO_KILL }}" "{{ EXTRA_ARGS }}"
+      register: nohup_pid
+    - name: "List all known variables and facts"
+      debug:
+        var: hostvars[inventory_hostname]
     - name: identify any running pumba containers
       shell: docker ps --filter ancestor=gaiaadm/pumba | grep -q gaiaadm/pumba && echo -n "EXISTS"
       register: pumba_cont
