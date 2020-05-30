@@ -33,14 +33,16 @@
         if [[ -f "nohup.out" ]]; then
           mv nohup.out nohup_old.out
         fi
-        nohup ./monitor-containers.sh "{{ DURATION_WITH_UNITS }}" "{{ MONITOR_SLEEP_INTERVAL_SECONDS }}" "{{ CONTAINERS_TO_KILL }}" "{{ EXTRA_ARGS }}" &
-    - name: stop any running pumba containers
+        nohup ./monitor-containers.sh "{{ DURATION_WITH_UNITS }}" "{{ MONITOR_SLEEP_INTERVAL_SECONDS }}" "{{ CONTAINERS_TO_KILL }}" "{{ EXTRA_ARGS }}"
+    - name: identify any running pumba containers
       shell: >
-        docker ps --filter ancestor=gaiaadm/pumba | grep -q gaiaadm/pumba
-        && echo -n "EXISTS" 
-        && docker ps -q --filter ancestor=gaiaadm/pumba | xargs docker stop
+        docker ps --filter ancestor=gaiaadm/pumba | grep -q gaiaadm/pumba && echo -n "EXISTS"
       register: pumba_cont_exists
-      changed_when: pumba_cont_exists.stdout != 'EXISTS'
+    - name: stop any running pumba containers
+      shell: |
+        docker ps -q --filter ancestor=gaiaadm/pumba | xargs docker stop
+      when: 'EXISTS' in pumba_cont_exists.stdout
+      changed_when: 'EXISTS' in pumba_cont_exists.stdout
     - name: start pumba
       docker_container:
         name: pumba_1
