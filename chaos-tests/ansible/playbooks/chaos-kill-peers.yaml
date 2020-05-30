@@ -31,18 +31,16 @@
       shell: |
         cd ~/symbol-testnet/utilities/bin/bash/
         if [[ -f "nohup.out" ]]; then
-          mv nohup.out nohup_old.out
+          mv nohup.out nohup_old_$(date -u +%F-%H-%M-%S).out
         fi
         nohup ./monitor-containers.sh "{{ DURATION_WITH_UNITS }}" "{{ MONITOR_SLEEP_INTERVAL_SECONDS }}" "{{ CONTAINERS_TO_KILL }}" "{{ EXTRA_ARGS }}"
     - name: identify any running pumba containers
-      shell: >
-        docker ps --filter ancestor=gaiaadm/pumba | grep -q gaiaadm/pumba && echo -n "EXISTS"
-      register: pumba_cont_exists
+      shell: docker ps --filter ancestor=gaiaadm/pumba | grep -q gaiaadm/pumba && echo -n "EXISTS"
+      register: pumba_cont
     - name: stop any running pumba containers
-      shell: |
-        docker ps -q --filter ancestor=gaiaadm/pumba | xargs docker stop
-      when: 'EXISTS' in pumba_cont_exists.stdout
-      changed_when: 'EXISTS' in pumba_cont_exists.stdout
+      shell: docker ps -q --filter ancestor=gaiaadm/pumba | xargs docker stop
+      when: "'EXISTS' in pumba_cont.stdout"
+      changed_when: "'EXISTS' in pumba_cont.stdout"
     - name: start pumba
       docker_container:
         name: pumba_1
