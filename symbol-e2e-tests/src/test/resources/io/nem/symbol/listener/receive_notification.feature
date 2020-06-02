@@ -29,12 +29,24 @@ Feature: Receive a notification
   @bvt
   Scenario: Alice gets notification when invalid transaction failed
     Given Alice register to receive error transaction notification
+    And Bob register to receive error transaction notification
+    And Sue register to receive error transaction notification
     And Alice defined the following bonded escrow contract:
       | type          | sender | recipient | data           |
       | send-an-asset | Alice  | Bob       | 1 cat.currency |
       | send-an-asset | Bob    | Sue       | 2 cat.currency |
     When she publishes no funds bonded contract
     Then Alice should receive an error notification
+
+  @bvt
+  Scenario: Alice registers for confirmed notification when transaction failed
+    Given Alice register to receive confirmed transaction notification
+    And Alice defined the following bonded escrow contract:
+      | type          | sender | recipient | data           |
+      | send-an-asset | Alice  | Bob       | 1 cat.currency |
+      | send-an-asset | Bob    | Sue       | 2 cat.currency |
+    When she publishes no funds bonded contract
+    Then Alice should receive a transaction notification
 
   @bvt
   Scenario: Alice gets notification when aggregate bonded transaction requires signing.
@@ -73,7 +85,7 @@ Feature: Receive a notification
     Then Alice should receive a cosign transaction notification that Sue cosigned
 
   @bvt
-  Scenario: An account tries to create an escrow already signed by the participants (mlma cosignatory)
+  Scenario: Multi-level multisig account should get nofitication
     Given Alice created a 1 of 2 multisignature contract called "Computer" with 1 required for removal with cosignatories:
       | cosignatory |
       | Browser     |

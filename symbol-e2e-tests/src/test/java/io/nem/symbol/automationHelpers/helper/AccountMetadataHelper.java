@@ -41,7 +41,7 @@ public class AccountMetadataHelper extends BaseHelper<AccountMetadataHelper> {
     super(testContext);
   }
 
-  private AccountMetadataTransaction createAccountMetadataTransaction(
+  public AccountMetadataTransaction createAccountMetadataTransaction(
       final PublicAccount targetPublicAccount,
       final BigInteger scopedMetadataKey,
       final short valueSizeDelta,
@@ -88,7 +88,7 @@ public class AccountMetadataHelper extends BaseHelper<AccountMetadataHelper> {
    * @param value Metadata value.
    * @return Mosaic supply change transaction.
    */
-  public AccountMetadataTransaction submitMosaicSupplyChangeAndWait(
+  public AccountMetadataTransaction submitAccountMetadataAndWait(
       final Account account,
       final PublicAccount targetPublicAccount,
       final BigInteger scopedMetadataKey,

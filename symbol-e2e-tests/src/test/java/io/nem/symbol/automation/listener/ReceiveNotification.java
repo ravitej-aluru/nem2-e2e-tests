@@ -176,7 +176,9 @@ public class ReceiveNotification extends BaseTest {
   public void listenForErrorNotification(final String userName) {
     final String hash = getTestContext().getSignedTransaction().getHash();
     final boolean found =
-        !getErrorObservable(userName)
+        !getErrorObservable(userName).timeout(
+                getTestContext().getConfigFileReader().getDatabaseQueryTimeoutInSeconds(),
+                TimeUnit.SECONDS)
             .filter(status -> status.getHash().equalsIgnoreCase(hash))
             .isEmpty()
             .blockingGet();

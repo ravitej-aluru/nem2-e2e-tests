@@ -126,25 +126,25 @@ public class TransactionMapper implements Function<JsonObject, Transaction> {
    * @return Transaction.
    */
   protected <T extends Transaction> T appendCommonPropertiesAndBuildTransaction(
-    final TransactionFactory<T> factory, final JsonObject jsonObject) {
-      final JsonObject transaction = jsonObject.getJsonObject("transaction");
-      final NetworkType networkType = NetworkType.rawValueOf(transaction.getInteger("network"));
-      final TransactionInfo transactionInfo =
-          this.createTransactionInfo(jsonObject.getJsonObject("meta"));
-      final Deadline deadline = new Deadline(extractBigInteger(transaction, "deadline"));
-      final Integer version = transaction.getInteger("version");
-      final BigInteger maxFee = extractBigInteger(transaction, "maxFee");
-      final String signature = transaction.getString("signature");
-      final PublicAccount signer =
-          new PublicAccount(transaction.getString("signerPublicKey"), networkType);
-      return factory
-          .transactionInfo(transactionInfo)
-          .signer(signer)
-          .deadline(deadline)
-          .version(version)
-          .maxFee(maxFee)
-          .signature(signature)
-          .build();
+      final TransactionFactory<T> factory, final JsonObject jsonObject) {
+    final JsonObject transaction = jsonObject.getJsonObject("transaction");
+    final NetworkType networkType = NetworkType.rawValueOf(transaction.getInteger("network"));
+    final TransactionInfo transactionInfo =
+        this.createTransactionInfo(jsonObject.getJsonObject("meta"));
+    final Deadline deadline = new Deadline(extractBigInteger(transaction, "deadline"));
+    final Integer version = transaction.getInteger("version");
+    final BigInteger maxFee = extractBigInteger(transaction, "maxFee");
+    final String signature = transaction.getString("signature");
+    final PublicAccount signer =
+        new PublicAccount(transaction.getString("signerPublicKey"), networkType);
+    return factory
+        .transactionInfo(transactionInfo)
+        .signer(signer)
+        .deadline(deadline)
+        .version(version)
+        .maxFee(maxFee)
+        .signature(signature)
+        .build();
   }
 
   private <T extends Transaction> Transaction createTransaction(final JsonObject jsonObject) {

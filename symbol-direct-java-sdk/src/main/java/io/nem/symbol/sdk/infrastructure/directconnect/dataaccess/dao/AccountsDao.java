@@ -175,7 +175,7 @@ public class AccountsDao implements AccountRepository {
    * signatures.
    *
    * @param publicAccount PublicAccount
-   * @return Observable of List&lt;{@link Transaction}&gt;
+   * @return Observable of List<{@link Transaction}>
    */
   @Override
   public Observable<List<AggregateTransaction>> aggregateBondedTransactions(
@@ -213,7 +213,7 @@ public class AccountsDao implements AccountRepository {
    * block.
    *
    * @param publicAccount PublicAccount
-   * @return Observable of List&lt;{@link Transaction}&gt;
+   * @return Observable of List<{@link Transaction}>
    */
   @Override
   public Observable<List<Transaction>> unconfirmedTransactions(PublicAccount publicAccount) {

@@ -20,7 +20,6 @@
 
 package io.nem.symbol.automationHelpers.common;
 
-import cucumber.api.java.ca.Atesa;
 import io.nem.symbol.automationHelpers.config.ConfigFileReader;
 import io.nem.symbol.automationHelpers.helper.TransactionHelper;
 import io.nem.symbol.core.utils.ExceptionUtils;
@@ -178,7 +177,8 @@ public class TestContext {
    * @return Generation hash.
    */
   public String getGenerationHash() {
-    return ExceptionUtils.propagate(() -> repositoryFactory.getGenerationHash().toFuture().get());
+    return "BF42024E58FE65C487A099CEF6370D023B4746C3E89027D9740817CEA54A2D63";
+    //return "E74320AB77DE107DF6FB14258F936F0B0EFAC1A1BACE5BE4A2AEE8AF01CB865A"; //ExceptionUtils.propagate(() -> repositoryFactory.getGenerationHash().toFuture().get());
   }
 
   /**

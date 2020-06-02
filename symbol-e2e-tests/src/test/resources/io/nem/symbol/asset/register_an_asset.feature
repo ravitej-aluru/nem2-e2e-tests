@@ -13,7 +13,7 @@
 
   @bvt
   Scenario Outline: An account registers an expiring asset with valid properties with divisibility
-    When Alice registers <transferability>, supply <supply-mutability> with divisibility <divisibility> asset for <duration> in blocks
+    When Alice registers an asset named "token" with <transferability>, supply <supply-mutability> with divisibility <divisibility> for <duration> blocks
     Then Alice should become the owner of the new asset for at least <duration> blocks
     And Alice pays fee in 500 units
 
@@ -24,7 +24,28 @@
       | 3        | transferable       | mutable           | 1            |
       | 1        | nontransferable    | immutable         | 2            |
 
-  @bvt
+   @bvt
+   Scenario Outline: An account updates an existing asset with valid properties
+     Given Alice registers an asset named "token" with transferable, supply immutable with divisibility 5 for 5 blocks
+     When Alice updates asset named "token" to <transferability>, supply <supply-mutability> with divisibility <divisibility> for <duration> blocks
+     Then token asset should be updated correctly
+     And Alice pays fee in 500 units
+
+     Examples:
+       | duration | transferability    | supply-mutability | divisibility |
+       | 1        | transferable       | immutable         | 5            |
+       | 2        | nontransferable    | mutable           | 4            |
+       | 3        | transferable       | mutable           | 2            |
+       | 0        | nontransferable    | immutable         | 6            |
+
+
+   Scenario: An account tries to alter the asset property without owning all supply
+     Given Alice registers an asset named "token" with transferable, supply immutable with divisibility 4 for 5 blocks
+     And Alice decides to increase the asset supply in 10 units
+     When Alice tries to update asset named "token" to transferable, supply immutable with divisibility 3 for 5 blocks
+     Then she should receive the error "FAILURE_MOSAIC_MODIFICATION_DISALLOWED"
+
+   @bvt
   Scenario: An account registers a non-expiring asset
     When Alice registers a non-expiring asset
     And Alice should become the owner of the new asset

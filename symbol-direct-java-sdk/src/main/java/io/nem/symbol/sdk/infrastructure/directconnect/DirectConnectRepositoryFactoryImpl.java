@@ -158,7 +158,7 @@ public class DirectConnectRepositoryFactoryImpl implements RepositoryFactory {
 
   @Override
   public MetadataRepository createMetadataRepository() {
-    throw new UnsupportedOperationException("Method not implemented");
+    return new MetadataDao(context);
   }
 
   @Override

@@ -155,8 +155,8 @@ public class BlockchainDao implements BlockRepository, ChainRepository, ReceiptR
    * calculated root equals the one recorded in the block header, verifying that the transaction was
    * included in the block.
    *
-   * @param height height of the blockchain
-   * @param hash has of the blockchain
+   * @param height
+   * @param hash
    * @return {@link Observable} of MerkleProofInfo
    */
   @Override

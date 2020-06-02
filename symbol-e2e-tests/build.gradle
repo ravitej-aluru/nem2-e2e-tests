@@ -28,7 +28,7 @@ repositories {
 
 dependencies {
     compile project(':symbol-direct-java-sdk')
-    implementation 'io.nem:symbol-sdk-vertx-client:0.17.0-SNAPSHOT'
+    implementation 'io.nem:symbol-sdk-vertx-client:0.17.0'
     implementation 'org.zeromq:jeromq:0.5.1'
     implementation 'org.mongodb:mongo-java-driver:3.10.1'
     implementation 'org.mongodb:bson:2.13.3'

@@ -33,6 +33,7 @@ import io.nem.symbol.sdk.model.transaction.SignedTransaction;
 import io.nem.symbol.sdk.model.transaction.TransactionStatus;
 import org.apache.commons.lang3.Validate;
 
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -56,7 +57,7 @@ public class CommonHelper {
   /**
    * Gets a random boolean value.
    *
-   * @return Randon boolean value.
+   * @return Random boolean value.
    */
   public static boolean getRandomNextBoolean() {
     return ThreadLocalRandom.current().nextBoolean();
@@ -142,6 +143,19 @@ public class CommonHelper {
    */
   public static String getRandomName(final String namePrefix) {
     return namePrefix + getRandomValueInRange(0, 100000000);
+  }
+
+  public static String getRandonString(final int length) {
+    final byte[] bytes = new byte[length];
+
+    new Random().nextBytes(bytes);
+    return new String(bytes, StandardCharsets.UTF_8);
+  }
+
+  public static String getRandonStringWithMaxLength(final int maxLength) {
+    final int length = getRandomValueInRange(1, maxLength);
+
+    return getRandonString(length);
   }
 
   /**

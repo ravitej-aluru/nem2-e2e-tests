@@ -32,7 +32,45 @@
     And Alice extended the namespace registration period for at least 6 blocks
     And Alice pays fee in 6 units
 
-  Scenario: An account tries to extend a namespace registration period, this is under grace but the account didn't created it
+    @bvt
+    Scenario: An account is able to send an asset using a namespace alias after namespace extension
+      Given Alice registered the namespace named "token" for 20 blocks
+      And Alice registered the asset "X"
+      And Alice links the namespace "token" to the asset "X"
+      And Alice can send "token" instead of asset "X" to Bob
+      When Alice extends the registration of the namespace named "token" for 6 blocks
+      Then Alice can send "token" instead of asset "X" to Bob
+
+    @bvt
+    Scenario: An account is able to send an asset to a namespace alias after the namespace is extended
+      Given Alice registered the namespace named "sue" for 20 blocks
+      And Alice registered the asset "X"
+      And Alice links the namespace "sue" to the address of Sue
+      And Alice can send asset "X" to the namespace "sue" instead of the address of Sue
+      When Alice extends the registration of the namespace named "sue" for 6 blocks
+      Then Alice can send asset "X" to the namespace "sue" instead of the address of Sue
+
+    @bvt
+    Scenario: An account is able to send an asset to a namespace alias after the namespace is extended in grace period
+      Given Alice registered the namespace named "sue" for 10 blocks
+      And Alice registered the asset "X"
+      And Alice links the namespace "sue" to the address of Sue
+      And Alice can send asset "X" to the namespace "sue" instead of the address of Sue
+      And the namespace is now under grace period
+      When Alice extends the registration of the namespace named "sue" for 6 blocks
+      Then Alice can send asset "X" to the namespace "sue" instead of the address of Sue
+
+    @bvt
+    Scenario: An account is able to send an asset using a subnamespace alias after the root namespace renewal
+      Given Alice registered the namespace named "alice" for 10 blocks
+      And Alice registered the subnamespace "alice.token"
+      And Alice registered the asset "X"
+      And Alice links the namespace "alice.token" to the asset "X"
+      And Alice can send "alice.token" instead of asset "X" to Bob
+      When Alice extends the registration of the namespace named "alice" for 6 blocks
+      Then Alice can send "alice.token" instead of asset "X" to Bob
+
+    Scenario: An account tries to extend a namespace registration period, this is under grace but the account didn't created it
     Given Bob registered the namespace named "bobnew" for 5 block
     And the namespace is now under grace period
     When Alice tries to extends the registration of the namespace named "bobnew" for 6 block

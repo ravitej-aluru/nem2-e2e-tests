@@ -110,7 +110,6 @@ public abstract class TransactionCurrentCollectionBase implements TransactionCur
    * Find Transaction by hash.
    *
    * @param transactionHash Transaction hash.
-   * @param timeoutInSeconds Timeout for search.
    * @return Transaction.
    */
   public Optional<Transaction> findByHash(

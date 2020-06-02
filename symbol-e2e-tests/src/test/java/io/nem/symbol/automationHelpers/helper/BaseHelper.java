@@ -38,7 +38,7 @@ public abstract class BaseHelper<U extends BaseHelper> {
     final int fee = maxFee.intValue() != 0 ? maxFee.intValue() :
             // TODO: calculate the number of cosigners for bonded but for now set to max of 25.
             (transaction.getSize() + (transaction.getType() == TransactionType.AGGREGATE_BONDED ? 96 * 25 : 0))
-            * testContext.getConfigFileReader().getMinFeeMultiplier().intValue();
+            * 100; //testContext.getConfigFileReader().getMinFeeMultiplier().intValue();
     return factory.deadline(deadlineLocal).maxFee(BigInteger.valueOf(fee)).build();
   }
 
