@@ -33,7 +33,9 @@
         name: tech-bureau/monit-cont:latest
         build:
           dockerfile: ~/symbol-testnet/utilities/monit-cont/Dockerfile-monitor-containers
-          path: ~/symbol-testnet/utilities/monit-cont
+          path: ~/symbol-testnet/utilities/monit-cont/
+          pull: yes
+          rm: yes
         source: build
         state: present
     - name: start container monitoring
