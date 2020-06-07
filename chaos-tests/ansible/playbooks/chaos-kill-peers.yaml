@@ -20,21 +20,35 @@
       pip:
         name:
         - docker
-    - name: copy container monitoring script
+    - name: copy container monitoring files
       copy:
-        src: ./scripts/monitor-containers.sh
-        dest: ~/symbol-testnet/utilities/bin/bash/monitor-containers.sh
+        src: ./scripts/
+        dest: ~/symbol-testnet/utilities/monit-cont/
         force: yes
         owner: ubuntu
-        mode: '0754'
-    - name: start the container monitoring script
-      shell: |
-        cd ~/symbol-testnet/utilities/bin/bash/
-        if [[ -f "nohup.out" ]]; then
-          mv nohup.out nohup_old_$(date -u +%F-%H-%M-%S).out
-        fi
-        nohup ./monitor-containers.sh "{{ DURATION_WITH_UNITS }}" "{{ MONITOR_SLEEP_INTERVAL_SECONDS }}" "{{ CONTAINERS_TO_KILL }}" "{{ EXTRA_ARGS }}"
-      register: nohup_pid
+        mode: '754'
+      with_fileglob: '*monitor-containers*'
+    - name: build the container monitoring image
+      docker_image:
+        name: tech-bureau/monit-cont:latest
+        build:
+          dockerfile: ~/symbol-testnet/utilities/monit-cont/Dockerfile-monitor-containers
+          path: ~/symbol-testnet/utilities/monit-cont
+        source: build
+        state: present
+    - name: start container monitoring
+      docker_container:
+        name: monit-cont_1
+        state: started
+        image: tech-bureau/monit-cont:latest
+        detach: yes
+        log_driver: json-file
+        output_logs: yes
+        command: --end-time {{ MONITOR_END_TIME }} --sleep-interval {{ MONITOR_INTERVAL}} {{ CONTAINERS_TO_KILL }}
+        volumes:
+        - /var/run/docker.sock:/var/run/docker.sock:rw
+        restart_policy: always
+        restart_retries: 5
     - name: "List all known variables and facts"
       debug:
         var: hostvars[inventory_hostname]
@@ -56,4 +70,6 @@
         command: --log-level=debug --interval={{ PUMBA_INTERVAL }} --json kill --signal=SIGKILL {{ CONTAINERS_TO_KILL }}
         volumes:
         - /var/run/docker.sock:/var/run/docker.sock:rw
+        restart_policy: always
+        restart_retries: 5
     
