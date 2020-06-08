@@ -63,11 +63,20 @@
       loop: "{{ docker_info.containers }}"
     - name: identify any running pumba containers
       shell: docker ps -aq --filter ancestor=gaiaadm/pumba
-      register: pumba_cont
+      register: pumba_conts
     - name: stop any running pumba containers
-      shell: docker ps -aq --filter ancestor=gaiaadm/pumba | xargs docker stop
-      when: "'gaiaadm/pumba' in pumba_cont.stdout"
-      changed_when: "'gaiaadm/pumba' in pumba_cont.stdout"
+      shell: docker ps -aq --filter ancestor=gaiaadm/pumba | xargs docker rm -f
+      when: pumba_conts.stdout != ""
+      changed_when: pumba_conts.stdout != ""
+    - name: Get info on docker host and list images
+      docker_host_info:
+        images: yes
+        containers: yes
+      register: docker_info
+    - name: print containers info
+      debug:
+        msg: "IMAGE: {{ item.Image }}, NAMES: {{ item.Names }}"
+      loop: "{{ docker_info.containers }}"
     - name: start pumba
       docker_container:
         name: pumba_1
