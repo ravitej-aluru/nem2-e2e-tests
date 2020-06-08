@@ -52,6 +52,11 @@
     - name: "List all known variables and facts"
       debug:
         var: hostvars[inventory_hostname]
+    - name: Get info on docker host and list images
+      docker_host_info:
+        images: yes
+        containers: yes
+      register: docker_info
     - name: identify any running pumba containers
       shell: docker ps --filter ancestor=gaiaadm/pumba | grep -q gaiaadm/pumba && echo -n "EXISTS"
       register: pumba_cont
