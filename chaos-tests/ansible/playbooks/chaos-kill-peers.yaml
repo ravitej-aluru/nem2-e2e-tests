@@ -47,7 +47,7 @@
         command: --end-time {{ MONITOR_END_TIME }} --sleep-interval {{ MONITOR_INTERVAL}} {{ CONTAINERS_TO_KILL }}
         volumes:
         - /var/run/docker.sock:/var/run/docker.sock:rw
-        restart_policy: always
+        restart_policy: on-failure
         restart_retries: 5
     - name: "List all known variables and facts"
       debug:
