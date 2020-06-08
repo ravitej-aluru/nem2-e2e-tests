@@ -44,7 +44,7 @@
         detach: yes
         log_driver: json-file
         output_logs: yes
-        command: --end-time {{ MONITOR_END_TIME }} --sleep-interval {{ MONITOR_INTERVAL}} {{ CONTAINERS_TO_KILL }}
+        command: --end-time {{ MONITOR_END_TIME }} --sleep-interval {{ MONITOR_INTERVAL}} {{ CONTAINERS_TO_KILL }} {{ EXTRA_ARGS }}
         volumes:
         - /var/run/docker.sock:/var/run/docker.sock:rw
         restart_policy: on-failure
@@ -71,5 +71,4 @@
         volumes:
         - /var/run/docker.sock:/var/run/docker.sock:rw
         restart_policy: always
-        restart_retries: 5
     
