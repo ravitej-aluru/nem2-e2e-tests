@@ -2,9 +2,9 @@
 # this playbook is supposed to:
 # 1. build monit-cont image and start a container to monitor symbol containers
 # 2. stop any currently running pumba containers
-# 3. check that all required symbol containers are running and start them if not
-# 4. start new pumba container to kill the peer node with an interval of x minutes
-# 5. If possible, set timeout for the pumba container also for x hours
+# check that all required symbol containers are running and start them if not -- this is done in a separate play
+# 3. start new pumba container to kill the peer node with an interval of x minutes
+# 4. If possible, set timeout for the pumba container also for x hours
 
 - hosts: peer*,beacon*
   remote_user: ubuntu
