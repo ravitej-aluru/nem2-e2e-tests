@@ -57,13 +57,17 @@
         images: yes
         containers: yes
       register: docker_info
+    - name: print containers info
+      debug:
+        msg: "KEY: {{ item.key }}, VALUE: {{ item.value }}"
+      loop: "{{ docker_info.containers | dict2items }}"
     - name: identify any running pumba containers
-      shell: docker ps --filter ancestor=gaiaadm/pumba | grep -q gaiaadm/pumba && echo -n "EXISTS"
+      shell: docker ps -aq --filter ancestor=gaiaadm/pumba | grep -q gaiaadm/pumba && echo "FOUND" || echo "NOT FOUND"
       register: pumba_cont
     - name: stop any running pumba containers
-      shell: docker ps -q --filter ancestor=gaiaadm/pumba | xargs docker stop
-      when: "'EXISTS' in pumba_cont.stdout"
-      changed_when: "'EXISTS' in pumba_cont.stdout"
+      shell: docker ps -aq --filter ancestor=gaiaadm/pumba | xargs docker stop
+      when: "'FOUND' in pumba_cont.stdout"
+      changed_when: "'FOUND' in pumba_cont.stdout"
     - name: start pumba
       docker_container:
         name: pumba_1
