@@ -22,12 +22,13 @@
         - docker
     - name: copy container monitoring files
       copy:
-        src: ./scripts/
+        src: "{{ item }}"
         dest: ~/symbol-testnet/utilities/monit-cont/
         force: yes
         owner: ubuntu
         mode: '754'
-      with_fileglob: '*monitor-containers*'
+      with_fileglob: 
+      - ./scripts/*monitor-containers*
     - name: build the container monitoring image
       docker_image:
         name: tech-bureau/monit-cont:latest
