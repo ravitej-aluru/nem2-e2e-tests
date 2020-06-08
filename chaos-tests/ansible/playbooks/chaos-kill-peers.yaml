@@ -59,8 +59,8 @@
       register: docker_info
     - name: print containers info
       debug:
-        msg: "KEY: {{ item.key }}, VALUE: {{ item.value }}"
-      loop: "{{ docker_info.containers | dict2items }}"
+        msg: "IMAGE: {{ item.Image }}, NAMES: {{ item.Names }}"
+      loop: "{{ docker_info.containers }}"
     - name: identify any running pumba containers
       shell: docker ps -aq --filter ancestor=gaiaadm/pumba | grep -q gaiaadm/pumba && echo "FOUND" || echo "NOT FOUND"
       register: pumba_cont
