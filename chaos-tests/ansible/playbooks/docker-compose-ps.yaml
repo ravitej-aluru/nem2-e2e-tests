@@ -2,11 +2,10 @@
 - hosts: all:!spammer*
   gather_facts: no
   tasks:
-  - name: get docker-compose ps info
+  - name: docker-compose ps
     shell: |
       cd /home/ubuntu/symbol-testnet/{{type}}
       docker-compose ps
     register: result
   - debug:
       var: result
-
