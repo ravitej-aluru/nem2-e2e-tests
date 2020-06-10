@@ -3,13 +3,13 @@
   gather_facts: no
   tasks:
   - name: ensure all symbol containers are running
-  shell: |
-    cd ~/symbol-testnet/{{type}}
-    docker-compose start
+    shell: |
+      cd ~/symbol-testnet/{{type}}
+      docker-compose start
   - name: get symbol containers status
-  shell: |
-    cd /home/ubuntu/symbol-testnet/{{type}}
-    docker-compose ps
-  register: result
+    shell: |
+      cd /home/ubuntu/symbol-testnet/{{type}}
+      docker-compose ps
+    register: result
   - debug:
     var: result
