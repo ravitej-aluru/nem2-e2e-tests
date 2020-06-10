@@ -8,7 +8,7 @@
       docker-compose start
   - name: get symbol containers status
     shell: |
-      cd /home/ubuntu/symbol-testnet/{{type}}
+      cd ~/symbol-testnet/{{type}}
       docker-compose ps
     register: result
   - debug:
