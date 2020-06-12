@@ -62,7 +62,7 @@
     - name: identify any running pumba containers
       shell: docker ps -aq --filter ancestor=gaiaadm/pumba
       register: pumba_conts
-    - name: stop any running pumba containers
+    - name: remove any running pumba containers
       shell: docker ps -aq --filter ancestor=gaiaadm/pumba | xargs docker rm -f
       when: pumba_conts.stdout != ""
       changed_when: pumba_conts.stdout != ""
