@@ -2,11 +2,11 @@
 - hosts: all:!spammer*
   gather_facts: no
   tasks:
-  - name: docker-compose up all symbol containers
+  - name: symbol down
     shell: |
       cd ~/symbol-testnet/{{type}}
       docker-compose down
-  - name: get symbol containers status
+  - name: symbol status
     shell: |
       cd ~/symbol-testnet/{{type}}
       docker-compose ps
