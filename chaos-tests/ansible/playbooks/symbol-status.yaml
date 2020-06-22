@@ -2,7 +2,7 @@
 - hosts: all:!spammer*
   gather_facts: no
   tasks:
-  - name: docker-compose ps
+  - name: symbol status
     shell: |
       cd /home/ubuntu/symbol-testnet/{{type}}
       docker-compose ps
