@@ -21,21 +21,16 @@
 package io.nem.symbol.sdk.infrastructure.directconnect.dataaccess.dao;
 
 import io.nem.symbol.sdk.api.AccountRepository;
-import io.nem.symbol.sdk.api.TransactionSearchCriteria;
+import io.nem.symbol.sdk.api.AccountSearchCriteria;
+import io.nem.symbol.sdk.api.Page;
 import io.nem.symbol.sdk.infrastructure.common.CatapultContext;
 import io.nem.symbol.sdk.infrastructure.directconnect.dataaccess.database.mongoDb.AccountsCollection;
-import io.nem.symbol.sdk.infrastructure.directconnect.dataaccess.database.mongoDb.PartialTransactionsCollection;
-import io.nem.symbol.sdk.infrastructure.directconnect.dataaccess.database.mongoDb.UnconfirmedTransactionsCollection;
 import io.nem.symbol.sdk.infrastructure.directconnect.dataaccess.mappers.MapperUtils;
 import io.nem.symbol.sdk.model.account.AccountInfo;
 import io.nem.symbol.sdk.model.account.Address;
-import io.nem.symbol.sdk.model.account.PublicAccount;
-import io.nem.symbol.sdk.model.transaction.AggregateTransaction;
-import io.nem.symbol.sdk.model.transaction.Transaction;
 import io.reactivex.Observable;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 /** Account dao repository. */
 public class AccountsDao implements AccountRepository {
@@ -78,166 +73,13 @@ public class AccountsDao implements AccountRepository {
   }
 
   /**
-   * Gets an list of confirmed transactions for which an account is signer or receiver.
+   * It searches entities of a type based on a criteria.
    *
-   * @param publicAccount PublicAccount
-   * @return Observable {@link List} of {@link Transaction}
+   * @param criteria the criteria
+   * @return a page of entities.
    */
   @Override
-  public Observable<List<Transaction>> transactions(PublicAccount publicAccount) {
-    throw new UnsupportedOperationException("Method not implemented");
-  }
-
-  /**
-   * Gets an list of confirmed transactions for which an account is signer or receiver. With
-   * pagination.
-   *
-   * @param publicAccount PublicAccount
-   * @param transactionSearchCriteria Transaction search criteria.
-   * @return Observable {@link List} of {@link Transaction}
-   */
-  @Override
-  public Observable<List<Transaction>> transactions(
-      PublicAccount publicAccount, TransactionSearchCriteria transactionSearchCriteria) {
-    throw new UnsupportedOperationException("Method not implemented");
-  }
-
-  /**
-   * Gets an list of transactions for which an account is the recipient of a transaction. A
-   * transaction is said to be incoming with respect to an account if the account is the recipient
-   * of a transaction.
-   *
-   * @param publicAccount {@link PublicAccount}
-   * @return Observable {@link List} of {@link Transaction}
-   */
-  @Override
-  public Observable<List<Transaction>> incomingTransactions(PublicAccount publicAccount) {
-    throw new UnsupportedOperationException("Method not implemented");
-  }
-
-  /**
-   * Gets an list of transactions for which an account is the recipient of a transaction. A
-   * transaction is said to be incoming with respect to an account if the account is the recipient
-   * of a transaction. With pagination.
-   *
-   * @param publicAccount PublicAccount
-   * @param transactionSearchCriteria Transaction search criteria.
-   * @return Observable {@link List} of {@link Transaction}
-   */
-  @Override
-  public Observable<List<Transaction>> incomingTransactions(
-      PublicAccount publicAccount, TransactionSearchCriteria transactionSearchCriteria) {
-    throw new UnsupportedOperationException("Method not implemented");
-  }
-
-  /**
-   * Gets an list of transactions for which an account is the sender a transaction. A transaction is
-   * said to be outgoing with respect to an account if the account is the sender of a transaction.
-   *
-   * @param publicAccount PublicAccount
-   * @return Observable {@link List} of {@link Transaction}
-   */
-  @Override
-  public Observable<List<Transaction>> outgoingTransactions(PublicAccount publicAccount) {
-    throw new UnsupportedOperationException("Method not implemented");
-  }
-
-  /**
-   * Gets an list of transactions for which an account is the sender a transaction. A transaction is
-   * said to be outgoing with respect to an account if the account is the sender of a transaction.
-   * With pagination.
-   *
-   * @param publicAccount PublicAccount
-   * @param transactionSearchCriteria Transaction search criteria.
-   * @return Observable {@link List} of {@link Transaction}
-   */
-  @Override
-  public Observable<List<Transaction>> outgoingTransactions(
-      PublicAccount publicAccount, TransactionSearchCriteria transactionSearchCriteria) {
-    throw new UnsupportedOperationException("Method not implemented");
-  }
-
-  @Override
-  public Observable<List<Transaction>> partialTransactions(PublicAccount publicAccount) {
-    throw new UnsupportedOperationException("Method not implemented");
-  }
-
-  @Override
-  public Observable<List<Transaction>> partialTransactions(
-      PublicAccount publicAccount, TransactionSearchCriteria transactionSearchCriteria) {
-
-    throw new UnsupportedOperationException("Method not implemented");
-  }
-
-  /**
-   * Gets an list of transactions for which an account is the sender or has sign the transaction. A
-   * transaction is said to be aggregate bonded with respect to an account if there are missing
-   * signatures.
-   *
-   * @param publicAccount PublicAccount
-   * @return Observable of List<{@link Transaction}>
-   */
-  @Override
-  public Observable<List<AggregateTransaction>> aggregateBondedTransactions(
-      PublicAccount publicAccount) {
-    return Observable.fromCallable(
-        () ->
-            new PartialTransactionsCollection(catapultContext.getDataAccessContext())
-                    .findBySigner(
-                        publicAccount.getPublicKey().getBytes(),
-                        MapperUtils.fromAddressToByteBuffer(publicAccount.getAddress()).array())
-                    .stream()
-                    .map(tx -> (AggregateTransaction) tx)
-                    .collect(Collectors.toList()));
-  }
-
-  /**
-   * Gets an list of transactions for which an account is the sender or has sign the transaction. A
-   * transaction is said to be aggregate bonded with respect to an account if there are missing
-   * signatures. With pagination.
-   *
-   * @param publicAccount PublicAccount
-   * @param transactionSearchCriteria Transaction search criteria.
-   * @return Observable {@link List} of {@link Transaction}
-   */
-  @Override
-  public Observable<List<AggregateTransaction>> aggregateBondedTransactions(
-      PublicAccount publicAccount, TransactionSearchCriteria transactionSearchCriteria) {
-    throw new UnsupportedOperationException("Method not implemented");
-  }
-
-  /**
-   * Gets the list of transactions for which an account is the sender or receiver and which have not
-   * yet been included in a block. Unconfirmed transactions are those transactions that have not yet
-   * been included in a block. Unconfirmed transactions are not guaranteed to be included in any
-   * block.
-   *
-   * @param publicAccount PublicAccount
-   * @return Observable of List<{@link Transaction}>
-   */
-  @Override
-  public Observable<List<Transaction>> unconfirmedTransactions(PublicAccount publicAccount) {
-    return Observable.fromCallable(
-        () ->
-            new UnconfirmedTransactionsCollection(catapultContext.getDataAccessContext())
-                .findBySigner(
-                    publicAccount.getPublicKey().getBytes(),
-                    MapperUtils.fromAddressToByteBuffer(publicAccount.getAddress()).array()));
-  }
-
-  /**
-   * Gets the list of transactions for which an account is the sender or receiver and which have not
-   * yet been included in a block. Unconfirmed transactions are those transactions that have not yet
-   * been included in a block. Unconfirmed transactions are not guaranteed to be included in any
-   * block. With pagination.
-   *
-   * @param publicAccount PublicAccount
-   * @param transactionSearchCriteria Transaction search criteria.
-   * @return Observable {@link List} of {@link Transaction}
-   */
-  @Override
-  public Observable<List<Transaction>> unconfirmedTransactions(
-      PublicAccount publicAccount, TransactionSearchCriteria transactionSearchCriteria) {
-    throw new UnsupportedOperationException("Method not implemented");
+  public Observable<Page<AccountInfo>> search(AccountSearchCriteria criteria) {
+    return null;
   }
 }

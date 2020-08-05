@@ -18,7 +18,7 @@
  * along with Catapult.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.nem.symbol.automationHelpers.helper;
+package io.nem.symbol.automationHelpers.helper.sdk;
 
 import io.nem.symbol.automationHelpers.common.TestContext;
 import io.nem.symbol.core.utils.ExceptionUtils;
@@ -341,5 +341,17 @@ public class NamespaceHelper extends BaseHelper<NamespaceHelper> {
     return new TransactionHelper(testContext)
         .signAndAnnounceTransactionAndWait(
             account, () -> createMosaicAliasTransaction(AliasAction.UNLINK, namespaceId, mosaicId));
+  }
+
+  public boolean isNamespaceExpired(final NamespaceInfo namespaceInfo) {
+    final BigInteger blockchainHeight = new BlockChainHelper(testContext).getBlockchainHeight();
+    final Integer namespaceGracePeriodInBlocks =
+        testContext.getSymbolConfig().getNamespaceGracePeriodInBlocks();
+    boolean result = namespaceInfo
+            .getEndHeight()
+            .subtract(BigInteger.valueOf(namespaceGracePeriodInBlocks))
+            .longValue()
+        <= blockchainHeight.longValue();
+    return result;
   }
 }

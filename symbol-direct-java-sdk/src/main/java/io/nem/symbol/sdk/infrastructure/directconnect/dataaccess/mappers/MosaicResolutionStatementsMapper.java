@@ -26,20 +26,21 @@ import io.vertx.core.json.JsonObject;
 import java.util.function.Function;
 
 public class MosaicResolutionStatementsMapper
-    implements Function<JsonObject, MosaicResolutionStatement> {
-  /**
-   * Converts a json object to resolution statement
-   *
-   * @param jsonObject Json object.
-   * @return Resolution statement.
-   */
-  @Override
-  public MosaicResolutionStatement apply(final JsonObject jsonObject) {
-    return createMosaicResolutionStatement(jsonObject.getJsonObject("statement"));
-  }
+        implements Function<JsonObject, MosaicResolutionStatement> {
+    /**
+     * Converts a json object to resolution statement
+     *
+     * @param jsonObject Json object.
+     * @return Resolution statement.
+     */
+    @Override
+    public MosaicResolutionStatement apply(final JsonObject jsonObject) {
+        return createMosaicResolutionStatement(jsonObject);
+    }
 
-  private MosaicResolutionStatement createMosaicResolutionStatement(
-      final JsonObject receiptJsonObject) {
-    return MapperUtils.createMosaicResolutionStatement(receiptJsonObject);
-  }
+    private MosaicResolutionStatement createMosaicResolutionStatement(
+            final JsonObject jsonObject) {
+        final String id = MapperUtils.toRecordId(jsonObject);
+        return MapperUtils.createMosaicResolutionStatement(id, jsonObject.getJsonObject("statement"));
+    }
 }

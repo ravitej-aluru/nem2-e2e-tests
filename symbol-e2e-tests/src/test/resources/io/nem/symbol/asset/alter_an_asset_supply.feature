@@ -5,7 +5,7 @@ Feature: Alter an asset supply
 
     Given the mean block generation time is 15 seconds
     And the maximum asset supply is 9000000000
-    And Alice has 10000000 "cat.currency" in her account
+    And Alice has 10000000 "network currency" in her account
 
   @bvt
   Scenario Outline: An account alters an asset supply

@@ -18,7 +18,7 @@
  * along with Catapult.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.nem.symbol.automationHelpers.helper;
+package io.nem.symbol.automationHelpers.helper.sdk;
 
 import io.nem.symbol.automationHelpers.common.TestContext;
 import io.nem.symbol.core.utils.ExceptionUtils;
@@ -103,7 +103,7 @@ public class MosaicHelper extends BaseHelper<MosaicHelper> {
    */
   public MosaicId getNetworkCurrencyMosaicId() {
     if (networkCurrencyMosaicId == null) {
-      networkCurrencyMosaicId = testContext.getNetworkCurrencyMosaicId();
+      networkCurrencyMosaicId = testContext.getSymbolConfig().getCurrencyMosaicId();
     }
     return networkCurrencyMosaicId;
   }
@@ -302,7 +302,7 @@ public class MosaicHelper extends BaseHelper<MosaicHelper> {
                 .createAggregateCompleteTransaction(
                     Arrays.asList(
                         mosaicDefinitionTransaction.toAggregate(account.getPublicAccount()),
-                        mosaicSupplyChangeTransaction.toAggregate(account.getPublicAccount())));
+                        mosaicSupplyChangeTransaction.toAggregate(account.getPublicAccount())), 1);
     final TransactionHelper transactionHelper = new TransactionHelper(testContext);
     transactionHelper.signAndAnnounceTransactionAndWait(account, aggregateTransactionSupplier);
     return getMosaicWithRetry(mosaicDefinitionTransaction.getMosaicId());

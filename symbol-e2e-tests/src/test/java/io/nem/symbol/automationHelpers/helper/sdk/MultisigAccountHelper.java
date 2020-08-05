@@ -18,17 +18,15 @@
  * along with Catapult.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.nem.symbol.automationHelpers.helper;
+package io.nem.symbol.automationHelpers.helper.sdk;
 
 import io.nem.symbol.automationHelpers.common.TestContext;
 import io.nem.symbol.sdk.model.account.Account;
-import io.nem.symbol.sdk.model.account.PublicAccount;
-import io.nem.symbol.sdk.model.transaction.Deadline;
+import io.nem.symbol.sdk.model.account.UnresolvedAddress;
 import io.nem.symbol.sdk.model.transaction.MultisigAccountModificationTransaction;
 import io.nem.symbol.sdk.model.transaction.MultisigAccountModificationTransactionFactory;
 import io.nem.symbol.sdk.model.transaction.SignedTransaction;
 
-import java.math.BigInteger;
 import java.util.List;
 
 /** Multisig account helper */
@@ -54,8 +52,8 @@ public class MultisigAccountHelper extends BaseHelper<MultisigAccountHelper> {
   public MultisigAccountModificationTransaction createMultisigAccountModificationTransaction(
       final byte minApprovalDelta,
       final byte minRemovalDelta,
-      final List<PublicAccount> accountsAdditions,
-      final List<PublicAccount> accountsDeletions) {
+      final List<UnresolvedAddress> accountsAdditions,
+      final List<UnresolvedAddress> accountsDeletions) {
     final MultisigAccountModificationTransactionFactory
             multisigAccountModificationTransactionFactory =
             MultisigAccountModificationTransactionFactory.create(
@@ -81,8 +79,8 @@ public class MultisigAccountHelper extends BaseHelper<MultisigAccountHelper> {
       final Account account,
       final byte minApprovalDelta,
       final byte minRemovalDelta,
-      final List<PublicAccount> accountsAdditions,
-      final List<PublicAccount> accountsDeletions) {
+      final List<UnresolvedAddress> accountsAdditions,
+      final List<UnresolvedAddress> accountsDeletions) {
     return new TransactionHelper(testContext)
         .signAndAnnounceTransaction(
             account,
@@ -106,8 +104,8 @@ public class MultisigAccountHelper extends BaseHelper<MultisigAccountHelper> {
       final Account account,
       final byte minApprovalDelta,
       final byte minRemovalDelta,
-      final List<PublicAccount> accountsAdditions,
-      final List<PublicAccount> accountsDeletions) {
+      final List<UnresolvedAddress> accountsAdditions,
+      final List<UnresolvedAddress> accountsDeletions) {
     return new TransactionHelper(testContext)
         .signAndAnnounceTransactionAndWait(
             account,

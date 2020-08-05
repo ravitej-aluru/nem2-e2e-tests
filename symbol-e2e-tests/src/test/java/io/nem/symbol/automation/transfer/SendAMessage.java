@@ -24,8 +24,8 @@ import cucumber.api.java.en.And;
 import cucumber.api.java.en.When;
 import io.nem.symbol.automation.common.BaseTest;
 import io.nem.symbol.automationHelpers.common.TestContext;
-import io.nem.symbol.automationHelpers.helper.TransactionHelper;
-import io.nem.symbol.automationHelpers.helper.TransferHelper;
+import io.nem.symbol.automationHelpers.helper.sdk.TransactionHelper;
+import io.nem.symbol.automationHelpers.helper.sdk.TransferHelper;
 import io.nem.symbol.sdk.model.message.PlainMessage;
 import io.nem.symbol.sdk.model.transaction.SignedTransaction;
 import io.nem.symbol.sdk.model.transaction.TransferTransaction;
@@ -48,9 +48,10 @@ public class SendAMessage extends BaseTest {
     transferHelper = new TransferHelper(testContext);
   }
 
-  @When("^(\\w+) tries to send a (\\d+) character message to (.*)$")
+  @When("^(\\w+) tries to send a message which is over the max length to (.*)$")
   public void sendReallyLongMessage(
-      final String sender, final int messageSize, final String recipient) {
+      final String sender, final String recipient) {
+    int messageSize = getTestContext().getSymbolConfig().getTransferMaxMessageSize() + 1;
     final PlainMessage longMessage = PlainMessage.create(new String(new char[messageSize]));
     triesToTransferAssets(sender, recipient, new ArrayList<>(), longMessage);
   }

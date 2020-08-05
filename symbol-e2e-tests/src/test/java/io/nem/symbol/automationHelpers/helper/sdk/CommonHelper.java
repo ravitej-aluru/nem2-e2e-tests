@@ -18,26 +18,24 @@
  * along with Catapult.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.nem.symbol.automationHelpers.helper;
+package io.nem.symbol.automationHelpers.helper.sdk;
 
 import io.nem.symbol.automation.common.BaseTest;
 import io.nem.symbol.automationHelpers.common.TestContext;
 import io.nem.symbol.core.utils.ExceptionUtils;
 import io.nem.symbol.sdk.model.account.Account;
 import io.nem.symbol.sdk.model.account.AccountInfo;
-import io.nem.symbol.sdk.model.blockchain.NetworkType;
 import io.nem.symbol.sdk.model.mosaic.Mosaic;
 import io.nem.symbol.sdk.model.mosaic.MosaicId;
+import io.nem.symbol.sdk.model.mosaic.ResolvedMosaic;
+import io.nem.symbol.sdk.model.network.NetworkType;
 import io.nem.symbol.sdk.model.transaction.CosignatureSignedTransaction;
 import io.nem.symbol.sdk.model.transaction.SignedTransaction;
 import io.nem.symbol.sdk.model.transaction.TransactionStatus;
 import org.apache.commons.lang3.Validate;
 
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.*;
 
 import static org.junit.Assert.assertEquals;
@@ -57,7 +55,7 @@ public class CommonHelper {
   /**
    * Gets a random boolean value.
    *
-   * @return Random boolean value.
+   * @return Randon boolean value.
    */
   public static boolean getRandomNextBoolean() {
     return ThreadLocalRandom.current().nextBoolean();
@@ -173,11 +171,11 @@ public class CommonHelper {
       final long expectedAmountChange) {
     final AccountInfo newAccountInfo =
         new AccountHelper(testContext).getAccountInfo(intialAccountInfo.getAddress());
-    final Optional<Mosaic> mosaicBefore =
+    final Optional<ResolvedMosaic> mosaicBefore =
         intialAccountInfo.getMosaics().stream()
             .filter(mosaic -> mosaic.getId().getIdAsLong() == mosaicId.getIdAsLong())
             .findAny();
-    final Mosaic mosaicAfter =
+    final ResolvedMosaic mosaicAfter =
         newAccountInfo.getMosaics().stream()
             .filter(mosaic -> mosaic.getId().getIdAsLong() == mosaicId.getIdAsLong())
             .findAny()
@@ -218,8 +216,23 @@ public class CommonHelper {
    */
   public static void executeInParallel(
       final Runnable runnable, final int numberOfInstances, final long timeoutInSeconds) {
-    ExecutorService es = Executors.newCachedThreadPool();
+    final List<Runnable> runnables = new ArrayList<>();
     for (int i = 0; i < numberOfInstances; i++) {
+      runnables.add(runnable);
+    }
+    executeInParallel(runnables, timeoutInSeconds);
+  }
+
+  /**
+   * Execute list of runnable methods in a given amount of time in parallel.
+   *
+   * @param runnables List of runnable methods.
+   * @param timeoutInSeconds Timeout in seconds.
+   */
+  public static void executeInParallel(
+          final List<Runnable> runnables, final long timeoutInSeconds) {
+    ExecutorService es = Executors.newCachedThreadPool();
+    for (final Runnable runnable : runnables) {
       es.execute(runnable);
     }
     ExceptionUtils.propagateVoid(() -> es.awaitTermination(timeoutInSeconds, TimeUnit.SECONDS));

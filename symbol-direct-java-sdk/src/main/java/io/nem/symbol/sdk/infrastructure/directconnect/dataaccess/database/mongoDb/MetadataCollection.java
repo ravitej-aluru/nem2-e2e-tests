@@ -53,16 +53,16 @@ public class MetadataCollection {
     return Filters.and(filters);
   }
 
-  private Bson getTargetPublicKeyFilter(final byte[] publicKeyBytes) {
-    return Filters.eq("metadataEntry.targetPublicKey", new Binary((byte) 0, publicKeyBytes));
+  private Bson getTargetAddressFilter(final byte[] targetAddressBytes) {
+    return Filters.eq("metadataEntry.targetAddress", new Binary((byte) 0, targetAddressBytes));
   }
 
   private Bson getKeyFilter(final long key) {
     return Filters.eq("metadataEntry.scopedMetadataKey", key);
   }
 
-  private Bson getSenderPublicKeyFilter(final byte[] senderPublicKeyBytes) {
-    return Filters.eq("metadataEntry.targetPublicKey", new Binary((byte) 0, senderPublicKeyBytes));
+  private Bson getSourceAddressFilter(final byte[] sourceAddressBytes) {
+    return Filters.eq("metadataEntry.sourceAddress", new Binary((byte) 0, sourceAddressBytes));
   }
 
   private Bson getTargetIdFilter(final long targetId) {
@@ -72,42 +72,42 @@ public class MetadataCollection {
   /**
    * Returns the account metadata given an account id.
    *
-   * @param publicKeyBytes public key of the account that holds the metadata values.
+   * @param targetAddressBytes Target address of the account that holds the metadata values.
    * @return Observable of {@link Metadata} {@link List}
    */
-  public List<Metadata> getAccountMetadata(final byte[] publicKeyBytes) {
+  public List<Metadata> getAccountMetadata(final byte[] targetAddressBytes) {
     return catapultCollection.findR(
-        getTargetPublicKeyFilter(publicKeyBytes), context.getDatabaseTimeoutInSeconds());
+        getTargetAddressFilter(targetAddressBytes), context.getDatabaseTimeoutInSeconds());
   }
 
   /**
    * Returns the account metadata given an account id and a key
    *
-   * @param publicKeyBytes public key of the account that holds the metadata values.
+   * @param targetAddressBytes Target address of the account that holds the metadata values.
    * @param key Metadata key
    * @return Observable of {@link Metadata} {@link List}
    */
-  public List<Metadata> getAccountMetadataByKey(final byte[] publicKeyBytes, final long key) {
+  public List<Metadata> getAccountMetadataByKey(final byte[] targetAddressBytes, final long key) {
     return catapultCollection.findR(
-        andFilter(getTargetPublicKeyFilter(publicKeyBytes), getKeyFilter(key)),
+        andFilter(getTargetAddressFilter(targetAddressBytes), getKeyFilter(key)),
         context.getDatabaseTimeoutInSeconds());
   }
 
   /**
    * Returns the account metadata given an account id and a key
    *
-   * @param publicKeyBytes public key of the account that holds the metadata values.
+   * @param targetAddressBytes Target address of the account that holds the metadata values.
    * @param key - Metadata key
-   * @param senderPublicKey The public key of the account that created the metadata.
+   * @param sourceAddressBytes Source address of the account that created the metadata.
    * @return Observable of {@link Metadata}
    */
   public Optional<Metadata> getAccountMetadataByKeyAndSender(
-      final byte[] publicKeyBytes, final long key, final byte[] senderPublicKey) {
+      final byte[] targetAddressBytes, final long key, final byte[] sourceAddressBytes) {
     return catapultCollection.findOneR(
         andFilter(
-            getTargetPublicKeyFilter(publicKeyBytes),
+            getTargetAddressFilter(targetAddressBytes),
             getKeyFilter(key),
-            getSenderPublicKeyFilter(senderPublicKey)),
+            getSourceAddressFilter(sourceAddressBytes)),
         context.getDatabaseTimeoutInSeconds());
   }
 
@@ -140,13 +140,13 @@ public class MetadataCollection {
    *
    * @param targetMosaicId The mosaic id that holds the metadata values.
    * @param key Metadata key.
-   * @param senderPublicKey The public key of the account that created the metadata.
+   * @param sourceAddressBytes Source address of the account that created the metadata.
    * @return Observable of {@link Metadata} {@link List}
    */
   public Optional<Metadata> getMosaicMetadataByKeyAndSender(
-      final long targetMosaicId, final long key, final byte[] senderPublicKey) {
+      final long targetMosaicId, final long key, final byte[] sourceAddressBytes) {
     return catapultCollection.findOneR(
-            andFilter(getTargetIdFilter(targetMosaicId), getKeyFilter(key), getSenderPublicKeyFilter(senderPublicKey)),
+            andFilter(getTargetIdFilter(targetMosaicId), getKeyFilter(key), getSourceAddressFilter(sourceAddressBytes)),
             context.getDatabaseTimeoutInSeconds());
   }
 
@@ -180,12 +180,12 @@ public class MetadataCollection {
    *
    * @param targetNamespaceId The namespace id that holds the metadata values.
    * @param key Metadata key.
-   * @param senderPublicKey The public key of the account that created the metadata.
+   * @param sourceAddressBytes Source address of the account that created the metadata.
    * @return Observable of {@link Metadata}
    */
   public Optional<Metadata> getNamespaceMetadataByKeyAndSender(
-      final long targetNamespaceId, final long key, final byte[] senderPublicKey) {
+      final long targetNamespaceId, final long key, final byte[] sourceAddressBytes) {
     return catapultCollection.findOneR(
-            andFilter(getTargetIdFilter(targetNamespaceId), getKeyFilter(key), getSenderPublicKeyFilter(senderPublicKey)),
+            andFilter(getTargetIdFilter(targetNamespaceId), getKeyFilter(key), getSourceAddressFilter(sourceAddressBytes)),
             context.getDatabaseTimeoutInSeconds());  }
 }

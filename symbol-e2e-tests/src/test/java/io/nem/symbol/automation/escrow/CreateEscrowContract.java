@@ -26,8 +26,9 @@ import cucumber.api.java.en.Given;
 import cucumber.api.java.en.When;
 import io.nem.symbol.automation.common.BaseTest;
 import io.nem.symbol.automationHelpers.common.TestContext;
-import io.nem.symbol.automationHelpers.helper.*;
+import io.nem.symbol.automationHelpers.helper.sdk.*;
 import io.nem.symbol.core.utils.ExceptionUtils;
+import io.nem.symbol.sdk.infrastructure.directconnect.dataaccess.common.RetryCommand;
 import io.nem.symbol.sdk.model.account.Account;
 import io.nem.symbol.sdk.model.account.AccountInfo;
 import io.nem.symbol.sdk.model.account.Address;
@@ -35,6 +36,7 @@ import io.nem.symbol.sdk.model.account.PublicAccount;
 import io.nem.symbol.sdk.model.message.PlainMessage;
 import io.nem.symbol.sdk.model.mosaic.Mosaic;
 import io.nem.symbol.sdk.model.mosaic.MosaicId;
+import io.nem.symbol.sdk.model.mosaic.ResolvedMosaic;
 import io.nem.symbol.sdk.model.namespace.NamespaceId;
 import io.nem.symbol.sdk.model.transaction.*;
 
@@ -61,9 +63,11 @@ public class CreateEscrowContract extends BaseTest {
       (final Map<String, String> dataMap) -> {
         final String recipientName = dataMap.get(TRANSACTION_RECIPIENT_HEADER);
         final Account recipientAccount = getUserWithCurrency(recipientName);
-        final String[] mosaicData = dataMap.get(TRANSACTION_DATA_HEADER).split(" ");
+        final String data = dataMap.get(TRANSACTION_DATA_HEADER);
+        final String[] mosaicData = data.split(" ");
         final BigInteger amount = BigInteger.valueOf(Long.valueOf(mosaicData[0]));
-        final NamespaceId namespaceId = getNamespaceIdFromName(mosaicData[1]);
+        final NamespaceId namespaceId =
+            getNamespaceIdFromName(data.substring(mosaicData[0].length() + 1));
         final TransferHelper transferHelper = new TransferHelper(getTestContext());
         final List<Mosaic> mosaics = Arrays.asList(new Mosaic(namespaceId, amount));
         storeUserInfoInContext(recipientName);
@@ -76,17 +80,20 @@ public class CreateEscrowContract extends BaseTest {
   final Function<Map<String, String>, Transaction> registerNamespace =
       (final Map<String, String> dataMap) -> {
         final String namespaceName = dataMap.get(TRANSACTION_DATA_HEADER);
+        final String randomName = createRandomNamespace(namespaceName, getTestContext());
         return new NamespaceHelper(getTestContext())
-            .createRootNamespaceTransaction(namespaceName, BigInteger.valueOf(10));
+            .createRootNamespaceTransaction(
+                randomName,
+                BigInteger.valueOf(getTestContext().getSymbolConfig().getMinNamespaceDuration()));
       };
   final Function<Map<String, String>, Transaction> createMultiSigAccount =
       (final Map<String, String> dataMap) -> {
-        final String namespaceName = dataMap.get(TRANSACTION_DATA_HEADER);
+        final String[] cosignatoryData = dataMap.get(TRANSACTION_DATA_HEADER).split(":");
         return new MultisigAccountHelper(getTestContext())
             .createMultisigAccountModificationTransaction(
                 (byte) 1,
                 (byte) 1,
-                Arrays.asList(getUser("Bob").getPublicAccount()),
+                Arrays.asList(getUser(cosignatoryData[1]).getAddress()),
                 new ArrayList<>());
       };
   final Map<String, Function<Map<String, String>, Transaction>> transactionFunctionMap =
@@ -114,7 +121,7 @@ public class CreateEscrowContract extends BaseTest {
 
   private List<Transaction> getTransactionListFromTable(final DataTable dataTable) {
     final List<Map<String, String>> data = dataTable.asMaps(String.class, String.class);
-    final List<Account> senders = new ArrayList<>(data.size());
+    final Set<Account> senders = new HashSet<>(data.size());
     final List<Transaction> transactions = new ArrayList<>(data.size());
     for (int i = 0; i < data.size(); i++) {
       final Map<String, String> transactionInfo = data.get(i);
@@ -137,7 +144,7 @@ public class CreateEscrowContract extends BaseTest {
       final String userName,
       final AggregateTransaction aggregateTransaction,
       final List<Account> cosigners) {
-    final Account account = getUser(userName);
+    final Account account = getUserWithCurrency(userName);
     new AggregateHelper(getTestContext())
         .signTransactionWithCosigners(aggregateTransaction, account, cosigners);
     getTestContext().getScenarioContext().setContext(INITIATOR_ACCOUNT, account);
@@ -169,12 +176,12 @@ public class CreateEscrowContract extends BaseTest {
     for (final Mosaic mosaic : mosaics) {
       final MosaicId mosaicId =
           new NamespaceHelper(getTestContext()).getLinkedMosaicId((NamespaceId) mosaic.getId());
-      final Optional<Mosaic> initialMosaic = getMosaic(recipientAccountInfo, mosaicId);
+      final Optional<ResolvedMosaic> initialMosaic = getMosaic(recipientAccountInfo, mosaicId);
       final long initialAmount =
           initialMosaic.isPresent() ? initialMosaic.get().getAmount().longValue() : 0;
       final AccountInfo recipientAccountInfoAfter =
           new AccountHelper(getTestContext()).getAccountInfo(recipientAccountInfo.getAddress());
-      final Optional<Mosaic> mosaicAfter = getMosaic(recipientAccountInfoAfter, mosaicId);
+      final Optional<ResolvedMosaic> mosaicAfter = getMosaic(recipientAccountInfoAfter, mosaicId);
       final String errorMessage =
           "Recipient("
               + recipientAccountInfoAfter.getAddress().pretty()
@@ -192,10 +199,10 @@ public class CreateEscrowContract extends BaseTest {
     for (final Mosaic mosaic : mosaics) {
       final MosaicId mosaicId =
           new NamespaceHelper(getTestContext()).getLinkedMosaicId((NamespaceId) mosaic.getId());
-      final Mosaic initialMosaic = getMosaic(senderAccountInfo, mosaicId).get();
+      final ResolvedMosaic initialMosaic = getMosaic(senderAccountInfo, mosaicId).get();
       final AccountInfo senderAccountInfoAfter =
           new AccountHelper(getTestContext()).getAccountInfo(senderAccountInfo.getAddress());
-      final Mosaic mosaicAfter = getMosaic(senderAccountInfoAfter, mosaicId).get();
+      final ResolvedMosaic mosaicAfter = getMosaic(senderAccountInfoAfter, mosaicId).get();
       final BigInteger fees =
           getUserFee(senderAccountInfo.getPublicAccount(), initialMosaic.getId());
       assertEquals(
@@ -213,7 +220,7 @@ public class CreateEscrowContract extends BaseTest {
         dataTable,
         (innerTransactions) ->
             new AggregateHelper(getTestContext())
-                .createAggregateCompleteTransaction(innerTransactions));
+                .createAggregateCompleteTransaction(innerTransactions, innerTransactions.size()));
   }
 
   @And("^(\\w+) defined the following bonded escrow contract:$")
@@ -223,7 +230,7 @@ public class CreateEscrowContract extends BaseTest {
         dataTable,
         (innerTransactions) ->
             new AggregateHelper(getTestContext())
-                .createAggregateBondedTransaction(innerTransactions));
+                .createAggregateBondedTransaction(innerTransactions, innerTransactions.size()));
   }
 
   @And("^the swap of assets should conclude$")
@@ -236,7 +243,49 @@ public class CreateEscrowContract extends BaseTest {
                 () ->
                     getTestContext()
                         .<AggregateTransaction>findTransaction(TransactionType.AGGREGATE_BONDED)
-                        .orElseThrow(() -> new IllegalStateException("Aggregate hash was not found")));
+                        .orElseThrow(
+                            () -> new IllegalStateException("Aggregate hash was not found")));
+    for (final Transaction transaction : aggregateTransaction.getInnerTransactions()) {
+      switch (transaction.getType()) {
+        case TRANSFER:
+          verifyTransfer((TransferTransaction) transaction);
+          break;
+      }
+    }
+  }
+
+  protected <T extends Transaction> T waitForLastAggregateTransactionToComplete() {
+    final SignedTransaction signedTransaction = getTestContext().getSignedTransaction();
+    final int waitTimeInMilliseconds = 1000;
+    final int maxTries = getTestContext().getConfigFileReader().getDatabaseQueryTimeoutInSeconds();
+    final T transaction =
+        new RetryCommand<T>(
+                maxTries,
+                waitTimeInMilliseconds,
+                Optional.of((String message) -> getTestContext().getLogger().LogError(message)))
+            .run(
+                (final RetryCommand<T> retryCommand) -> {
+                  final TransactionHelper transactionHelper =
+                      new TransactionHelper(getTestContext());
+                  return transactionHelper.getTransaction(
+                      TransactionGroup.CONFIRMED, signedTransaction.getHash());
+                });
+    getTestContext().updateUserFee(transaction.getSigner().get(), transaction);
+    return transaction;
+  }
+
+  @And("^the resubmit should conclude$")
+  public void verifyLastAggregateTransaction() {
+    waitForLastAggregateTransactionToComplete();
+    AggregateTransaction aggregateTransaction =
+        getTestContext()
+            .<AggregateTransaction>findTransaction(TransactionType.AGGREGATE_COMPLETE)
+            .orElseGet(
+                () ->
+                    getTestContext()
+                        .<AggregateTransaction>findTransaction(TransactionType.AGGREGATE_BONDED)
+                        .orElseThrow(
+                            () -> new IllegalStateException("Aggregate hash was not found")));
     for (final Transaction transaction : aggregateTransaction.getInnerTransactions()) {
       switch (transaction.getType()) {
         case TRANSFER:
@@ -261,6 +310,7 @@ public class CreateEscrowContract extends BaseTest {
           getTestContext()
               .<AggregateTransaction>findTransaction(TransactionType.AGGREGATE_COMPLETE)
               .get();
+      getTestContext().clearTransaction();
       final Account initiatorAccount =
           getTestContext().getScenarioContext().getContext(INITIATOR_ACCOUNT);
       new AggregateHelper(getTestContext())
@@ -281,7 +331,8 @@ public class CreateEscrowContract extends BaseTest {
       innerTransaction.add(transaction.toAggregate(account.getPublicAccount()));
     }
     final AggregateTransaction aggregateTransaction =
-        new AggregateHelper(getTestContext()).createAggregateCompleteTransaction(innerTransaction);
+        new AggregateHelper(getTestContext())
+            .createAggregateCompleteTransaction(innerTransaction, 0);
     signedAggregateTransaction(userName, aggregateTransaction, new ArrayList<>());
   }
 
@@ -310,7 +361,8 @@ public class CreateEscrowContract extends BaseTest {
     final long timeoutInSeconds = 8 * BLOCK_CREATION_TIME_IN_SECONDS;
     ExceptionUtils.propagateVoid(() -> es.awaitTermination(timeoutInSeconds, TimeUnit.SECONDS));
     final AggregateTransaction aggregateTransaction =
-        new AggregateHelper(getTestContext()).createAggregateCompleteTransaction(innerTransaction);
+        new AggregateHelper(getTestContext())
+            .createAggregateCompleteTransaction(innerTransaction, cosigners.size());
     signedAggregateTransaction(userName, aggregateTransaction, cosigners);
   }
 

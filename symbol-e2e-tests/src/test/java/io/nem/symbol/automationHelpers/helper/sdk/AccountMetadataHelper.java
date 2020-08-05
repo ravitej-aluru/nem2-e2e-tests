@@ -18,96 +18,96 @@
  * along with Catapult.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.nem.symbol.automationHelpers.helper;
+package io.nem.symbol.automationHelpers.helper.sdk;
 
 import io.nem.symbol.automationHelpers.common.TestContext;
 import io.nem.symbol.sdk.model.account.Account;
-import io.nem.symbol.sdk.model.account.PublicAccount;
-import io.nem.symbol.sdk.model.namespace.NamespaceId;
-import io.nem.symbol.sdk.model.transaction.NamespaceMetadataTransaction;
-import io.nem.symbol.sdk.model.transaction.NamespaceMetadataTransactionFactory;
+import io.nem.symbol.sdk.model.account.UnresolvedAddress;
+import io.nem.symbol.sdk.model.transaction.AccountMetadataTransaction;
+import io.nem.symbol.sdk.model.transaction.AccountMetadataTransactionFactory;
 import io.nem.symbol.sdk.model.transaction.SignedTransaction;
 
 import java.math.BigInteger;
 
-/** Namespace metadata helper */
-public class NamespaceMetadataHelper extends BaseHelper<NamespaceMetadataHelper> {
+/** Account metadata helper. */
+public class AccountMetadataHelper extends BaseHelper<AccountMetadataHelper> {
+
   /**
    * Constructor.
    *
    * @param testContext Test context.
    */
-  public NamespaceMetadataHelper(final TestContext testContext) {
+  public AccountMetadataHelper(final TestContext testContext) {
     super(testContext);
   }
 
-  private NamespaceMetadataTransaction createNamespaceMetadataTransaction(
-      final PublicAccount targetPublicAccount,
+  /**
+   * Creates an account metadata transaction.
+   *
+   * @param targetAddress Target address.
+   * @param scopedMetadataKey Scoped meta data Key.
+   * @param valueSizeDelta Value size delta.
+   * @param value Metadata value.
+   * @return Account metadata transaction.
+   */
+  public AccountMetadataTransaction createAccountMetadataTransaction(
+      final UnresolvedAddress targetAddress,
       final BigInteger scopedMetadataKey,
-      final NamespaceId namespaceId,
       final short valueSizeDelta,
       final String value) {
-    final NamespaceMetadataTransactionFactory namespaceMetadataTransactionFactory =
-        NamespaceMetadataTransactionFactory.create(
-            testContext.getNetworkType(),
-            targetPublicAccount,
-            namespaceId,
-            scopedMetadataKey,
-            value);
-    namespaceMetadataTransactionFactory.valueSizeDelta(valueSizeDelta);
-    return buildTransaction(namespaceMetadataTransactionFactory);
+    final AccountMetadataTransactionFactory accountMetadataTransactionFactory =
+        AccountMetadataTransactionFactory.create(
+            testContext.getNetworkType(), targetAddress, scopedMetadataKey, value);
+    accountMetadataTransactionFactory.valueSizeDelta(valueSizeDelta);
+    return buildTransaction(accountMetadataTransactionFactory);
   }
 
   /**
-   * Creates an mosaic metadata transaction and announce it to the network.
+   * Creates an account metadata transaction and announce it to the network.
    *
    * @param account User account.
-   * @param targetPublicAccount Target public account.
+   * @param targetAddress Target address.
    * @param scopedMetadataKey Scoped meta data Key.
-   * @param namespaceId Namespace id.
    * @param valueSizeDelta Value size delta.
    * @param value Metadata value.
    * @return Signed transaction.
    */
   public SignedTransaction createAccountMetadataAndAnnounce(
       final Account account,
-      final PublicAccount targetPublicAccount,
+      final UnresolvedAddress targetAddress,
       final BigInteger scopedMetadataKey,
-      final NamespaceId namespaceId,
       final short valueSizeDelta,
       final String value) {
     final TransactionHelper transactionHelper = new TransactionHelper(testContext);
     return transactionHelper.signAndAnnounceTransaction(
         account,
         () ->
-            createNamespaceMetadataTransaction(
-                targetPublicAccount, scopedMetadataKey, namespaceId, valueSizeDelta, value));
+            createAccountMetadataTransaction(
+                targetAddress, scopedMetadataKey, valueSizeDelta, value));
   }
 
   /**
-   * Creates a namespace metadata transaction and announce it to the network and wait for confirmed
+   * Creates an account metadata transaction and announce it to the network and wait for confirmed
    * status.
    *
    * @param account User account.
-   * @param targetPublicAccount Target public account.
+   * @param targetAddress Target address.
    * @param scopedMetadataKey Scoped meta data Key.
-   * @param namespaceId Namespace id.
    * @param valueSizeDelta Value size delta.
    * @param value Metadata value.
    * @return Mosaic supply change transaction.
    */
-  public NamespaceMetadataTransaction submitMosaicSupplyChangeAndWait(
+  public AccountMetadataTransaction submitAccountMetadataAndWait(
       final Account account,
-      final PublicAccount targetPublicAccount,
+      final UnresolvedAddress targetAddress,
       final BigInteger scopedMetadataKey,
-      final NamespaceId namespaceId,
       final short valueSizeDelta,
       final String value) {
     final TransactionHelper transactionHelper = new TransactionHelper(testContext);
     return transactionHelper.signAndAnnounceTransactionAndWait(
         account,
         () ->
-            createNamespaceMetadataTransaction(
-                targetPublicAccount, scopedMetadataKey, namespaceId, valueSizeDelta, value));
+            createAccountMetadataTransaction(
+                targetAddress, scopedMetadataKey, valueSizeDelta, value));
   }
 }

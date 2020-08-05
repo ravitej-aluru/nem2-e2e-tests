@@ -18,7 +18,7 @@
  * along with Catapult.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.nem.symbol.automationHelpers.helper;
+package io.nem.symbol.automationHelpers.helper.sdk;
 
 import io.nem.symbol.automationHelpers.common.TestContext;
 import io.nem.symbol.core.crypto.Hashes;
@@ -62,8 +62,6 @@ public class SecretLockHelper extends BaseHelper<SecretLockHelper> {
     switch (lockHashAlgorithmType) {
       case SHA3_256:
         return Hashes.sha3_256(inputBytes);
-      case KECCAK_256:
-        return Hashes.keccak256(inputBytes);
       case HASH_256:
         return Hashes.hash256(inputBytes);
       case HASH_160:

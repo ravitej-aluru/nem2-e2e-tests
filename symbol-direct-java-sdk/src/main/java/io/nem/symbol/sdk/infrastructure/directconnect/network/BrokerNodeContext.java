@@ -18,30 +18,22 @@
  * along with Catapult.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.nem.symbol.automationHelpers.helper;
+package io.nem.symbol.sdk.infrastructure.directconnect.network;
 
-import io.nem.symbol.automationHelpers.common.TestContext;
-import io.nem.symbol.sdk.model.blockchain.NetworkType;
+public class BrokerNodeContext {
+  final String hostName;
+  final int serverPort;
 
-/** Network Helper */
-public class NetworkHelper {
-  private final TestContext testContext;
-
-  /**
-   * Constructor.
-   *
-   * @param testContext Test context.
-   */
-  public NetworkHelper(final TestContext testContext) {
-    this.testContext = testContext;
+  public BrokerNodeContext(final String hostName, final int serverPort) {
+    this.hostName = hostName;
+    this.serverPort = serverPort;
   }
 
-  /**
-   * Gets the network type from the server.
-   *
-   * @return Network type.
-   */
-  public NetworkType getNetworkType() {
-    return testContext.getNetworkType();
+  public int getServerPort() {
+    return serverPort;
+  }
+
+  public String getHostName() {
+    return hostName;
   }
 }
